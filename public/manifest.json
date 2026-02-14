@@ -1,0 +1,25 @@
+{
+  "name": "Mastering Words - Gamified Spelling Learning",
+  "short_name": "Mastering Words",
+  "description": "A fun, gamified spelling learning system for elementary students with AI-powered word generation and progress tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1221",
+  "theme_color": "#00c2a0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "games", "kids"]
+}

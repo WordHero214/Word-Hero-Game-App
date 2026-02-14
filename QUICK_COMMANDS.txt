@@ -1,0 +1,132 @@
+═══════════════════════════════════════════════════════════
+  MASTERING WORDS - QUICK COMMAND REFERENCE
+═══════════════════════════════════════════════════════════
+
+📦 START DEVELOPMENT SERVER
+───────────────────────────────────────────────────────────
+cd masteringword-main
+npm run dev
+
+Open: http://localhost:3000
+
+
+📱 EXPOSE TO MOBILE (Same WiFi)
+───────────────────────────────────────────────────────────
+cd masteringword-main
+npm run dev -- --host
+
+Use Network URL on mobile (e.g., http://192.168.1.x:3000)
+
+
+🔨 BUILD FOR PRODUCTION
+───────────────────────────────────────────────────────────
+cd masteringword-main
+npm run build
+
+
+👀 PREVIEW PRODUCTION BUILD
+───────────────────────────────────────────────────────────
+cd masteringword-main
+npm run preview
+
+
+🌐 DEPLOY TO VERCEL
+───────────────────────────────────────────────────────────
+npm i -g vercel
+cd masteringword-main
+vercel
+
+
+🌐 DEPLOY TO NETLIFY
+───────────────────────────────────────────────────────────
+npm i -g netlify-cli
+cd masteringword-main
+npm run build
+netlify deploy --prod --dir=dist
+
+
+🔥 DEPLOY TO FIREBASE
+───────────────────────────────────────────────────────────
+npm i -g firebase-tools
+firebase login
+cd masteringword-main
+firebase init hosting
+npm run build
+firebase deploy --only hosting
+
+
+🧹 CLEAR SERVICE WORKER (In Browser Console)
+───────────────────────────────────────────────────────────
+navigator.serviceWorker.getRegistrations().then(regs => {
+  regs.forEach(reg => reg.unregister());
+});
+
+
+✅ CHECK PWA STATUS (In Browser Console)
+───────────────────────────────────────────────────────────
+console.log('Installed:', window.matchMedia('(display-mode: standalone)').matches);
+navigator.serviceWorker.getRegistrations().then(r => console.log('SW:', r.length));
+
+
+📱 INSTALL PWA
+───────────────────────────────────────────────────────────
+Desktop:
+  - Click install icon in address bar
+  - Or: Menu (⋮) > Install Mastering Words
+
+Android:
+  - Menu (⋮) > Add to Home screen
+
+iOS:
+  - Share button > Add to Home Screen
+
+
+🔍 CHECK FILES
+───────────────────────────────────────────────────────────
+Windows:
+  dir logo
+  dir public\sounds
+  dir music
+
+Mac/Linux:
+  ls logo
+  ls public/sounds
+  ls music
+
+
+📊 VERIFY SETUP
+───────────────────────────────────────────────────────────
+✅ Logo files in /logo folder
+✅ background_music.mp3 in /music folder
+✅ click.mp3 in /public/sounds folder (optional)
+✅ Service worker at /public/sw.js
+✅ Manifest at /public/manifest.json
+
+
+🆘 TROUBLESHOOTING
+───────────────────────────────────────────────────────────
+Issue: Install button not showing
+  → Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
+  → Check F12 > Application > Manifest
+  → Check F12 > Application > Service Workers
+
+Issue: Icons not loading
+  → Verify files exist in /logo folder
+  → Check manifest.json paths
+  → Hard refresh browser
+
+Issue: Service worker not working
+  → Check /public/sw.js exists
+  → Unregister old SW (see command above)
+  → Hard refresh browser
+
+
+═══════════════════════════════════════════════════════════
+  READY TO GO! 🚀
+═══════════════════════════════════════════════════════════
+
+Start with: npm run dev
+Then open: http://localhost:3000
+Install: Click install icon in address bar
+
+Full guide: PWA_INSTALLATION_COMMANDS.md

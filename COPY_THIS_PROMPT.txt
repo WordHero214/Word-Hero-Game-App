@@ -1,0 +1,71 @@
+========================================
+COPY THIS ENTIRE PROMPT TO ChatGPT/Claude/Gemini
+========================================
+
+Generate a comprehensive spelling word list for Filipino elementary students (Grades 1-6) in CSV format. Create 30 words per grade level (180 words total), with each word having 10 questions distributed across three difficulty levels.
+
+GRADE LEVEL APPROPRIATENESS:
+- Grade 1: Simple 3-5 letter words, basic phonics, common objects (cat, dog, sun, red, big)
+- Grade 2: 4-6 letter words, simple compound words, basic sight words (happy, jump, play, tree, book)
+- Grade 3: 5-7 letter words, common prefixes/suffixes, everyday vocabulary (beautiful, running, teacher, garden)
+- Grade 4: 6-9 letter words, more complex patterns, academic vocabulary (important, different, science, history)
+- Grade 5: 7-10 letter words, advanced patterns, subject-specific terms (photosynthesis, democracy, multiplication)
+- Grade 6: 8-12 letter words, complex vocabulary, abstract concepts (responsibility, environment, civilization)
+
+DIFFICULTY DISTRIBUTION (per grade):
+- 10 EASY words: Basic level for that grade
+- 10 MEDIUM words: Grade-appropriate challenge
+- 10 HARD words: Advanced for that grade level
+
+CSV FORMAT REQUIRED:
+Word,Difficulty,Grade,Hint (English),Scenario (English),Hint (Filipino),Scenario (Filipino)
+
+CONTENT GUIDELINES:
+
+1. Hints (English & Filipino):
+   - Short, clear definition or description
+   - Age-appropriate language
+   - Help students understand meaning
+   - Example: "A red or green fruit" / "Isang pulang o berdeng prutas"
+
+2. Scenarios (English & Filipino):
+   - Complete sentence with blank (use ___)
+   - Natural, relatable context
+   - Grade-appropriate situations
+   - Example: "I ate an ___ for breakfast" / "Kumain ako ng ___ sa almusal"
+
+3. Filipino Translations:
+   - Use simple, commonly understood Tagalog
+   - Match the English meaning closely
+   - Keep it natural for Filipino elementary students
+   - Use everyday Filipino vocabulary
+
+WORD SELECTION CRITERIA:
+- Relevant to Filipino student life and culture
+- Mix of: objects, actions, descriptions, concepts
+- Include words from: home, school, nature, community
+- Avoid: offensive words, overly complex terms, rare vocabulary
+- Ensure: proper spelling, common usage, educational value
+
+OUTPUT FORMAT:
+Provide the complete CSV with all 180 words (30 per grade × 6 grades) in this exact format:
+
+Word,Difficulty,Grade,Hint (English),Scenario (English),Hint (Filipino),Scenario (Filipino)
+CAT,EASY,1,A small furry pet,I have a pet ___,Isang maliit na alagang hayop,Mayroon akong alaga na ___
+DOG,EASY,1,A pet that barks,The ___ is barking,Alagang hayop na tumatahol,Ang ___ ay tumatahol
+
+QUALITY CHECKLIST:
+✓ All words are spelled correctly
+✓ Difficulty matches grade level
+✓ Hints are clear and helpful
+✓ Scenarios use natural language
+✓ Filipino translations are accurate
+✓ No duplicate words across grades
+✓ Progressive difficulty from Grade 1 to 6
+✓ Mix of word types (nouns, verbs, adjectives)
+
+Please generate the complete CSV now with all 180 words.
+
+========================================
+END OF PROMPT
+========================================

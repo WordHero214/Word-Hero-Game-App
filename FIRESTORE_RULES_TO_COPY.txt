@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check user role
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Allow reading all user profiles (unauthenticated users need to see teacher list during signup)
+      // Also needed for leaderboards
+      allow read: if true;
+      
+      // Users can create their own profile during signup (unauthenticated allowed)
+      // Admins can create profiles for other users (teacher creation)
+      allow create: if !isSignedIn() || 
+                       request.auth.uid == userId || 
+                       (isSignedIn() && getUserRole() == 'ADMIN');
+      
+      // Users can update their own data
+      // Admins can update any user
+      // Teachers can update student data (for teacher name assignment)
+      allow update: if isSignedIn() && 
+        (request.auth.uid == userId || 
+         getUserRole() == 'ADMIN' || 
+         getUserRole() == 'TEACHER');
+      
+      // Only admins can delete users
+      allow delete: if isSignedIn() && getUserRole() == 'ADMIN';
+    }
+    
+    // Words collection
+    match /words/{wordId} {
+      // Everyone can read words (even unauthenticated for initial load)
+      allow read: if true;
+      
+      // Only teachers and admins can create/update/delete words
+      allow create, update, delete: if isSignedIn() && 
+        (getUserRole() == 'TEACHER' || getUserRole() == 'ADMIN');
+    }
+    
+    // Activities collection
+    match /activities/{activityId} {
+      // Teachers can create activities
+      allow create: if isSignedIn() && 
+        (getUserRole() == 'TEACHER' || getUserRole() == 'ADMIN');
+      
+      // Teachers can update/delete their own activities
+      allow update, delete: if isSignedIn() && 
+        (resource.data.teacherId == request.auth.uid || getUserRole() == 'ADMIN');
+      
+      // Students can read activities assigned to them
+      // Teachers can read their own activities
+      allow read: if isSignedIn() && (
+        getUserRole() == 'TEACHER' ||
+        getUserRole() == 'ADMIN' ||
+        resource.data.targetType == 'all' ||
+        (resource.data.targetType == 'students' && 
+         request.auth.uid in resource.data.targetStudentIds)
+      );
+    }
+    
+    // Activity submissions collection
+    match /activitySubmissions/{submissionId} {
+      // Students can create/update their own submissions
+      allow create, update: if isSignedIn() && 
+        request.resource.data.studentId == request.auth.uid;
+      
+      // Students can read their own submissions
+      // Teachers can read all submissions
+      allow read: if isSignedIn() && (
+        resource.data.studentId == request.auth.uid ||
+        getUserRole() == 'TEACHER' ||
+        getUserRole() == 'ADMIN'
+      );
+    }
+  }
+}
