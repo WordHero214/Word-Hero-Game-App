@@ -485,8 +485,17 @@ const GameOverlay: React.FC<{
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // NEW: Use ref to store shuffled words so they don't re-shuffle on every render
+  const wordsRef = useRef<Word[]>([]);
 
+  // Initialize words only once when component mounts or gameWords changes
   const words = useMemo(() => {
+    // If we already have words in ref, return them (prevents re-shuffling)
+    if (wordsRef.current.length > 0) {
+      return wordsRef.current;
+    }
+    
     // Note: Fresh word selection is now handled in the parent component
     // This component receives pre-selected words via gameWords prop
     let filteredWords;
@@ -499,7 +508,7 @@ const GameOverlay: React.FC<{
       filteredWords = gameWords.filter(w => w.difficulty === difficulty);
     }
     
-    // Randomize words
+    // Randomize words ONCE
     const shuffled = [...filteredWords].sort(() => Math.random() - 0.5);
     
     // Quick Play: 5 words, Regular Game: 10 words
@@ -507,6 +516,9 @@ const GameOverlay: React.FC<{
     const selectedWords = shuffled.slice(0, wordLimit);
     
     console.log(`🎮 Game starting with ${selectedWords.length} words (${difficulty})`);
+    
+    // Store in ref to prevent re-shuffling
+    wordsRef.current = selectedWords;
     
     return selectedWords;
   }, [difficulty, gameWords, isQuickPlay]);
@@ -528,6 +540,8 @@ const GameOverlay: React.FC<{
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      // Reset words ref when component unmounts
+      wordsRef.current = [];
     };
   }, []);
 
