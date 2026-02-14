@@ -684,8 +684,18 @@ const GameOverlay: React.FC<{
       }
       setShowFeedbackAnimation(true);
 
+      // COMBINATION APPROACH: Reduce reward if hints were used
+      let baseReward = DIFFICULTY_CONFIG[difficulty].reward + bonus;
+      const hintsUsed = revealedIndices.length;
+      
+      // Apply 50% penalty if any hints were used
+      if (hintsUsed > 0) {
+        baseReward = Math.floor(baseReward * 0.5);
+        console.log(`   ⚠️ Hints used (${hintsUsed}): Reward reduced by 50%`);
+      }
+      
       // Only award sparkies if NOT in practice/quick play mode
-      const reward = (isPracticeMode || isQuickPlay) ? 0 : DIFFICULTY_CONFIG[difficulty].reward + bonus;
+      const reward = (isPracticeMode || isQuickPlay) ? 0 : baseReward;
       const newSparkies = sessionSparkies + reward;
       const newResult = { wordId: currentWord.id, isCorrect: true, attempts: 1 };
       
@@ -732,12 +742,21 @@ const GameOverlay: React.FC<{
   const useHint = () => {
     if (!currentWord) return;
     
-    // Calculate hint cost based on how many hints already used
+    // COMBINATION APPROACH LIMITS
+    const MAX_HINTS_PER_WORD = 3; // Limit to 3 reveals per word
     const hintsUsed = revealedIndices.length;
+    
+    // Check if max hints reached
+    if (hintsUsed >= MAX_HINTS_PER_WORD) {
+      playSound('wrong');
+      return;
+    }
+    
     const isFree = hintsUsed === 0;
     
-    // Progressive cost: Free, 5, 10, 15, 20, 25...
-    const hintCost = isFree ? 0 : 5 + (hintsUsed - 1) * 5;
+    // STEEPER PROGRESSIVE COST: Free, 10, 25, 50
+    const hintCostTable = [0, 10, 25, 50];
+    const hintCost = hintCostTable[hintsUsed] || 50;
     
     // Check if user has enough sparkies
     if (!isFree && sparkies < hintCost) {
@@ -764,9 +783,15 @@ const GameOverlay: React.FC<{
   
   // Calculate next hint cost for display
   const getNextHintCost = () => {
+    const MAX_HINTS_PER_WORD = 3;
     const hintsUsed = revealedIndices.length;
+    
+    if (hintsUsed >= MAX_HINTS_PER_WORD) return 0; // Max reached
     if (hintsUsed === 0) return 0; // First hint is free
-    return 5 + hintsUsed * 5; // Next hint cost
+    
+    // STEEPER PROGRESSIVE COST: Free, 10, 25, 50
+    const hintCostTable = [0, 10, 25, 50];
+    return hintCostTable[hintsUsed] || 50;
   };
 
   const handleClose = () => {
@@ -972,28 +997,55 @@ const GameOverlay: React.FC<{
                   : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
                 }
               </h2>
-              <button 
-                onClick={useHint} 
-                disabled={revealedIndices.length > 0 && sparkies < getNextHintCost()}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
-                  revealedIndices.length > 0 && sparkies < getNextHintCost()
-                    ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
-                    : 'bg-white/5 text-[#f39c12] border-white/5 hover:bg-white/10 active:scale-95'
-                }`}
-              >
-                💡 {t('hint', userLanguage)} {
-                  revealedIndices.length === 0 
-                    ? '(Free!)' 
-                    : revealedIndices.length >= currentWord.term.length
-                    ? '(All revealed)'
-                    : `(-${getNextHintCost()} ✨)`
-                }
-              </button>
-              {revealedIndices.length > 0 && sparkies < getNextHintCost() && (
-                <p className="text-xs text-red-400 animate-pulse">
-                  Not enough sparkies! Need {getNextHintCost()} ✨
-                </p>
-              )}
+              
+              {/* Hint Button with Limit */}
+              <div className="w-full space-y-2">
+                <button 
+                  onClick={useHint} 
+                  disabled={(revealedIndices.length > 0 && sparkies < getNextHintCost()) || revealedIndices.length >= 3}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    revealedIndices.length >= 3
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : (revealedIndices.length > 0 && sparkies < getNextHintCost())
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : 'bg-white/5 text-[#f39c12] border-white/5 hover:bg-white/10 active:scale-95'
+                  }`}
+                >
+                  💡 {t('hint', userLanguage)} {
+                    revealedIndices.length >= 3
+                      ? '(Max 3 reached)'
+                      : revealedIndices.length === 0 
+                      ? '(Free!)' 
+                      : `(-${getNextHintCost()} ✨)`
+                  }
+                </button>
+                
+                {/* Hints remaining counter */}
+                {(revealedIndices.length > 0 || revealedIndices.length >= 3) && (
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-500">
+                      Hints used: {revealedIndices.length}/3
+                    </span>
+                    {revealedIndices.length > 0 && revealedIndices.length < 3 && (
+                      <span className="text-yellow-500 animate-pulse">
+                        ⚠️ Reward reduced by 50%
+                      </span>
+                    )}
+                  </div>
+                )}
+                
+                {/* Error messages */}
+                {revealedIndices.length >= 3 && (
+                  <p className="text-xs text-orange-400 text-center animate-pulse">
+                    Maximum hints reached! Try to spell it yourself 💪
+                  </p>
+                )}
+                {revealedIndices.length > 0 && revealedIndices.length < 3 && sparkies < getNextHintCost() && (
+                  <p className="text-xs text-red-400 text-center animate-pulse">
+                    Not enough sparkies! Need {getNextHintCost()} ✨
+                  </p>
+                )}
+              </div>
             </>
           )}
 
@@ -1003,6 +1055,7 @@ const GameOverlay: React.FC<{
               <p className="text-[#00c2a0] font-bold uppercase tracking-widest text-xs">{t('listenAndType', userLanguage)}</p>
             </>
           )}
+
 
           {difficulty === Difficulty.HARD && (
             <>
@@ -1049,29 +1102,52 @@ const GameOverlay: React.FC<{
                 </p>
               </div>
               
-              {/* Reveal Letter Button (Progressive Cost) */}
-              <button 
-                onClick={useHint} 
-                disabled={revealedIndices.length > 0 && sparkies < getNextHintCost()}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
-                  revealedIndices.length > 0 && sparkies < getNextHintCost()
-                    ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
-                    : 'bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border-orange-500/50 active:scale-95'
-                }`}
-              >
-                🔓 Reveal Letter {
-                  revealedIndices.length === 0 
-                    ? '(Free!)' 
-                    : revealedIndices.length >= currentWord.term.length
-                    ? '(All revealed)'
-                    : `(-${getNextHintCost()} ✨)`
-                }
-              </button>
-              {revealedIndices.length > 0 && sparkies < getNextHintCost() && revealedIndices.length < currentWord.term.length && (
-                <p className="text-xs text-red-400 animate-pulse">
-                  Not enough sparkies! Need {getNextHintCost()} ✨
-                </p>
-              )}
+              {/* Reveal Letter Button (Progressive Cost with Limit) */}
+              <div className="w-full space-y-2">
+                <button 
+                  onClick={useHint} 
+                  disabled={(revealedIndices.length > 0 && sparkies < getNextHintCost()) || revealedIndices.length >= 3}
+                  className={`w-full px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    revealedIndices.length >= 3
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : (revealedIndices.length > 0 && sparkies < getNextHintCost())
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : 'bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border-orange-500/50 active:scale-95'
+                  }`}
+                >
+                  🔓 Reveal Letter {
+                    revealedIndices.length >= 3
+                      ? '(Max 3 reached)'
+                      : revealedIndices.length === 0 
+                      ? '(Free!)' 
+                      : `(-${getNextHintCost()} ✨)`
+                  }
+                </button>
+                
+                {/* Hints remaining counter */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-500">
+                    Hints used: {revealedIndices.length}/3
+                  </span>
+                  {revealedIndices.length > 0 && (
+                    <span className="text-yellow-500 animate-pulse">
+                      ⚠️ Reward reduced by 50%
+                    </span>
+                  )}
+                </div>
+                
+                {/* Error messages */}
+                {revealedIndices.length >= 3 && (
+                  <p className="text-xs text-orange-400 text-center animate-pulse">
+                    Maximum hints reached! Try to spell it yourself 💪
+                  </p>
+                )}
+                {revealedIndices.length > 0 && revealedIndices.length < 3 && sparkies < getNextHintCost() && (
+                  <p className="text-xs text-red-400 text-center animate-pulse">
+                    Not enough sparkies! Need {getNextHintCost()} ✨
+                  </p>
+                )}
+              </div>
             </>
           )}
 
