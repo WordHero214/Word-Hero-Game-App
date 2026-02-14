@@ -1396,133 +1396,122 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Load words from Firebase with real-time sync
+  // Load words from Firebase with real-time sync (HYBRID APPROACH)
   useEffect(() => {
     if (!user) return;
     
-    console.log('🔄 Setting up real-time word sync...');
+    console.log('🔄 Setting up hybrid word loading (offline-first)...');
     
-    // Set up real-time listener for words collection
+    // STEP 1: Immediately load local bilingual words (works offline)
+    const gradeLevel = user?.role === UserRole.STUDENT ? user.gradeLevel : undefined;
+    const section = user?.role === UserRole.STUDENT ? user.section : undefined;
+    
+    let localWords = BILINGUAL_WORDS;
+    
+    // Apply filtering for students
+    if (gradeLevel || section) {
+      localWords = BILINGUAL_WORDS.filter(word => {
+        const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
+                         (gradeLevel && word.gradeLevels.includes(gradeLevel));
+        const sectionMatch = !word.sections || word.sections.length === 0 || 
+                           (section && word.sections.includes(section));
+        return gradeMatch && sectionMatch;
+      });
+      
+      console.log(`📚 Local Words Loaded (Offline-Ready):`);
+      console.log(`   Student Grade: ${gradeLevel || 'Not set'}`);
+      console.log(`   Student Section: ${section || 'Not set'}`);
+      console.log(`   Total local words: ${BILINGUAL_WORDS.length}`);
+      console.log(`   Words available for this student: ${localWords.length}`);
+      
+      // Log breakdown by difficulty
+      const easyCount = localWords.filter(w => w.difficulty === Difficulty.EASY).length;
+      const mediumCount = localWords.filter(w => w.difficulty === Difficulty.MEDIUM).length;
+      const hardCount = localWords.filter(w => w.difficulty === Difficulty.HARD).length;
+      console.log(`   Breakdown: ${easyCount} Easy, ${mediumCount} Medium, ${hardCount} Hard`);
+    }
+    
+    // Set local words immediately (works offline)
+    setWordList(localWords);
+    setIsPracticeMode(false);
+    console.log('✅ Local words loaded successfully (offline-ready)');
+    
+    // STEP 2: Try to sync with Firestore (online only)
+    // This will merge Firestore words with local words when online
     const wordsQuery = query(collection(db, 'words'));
     
     const unsubscribe = onSnapshot(wordsQuery, async (snapshot) => {
       try {
-        const allWords = snapshot.docs.map(doc => ({ 
+        const firestoreWords = snapshot.docs.map(doc => ({ 
           id: doc.id, 
           ...doc.data() 
         } as Word));
         
-        console.log('📡 Real-time update: Received', allWords.length, 'words');
-        
-        // Filter words based on student's grade level and section
-        const gradeLevel = user?.role === UserRole.STUDENT ? user.gradeLevel : undefined;
-        const section = user?.role === UserRole.STUDENT ? user.section : undefined;
-        
-        let words = allWords;
-        
-        // Apply filtering for students
-        if (gradeLevel || section) {
-          words = allWords.filter(word => {
-            const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
-                             (gradeLevel && word.gradeLevels.includes(gradeLevel));
-            const sectionMatch = !word.sections || word.sections.length === 0 || 
-                               (section && word.sections.includes(section));
-            return gradeMatch && sectionMatch;
+        if (firestoreWords.length > 0) {
+          console.log('📡 Real-time update: Received', firestoreWords.length, 'words from Firestore');
+          
+          // Merge Firestore words with local words (Firestore takes priority for duplicates)
+          const mergedWords = [...localWords];
+          
+          firestoreWords.forEach(fsWord => {
+            const existingIndex = mergedWords.findIndex(w => w.id === fsWord.id || w.term === fsWord.term);
+            if (existingIndex >= 0) {
+              // Replace with Firestore version
+              mergedWords[existingIndex] = fsWord;
+            } else {
+              // Add new Firestore word
+              mergedWords.push(fsWord);
+            }
           });
           
-          console.log(`📚 Grade Level Filtering Applied:`);
-          console.log(`   Student Grade: ${gradeLevel || 'Not set'}`);
-          console.log(`   Student Section: ${section || 'Not set'}`);
-          console.log(`   Total words in database: ${allWords.length}`);
-          console.log(`   Words available for this student: ${words.length}`);
+          // Apply filtering for students
+          let filteredWords = mergedWords;
+          if (gradeLevel || section) {
+            filteredWords = mergedWords.filter(word => {
+              const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
+                               (gradeLevel && word.gradeLevels.includes(gradeLevel));
+              const sectionMatch = !word.sections || word.sections.length === 0 || 
+                                 (section && word.sections.includes(section));
+              return gradeMatch && sectionMatch;
+            });
+          }
           
-          // Log breakdown by difficulty
-          const easyCount = words.filter(w => w.difficulty === Difficulty.EASY).length;
-          const mediumCount = words.filter(w => w.difficulty === Difficulty.MEDIUM).length;
-          const hardCount = words.filter(w => w.difficulty === Difficulty.HARD).length;
-          console.log(`   Breakdown: ${easyCount} Easy, ${mediumCount} Medium, ${hardCount} Hard`);
-        }
-        
-        console.log('✅ Filtered to', words.length, 'words for user');
-        
-        // Cache words for offline use
-        await cacheWordsForOffline(words);
-        
-        // Check if we have enough words
-        const easyWords = words.filter(w => w.difficulty === Difficulty.EASY);
-        const mediumWords = words.filter(w => w.difficulty === Difficulty.MEDIUM);
-        const hardWords = words.filter(w => w.difficulty === Difficulty.HARD);
-        
-        const hasEnoughWords = easyWords.length >= 10 && mediumWords.length >= 10 && hardWords.length >= 10;
-        
-        if (words.length > 0 && hasEnoughWords) {
-          setWordList(words);
+          console.log('✅ Merged Firestore + Local words:', filteredWords.length, 'total');
+          
+          // Cache merged words for offline use
+          await cacheWordsForOffline(filteredWords);
+          
+          setWordList(filteredWords);
           setIsPracticeMode(false);
-        } else if (words.length > 0 && !hasEnoughWords) {
-          // Supplement with practice words
-          console.warn('⚠️ Supplementing with practice words');
-          
-          let practiceWordsToUse = INITIAL_MOCK_WORDS;
-          
-          if (gradeLevel && parseInt(gradeLevel) <= 3) {
-            practiceWordsToUse = INITIAL_MOCK_WORDS.filter(w => 
-              w.difficulty === Difficulty.EASY || w.difficulty === Difficulty.MEDIUM
-            );
-          } else if (gradeLevel && parseInt(gradeLevel) <= 4) {
-            practiceWordsToUse = INITIAL_MOCK_WORDS.filter(w => 
-              w.difficulty === Difficulty.EASY || 
-              w.difficulty === Difficulty.MEDIUM ||
-              (w.difficulty === Difficulty.HARD && w.term.length <= 12)
-            );
-          }
-          
-          const practiceEasy = practiceWordsToUse.filter(w => w.difficulty === Difficulty.EASY);
-          const practiceMedium = practiceWordsToUse.filter(w => w.difficulty === Difficulty.MEDIUM);
-          const practiceHard = practiceWordsToUse.filter(w => w.difficulty === Difficulty.HARD);
-          
-          const combinedWords = [
-            ...words,
-            ...practiceEasy.slice(0, Math.max(0, 10 - easyWords.length)),
-            ...practiceMedium.slice(0, Math.max(0, 10 - mediumWords.length)),
-            ...practiceHard.slice(0, Math.max(0, 10 - hardWords.length))
-          ];
-          
-          setWordList(combinedWords);
-          setIsPracticeMode(true);
-        } else {
-          // Use practice words as fallback
-          console.warn('⚠️ Using practice words as fallback');
-          
-          let practiceWordsToUse = INITIAL_MOCK_WORDS;
-          
-          if (gradeLevel && parseInt(gradeLevel) <= 3) {
-            practiceWordsToUse = INITIAL_MOCK_WORDS.filter(w => 
-              w.difficulty === Difficulty.EASY || w.difficulty === Difficulty.MEDIUM
-            );
-          } else if (gradeLevel && parseInt(gradeLevel) <= 4) {
-            practiceWordsToUse = INITIAL_MOCK_WORDS.filter(w => 
-              w.difficulty === Difficulty.EASY || 
-              w.difficulty === Difficulty.MEDIUM ||
-              (w.difficulty === Difficulty.HARD && w.term.length <= 12)
-            );
-          }
-          
-          setWordList(practiceWordsToUse);
-          setIsPracticeMode(true);
         }
       } catch (error) {
-        console.error('❌ Error in real-time word sync:', error);
+        console.warn('⚠️ Firestore sync failed (offline mode):', error);
+        console.log('✅ Continuing with local words (offline-ready)');
+        // Keep using local words - already set above
       }
     }, (error) => {
-      console.error('❌ Firestore listener error:', error);
+      console.warn('⚠️ Firestore listener error (offline mode):', error);
+      console.log('✅ Continuing with local words (offline-ready)');
+      // Keep using local words - already set above
     });
     
-    // Cleanup listener on unmount
-    return () => {
-      console.log('🔌 Disconnecting real-time word sync');
-      unsubscribe();
-    };
-  }, [user]); // Re-setup listener when user changes
+    return () => unsubscribe();
+  }, [user]);
+
+  // Fallback: If no words loaded after 2 seconds, ensure local words are used
+  useEffect(() => {
+    if (!user) return;
+    
+    const fallbackTimer = setTimeout(() => {
+      if (wordList.length === 0) {
+        console.warn('⚠️ Fallback: Ensuring local words are loaded');
+        setWordList(BILINGUAL_WORDS);
+        setIsPracticeMode(false);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(fallbackTimer);
+  }, [user, wordList.length]);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
