@@ -1036,19 +1036,43 @@ const GameOverlay: React.FC<{
                 </div>
               )}
               
-              {/* Show word structure to help students */}
+              {/* Show word structure with revealed letters */}
               <div className="text-center space-y-2">
                 <p className="text-[#f39c12] text-xs uppercase tracking-wider font-bold">Spell this word:</p>
                 <h2 className="text-2xl font-bold tracking-[0.5em] text-white">
                   {isFeedback === 'correct' 
                     ? currentWord.term.split('').join(' ')
-                    : currentWord.term.split('').map(() => '_').join(' ')
+                    : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
                   }
                 </h2>
                 <p className="text-gray-500 text-xs">
                   ({currentWord.term.length} {currentWord.term.length === 1 ? 'letter' : 'letters'})
                 </p>
               </div>
+              
+              {/* Reveal Letter Button (Progressive Cost) */}
+              <button 
+                onClick={useHint} 
+                disabled={revealedIndices.length > 0 && sparkies < getNextHintCost()}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                  revealedIndices.length > 0 && sparkies < getNextHintCost()
+                    ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                    : 'bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border-orange-500/50 active:scale-95'
+                }`}
+              >
+                🔓 Reveal Letter {
+                  revealedIndices.length === 0 
+                    ? '(Free!)' 
+                    : revealedIndices.length >= currentWord.term.length
+                    ? '(All revealed)'
+                    : `(-${getNextHintCost()} ✨)`
+                }
+              </button>
+              {revealedIndices.length > 0 && sparkies < getNextHintCost() && revealedIndices.length < currentWord.term.length && (
+                <p className="text-xs text-red-400 animate-pulse">
+                  Not enough sparkies! Need {getNextHintCost()} ✨
+                </p>
+              )}
             </>
           )}
 
