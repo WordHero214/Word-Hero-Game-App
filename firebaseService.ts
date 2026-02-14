@@ -30,70 +30,132 @@ export const signUpUser = async (
   role: UserRole,
   additionalData?: { gradeLevel?: string; section?: string; subject?: string; teacherName?: string; teacherId?: string }
 ): Promise<User> => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const firebaseUser = userCredential.user;
+  try {
+    console.log('🔐 Starting user registration...', { email, name, role });
+    
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const firebaseUser = userCredential.user;
+    
+    console.log('✅ Firebase Auth user created:', firebaseUser.uid);
 
-  await updateProfile(firebaseUser, { displayName: name });
+    await updateProfile(firebaseUser, { displayName: name });
+    console.log('✅ Display name updated');
 
-  const baseUser = {
-    id: firebaseUser.uid,
-    name,
-    email,
-    username: email.split('@')[0],
-    role
-  };
+    const baseUser = {
+      id: firebaseUser.uid,
+      name,
+      email,
+      username: email.split('@')[0],
+      role
+    };
 
-  // Only add student-specific fields for STUDENT role
-  const newUser: User = role === UserRole.STUDENT ? {
-    ...baseUser,
-    sparkies: 0,
-    totalGames: 0,
-    wordsLearned: 0,
-    bestStreak: 0,
-    badges: [],
-    certificates: [],
-    achievements: [],
-    levelProgress: {
-      [Difficulty.EASY]: { difficulty: Difficulty.EASY, mastery: 0, gamesPlayed: 0 },
-      [Difficulty.MEDIUM]: { difficulty: Difficulty.MEDIUM, mastery: 0, gamesPlayed: 0 },
-      [Difficulty.HARD]: { difficulty: Difficulty.HARD, mastery: 0, gamesPlayed: 0 }
-    },
-    currentStreak: 0,
-    longestStreak: 0,
-    lastPlayedDate: new Date().toISOString().split('T')[0],
-    wrongWords: [],
-    progressHistory: [],
-    ...(additionalData?.gradeLevel && { gradeLevel: additionalData.gradeLevel }),
-    ...(additionalData?.section && { section: additionalData.section }),
-    ...(additionalData?.teacherName && { teacherName: additionalData.teacherName }),
-    ...(additionalData?.teacherId && { teacherId: additionalData.teacherId })
-  } : {
-    ...baseUser,
-    ...(additionalData?.subject && { subject: additionalData.subject })
-  };
+    // Only add student-specific fields for STUDENT role
+    const newUser: User = role === UserRole.STUDENT ? {
+      ...baseUser,
+      sparkies: 0,
+      totalGames: 0,
+      wordsLearned: 0,
+      bestStreak: 0,
+      badges: [],
+      certificates: [],
+      achievements: [],
+      levelProgress: {
+        [Difficulty.EASY]: { difficulty: Difficulty.EASY, mastery: 0, gamesPlayed: 0 },
+        [Difficulty.MEDIUM]: { difficulty: Difficulty.MEDIUM, mastery: 0, gamesPlayed: 0 },
+        [Difficulty.HARD]: { difficulty: Difficulty.HARD, mastery: 0, gamesPlayed: 0 }
+      },
+      currentStreak: 0,
+      longestStreak: 0,
+      lastPlayedDate: new Date().toISOString().split('T')[0],
+      wrongWords: [],
+      progressHistory: [],
+      ...(additionalData?.gradeLevel && { gradeLevel: additionalData.gradeLevel }),
+      ...(additionalData?.section && { section: additionalData.section }),
+      ...(additionalData?.teacherName && { teacherName: additionalData.teacherName }),
+      ...(additionalData?.teacherId && { teacherId: additionalData.teacherId })
+    } : {
+      ...baseUser,
+      ...(additionalData?.subject && { subject: additionalData.subject })
+    };
 
-  // Remove undefined values before saving to Firestore
-  const cleanedUser = Object.fromEntries(
-    Object.entries(newUser).filter(([_, v]) => v !== undefined)
-  );
+    // Remove undefined values before saving to Firestore
+    const cleanedUser = Object.fromEntries(
+      Object.entries(newUser).filter(([_, v]) => v !== undefined)
+    );
 
-  await setDoc(doc(db, "users", firebaseUser.uid), {
-    ...cleanedUser,
-    createdAt: Timestamp.now()
-  });
-
-  return newUser;
+    console.log('📝 Creating Firestore document...', { uid: firebaseUser.uid, role });
+    
+    // Create Firestore document with retry logic
+    let retries = 3;
+    let lastError;
+    
+    while (retries > 0) {
+      try {
+        await setDoc(doc(db, "users", firebaseUser.uid), {
+          ...cleanedUser,
+          createdAt: Timestamp.now()
+        });
+        
+        console.log('✅ Firestore document created successfully');
+        
+        // Verify the document was created
+        const verifyDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+        if (verifyDoc.exists()) {
+          console.log('✅ Document verified in Firestore');
+          return newUser;
+        } else {
+          throw new Error('Document verification failed');
+        }
+      } catch (error) {
+        lastError = error;
+        retries--;
+        console.warn(`⚠️ Firestore write attempt failed, retries left: ${retries}`, error);
+        if (retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+        }
+      }
+    }
+    
+    // If all retries failed, throw error
+    throw new Error(`Failed to create Firestore document after 3 attempts: ${lastError}`);
+    
+  } catch (error) {
+    console.error('❌ Registration error:', error);
+    throw error;
+  }
 };
 
 export const signInUser = async (email: string, password: string): Promise<User> => {
-  const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  const firebaseUser = userCredential.user;
-  
-  const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-  
-  if (!userDoc.exists()) {
-    // User exists in Auth but not in Firestore - create the document
-    console.warn("User document not found in Firestore, creating one...");
+  try {
+    console.log('🔐 Starting sign in...', { email });
+    
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const firebaseUser = userCredential.user;
+    
+    console.log('✅ Firebase Auth sign in successful:', firebaseUser.uid);
+    
+    // Try to get user document with retry logic
+    let retries = 3;
+    let userDoc;
+    
+    while (retries > 0) {
+      userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+      
+      if (userDoc.exists()) {
+        console.log('✅ Firestore document found');
+        return userDoc.data() as User;
+      }
+      
+      retries--;
+      console.warn(`⚠️ User document not found, retries left: ${retries}`);
+      
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+      }
+    }
+    
+    // User exists in Auth but not in Firestore after retries - create the document
+    console.warn("⚠️ User document not found in Firestore after retries, creating one...");
     
     // Determine role based on email (temporary logic)
     let role = UserRole.STUDENT;
@@ -125,6 +187,11 @@ export const signInUser = async (email: string, password: string): Promise<User>
         [Difficulty.MEDIUM]: { difficulty: Difficulty.MEDIUM, mastery: 0, gamesPlayed: 0 },
         [Difficulty.HARD]: { difficulty: Difficulty.HARD, mastery: 0, gamesPlayed: 0 }
       };
+      newUserData.currentStreak = 0;
+      newUserData.longestStreak = 0;
+      newUserData.lastPlayedDate = new Date().toISOString().split('T')[0];
+      newUserData.wrongWords = [];
+      newUserData.progressHistory = [];
     }
     
     // Remove undefined values
@@ -132,16 +199,34 @@ export const signInUser = async (email: string, password: string): Promise<User>
       Object.entries(newUserData).filter(([_, v]) => v !== undefined)
     );
     
-    // Create the document
-    await setDoc(doc(db, "users", firebaseUser.uid), {
-      ...cleanedUserData,
-      createdAt: Timestamp.now()
-    });
+    // Create the document with retry
+    retries = 3;
+    while (retries > 0) {
+      try {
+        await setDoc(doc(db, "users", firebaseUser.uid), {
+          ...cleanedUserData,
+          createdAt: Timestamp.now()
+        });
+        
+        console.log('✅ Firestore document created during sign in');
+        return newUserData as User;
+      } catch (error) {
+        retries--;
+        console.warn(`⚠️ Failed to create document, retries left: ${retries}`, error);
+        if (retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          throw error;
+        }
+      }
+    }
     
-    return newUserData as User;
+    throw new Error('Failed to create user document');
+    
+  } catch (error) {
+    console.error('❌ Sign in error:', error);
+    throw error;
   }
-
-  return userDoc.data() as User;
 };
 
 export const signOutUser = async (): Promise<void> => {
