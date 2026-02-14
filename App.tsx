@@ -897,8 +897,8 @@ const GameOverlay: React.FC<{
         </div>
       </div>
 
-      {/* Main Content Area - Flexible */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4 min-h-0">
+      {/* Main Content Area - Flexible with proper spacing for mobile keyboard */}
+      <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-2 min-h-0 overflow-y-auto">
         {/* Practice Mode Banner - Compact */}
         {(isPracticeMode || isQuickPlay) && (
           <div className="mb-3 bg-blue-500/20 border border-blue-500/50 rounded-xl p-2 text-center w-full max-w-lg">
@@ -907,7 +907,7 @@ const GameOverlay: React.FC<{
         )}
 
         {/* Content based on difficulty - Optimized spacing */}
-        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl space-y-4">
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl space-y-4 mb-4">
           {difficulty === Difficulty.EASY && (
             <>
               <div className="bg-[#162031] p-4 rounded-2xl border border-[#00c2a0]/20 shadow-xl w-full">
@@ -979,8 +979,8 @@ const GameOverlay: React.FC<{
         </div>
       </div>
 
-      {/* Bottom Buttons - Compact */}
-      <div className="p-4 space-y-2">
+      {/* Bottom Buttons - Sticky at bottom, always visible */}
+      <div className="sticky bottom-0 left-0 right-0 p-4 space-y-2 bg-[#0b1221] border-t border-white/5 z-10">
         <button 
           onClick={checkAnswer} 
           disabled={isFeedback === 'correct'}
