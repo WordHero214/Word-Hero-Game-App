@@ -123,8 +123,27 @@ const AuthView: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center px-6 py-12 animate-in fade-in duration-700">
       <div className="w-full max-w-md bg-[#162031] rounded-[3rem] p-10 shadow-2xl border border-white/5">
         <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-[#00c2a0] rounded-3xl flex items-center justify-center text-4xl shadow-xl mx-auto mb-6">W</div>
-          <h2 className="text-3xl font-bold text-white mb-2">Mastering Words</h2>
+          {/* Enhanced Animated Logo */}
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            {/* Glowing background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00c2a0] to-[#00d8b3] rounded-3xl blur-xl opacity-50 animate-pulse" />
+            
+            {/* Main logo container */}
+            <div className="relative w-24 h-24 bg-gradient-to-br from-[#00c2a0] to-[#00d8b3] rounded-3xl flex items-center justify-center text-5xl font-black text-white shadow-2xl shadow-teal-500/30 transform hover:scale-110 transition-transform duration-300">
+              W
+              {/* Sparkle effects */}
+              <div className="absolute -top-1 -right-1 text-yellow-400 text-lg animate-ping">✨</div>
+              <div className="absolute -bottom-1 -left-1 text-yellow-400 text-sm animate-ping" style={{ animationDelay: '0.5s' }}>⭐</div>
+            </div>
+            
+            {/* Rotating ring */}
+            <div className="absolute inset-0 border-2 border-[#00c2a0] border-t-transparent rounded-full animate-spin-slow opacity-30" />
+          </div>
+          
+          {/* App name with gradient */}
+          <h2 className="text-4xl font-black mb-2 bg-gradient-to-r from-[#00c2a0] via-[#00d8b3] to-[#00c2a0] bg-clip-text text-transparent">
+            Word Hero
+          </h2>
           <p className="text-gray-500">
             {showForgotPassword ? 'Reset Your Password' : (isRegistering ? 'New Student Registration' : 'Welcome back, explorer!')}
           </p>
@@ -341,3 +360,19 @@ const AuthView: React.FC = () => {
 };
 
 export default AuthView;
+
+// Add custom animations for the logo
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+`;
+if (typeof document !== 'undefined') {
+  document.head.appendChild(style);
+}

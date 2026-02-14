@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { User, UserRole, Difficulty, Word, GameSession, LevelProgress, Certificate } from './types';
 import { COLORS, BADGES, ACHIEVEMENTS, DIFFICULTY_CONFIG } from './constants';
 import AuthView from './AuthView';
+import SplashScreen from './SplashScreen';
 import TeacherView from './TeacherView';
 import AdminView from './AdminView';
 import { speakWord } from './geminiService';
@@ -1063,6 +1064,7 @@ const GameOverlay: React.FC<{
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [user, setUser] = useState<User | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const [activeGame, setActiveGame] = useState<Difficulty | null>(null);
   const [wordList, setWordList] = useState<Word[]>(INITIAL_MOCK_WORDS);
   const [isPracticeMode, setIsPracticeMode] = useState(false); // Track if using default practice words
@@ -1531,6 +1533,11 @@ export default function App() {
         <FunLoadingAnimation type="words" message="Loading your adventure..." />
       </div>
     );
+  }
+
+  // Show splash screen on first load
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
   if (!user) {
