@@ -7,6 +7,7 @@ import {
   updateUserData,
   getSystemAnalytics 
 } from './firebaseService';
+import Upload540WordsComponent from './Upload540WordsComponent';
 
 interface SystemAnalytics {
   totalUsers: number;
@@ -21,7 +22,7 @@ interface SystemAnalytics {
 }
 
 const AdminView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'users' | 'analytics' | 'create'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'analytics' | 'create' | 'database'>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [analytics, setAnalytics] = useState<SystemAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,9 @@ const AdminView: React.FC = () => {
   // Search and Filter
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<'ALL' | UserRole>('ALL');
+  
+  // Database Management
+  const [showUpload540, setShowUpload540] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -143,20 +147,20 @@ const AdminView: React.FC = () => {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex gap-4 bg-[#162031] p-2 rounded-2xl border border-white/5">
+      <div className="flex flex-wrap gap-2 sm:gap-4 bg-[#162031] p-2 rounded-2xl border border-white/5">
         <button
           onClick={() => setActiveTab('users')}
-          className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+          className={`flex-1 min-w-[120px] py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm transition-all ${
             activeTab === 'users'
               ? 'bg-[#00c2a0] text-white'
               : 'text-gray-400 hover:text-white'
           }`}
         >
-          👥 User Management
+          👥 Users
         </button>
         <button
           onClick={() => setActiveTab('analytics')}
-          className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+          className={`flex-1 min-w-[120px] py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm transition-all ${
             activeTab === 'analytics'
               ? 'bg-[#00c2a0] text-white'
               : 'text-gray-400 hover:text-white'
@@ -166,13 +170,23 @@ const AdminView: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('create')}
-          className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all ${
+          className={`flex-1 min-w-[120px] py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm transition-all ${
             activeTab === 'create'
               ? 'bg-[#00c2a0] text-white'
               : 'text-gray-400 hover:text-white'
           }`}
         >
-          ➕ Create Teacher
+          ➕ Create
+        </button>
+        <button
+          onClick={() => setActiveTab('database')}
+          className={`flex-1 min-w-[120px] py-3 px-3 sm:px-6 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+            activeTab === 'database'
+              ? 'bg-[#00c2a0] text-white'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          📚 Database
         </button>
       </div>
 
@@ -522,6 +536,160 @@ const AdminView: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Database Management Tab */}
+      {activeTab === 'database' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-3xl p-8 border border-purple-500/20">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center text-3xl">
+                📚
+              </div>
+              <div>
+                <h3 className="text-3xl font-bold text-white">Database Management</h3>
+                <p className="text-gray-400">Manage word database for offline gameplay</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Database Info Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+              <div className="text-purple-400 text-sm font-bold mb-2">Total Words</div>
+              <div className="text-white text-3xl font-bold">540</div>
+              <div className="text-gray-500 text-xs mt-1">Across all grades</div>
+            </div>
+            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+              <div className="text-blue-400 text-sm font-bold mb-2">Grade Levels</div>
+              <div className="text-white text-3xl font-bold">6</div>
+              <div className="text-gray-500 text-xs mt-1">Grades 1-6</div>
+            </div>
+            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+              <div className="text-green-400 text-sm font-bold mb-2">Difficulty Levels</div>
+              <div className="text-white text-3xl font-bold">3</div>
+              <div className="text-gray-500 text-xs mt-1">Easy, Medium, Hard</div>
+            </div>
+          </div>
+
+          {/* Upload 540 Words Section */}
+          <div className="bg-[#162031] rounded-3xl p-8 border border-white/5">
+            <div className="flex items-start gap-6">
+              <div className="flex-1">
+                <h4 className="text-2xl font-bold text-white mb-3">📤 Upload Complete Database</h4>
+                <p className="text-gray-400 mb-4">
+                  Upload the complete 540-word database for offline use. This includes:
+                </p>
+                <ul className="space-y-2 text-gray-300 text-sm mb-6">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    90 words per grade level (1-6)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    30 words per difficulty (Easy, Medium, Hard)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    Bilingual hints (English & Filipino)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    Random word selection with reset
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">✓</span>
+                    Educational progression by grade
+                  </li>
+                </ul>
+                <button
+                  onClick={() => setShowUpload540(true)}
+                  className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all active:scale-95 flex items-center gap-3"
+                >
+                  <span className="text-2xl">📚</span>
+                  Upload 540 Words Database
+                </button>
+              </div>
+              <div className="hidden lg:block">
+                <div className="bg-[#0b1221] rounded-2xl p-6 border border-white/5">
+                  <div className="text-xs font-bold text-gray-500 uppercase mb-3">Database Structure</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 1:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 2:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 3:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 4:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 5:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Grade 6:</span>
+                      <span className="text-white font-bold">90 words</span>
+                    </div>
+                    <div className="border-t border-white/10 pt-2 mt-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400 font-bold">Total:</span>
+                        <span className="text-purple-400 font-bold">540 words</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Database Tools */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+              <h5 className="text-white font-bold mb-3 flex items-center gap-2">
+                <span className="text-xl">📝</span>
+                Manual Word Entry
+              </h5>
+              <p className="text-gray-400 text-sm mb-4">
+                Add individual words or small batches through the teacher dashboard
+              </p>
+              <button
+                onClick={() => setActiveTab('create')}
+                className="text-[#00c2a0] hover:text-[#00d8b3] text-sm font-bold transition-colors"
+              >
+                Go to Teacher Tools →
+              </button>
+            </div>
+            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+              <h5 className="text-white font-bold mb-3 flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                Database Analytics
+              </h5>
+              <p className="text-gray-400 text-sm mb-4">
+                View word usage statistics and student performance data
+              </p>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className="text-[#00c2a0] hover:text-[#00d8b3] text-sm font-bold transition-colors"
+              >
+                View Analytics →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload 540 Words Modal */}
+      {showUpload540 && (
+        <Upload540WordsComponent onClose={() => setShowUpload540(false)} />
       )}
 
       {/* Edit User Modal */}

@@ -1,0 +1,49 @@
+grade,level,word,englishHint,tagalogHint,category
+1,EASY,CAT,A small furry pet that says meow,Isang maliit na alaga na tumutunog ng meow,Animals
+1,EASY,DOG,A loyal pet that barks and wags its tail,Isang tapat na alaga na tumatahol,Animals
+1,EASY,SUN,The bright star that gives us light and warmth,Ang maliwanag na bituin na nagbibigay ng liwanag,Nature
+1,EASY,RUN,To move quickly with your legs,Tumakbo nang mabilis gamit ang iyong mga binti,Actions
+1,EASY,BALL,A round toy you can throw and catch,Isang bilog na laruan na maaaring ihagis,Toys
+1,EASY,TREE,A tall plant with leaves and branches,Isang matangkad na halaman na may dahon,Nature
+1,EASY,BOOK,Something with pages you read,Isang bagay na may mga pahina na binabasa,School
+1,EASY,FISH,An animal that lives and swims in water,Isang hayop na nabubuhay sa tubig,Animals
+1,EASY,BIRD,An animal with wings that can fly,Isang hayop na may pakpak na lumilipad,Animals
+1,EASY,STAR,Tiny lights that twinkle in the night sky,Maliliit na ilaw na kumikislap sa gabi,Space
+1,EASY,MOON,A bright circle in the night sky,Isang maliwanag na bilog sa gabi sa langit,Space
+1,EASY,RAIN,Water that falls from clouds,Tubig na bumabagsak mula sa ulap,Weather
+1,EASY,WIND,Moving air you can feel but not see,Umiikot na hangin na nararamdaman mo,Weather
+1,EASY,HAND,The part at the end of your arm with fingers,Ang bahagi sa dulo ng iyong braso na may mga daliri,Body
+1,EASY,FOOT,The part at the end of your leg you stand on,Ang bahagi sa dulo ng iyong binti na tinatayuan mo,Body
+1,EASY,EYE,The part of your face you see with,Ang bahagi ng iyong mukha na nakikita mo,Body
+1,EASY,EAR,The part of your head you hear with,Ang bahagi ng iyong ulo na naririnig mo,Body
+1,EASY,NOSE,The part of your face you smell with,Ang bahagi ng iyong mukha na naamoy mo,Body
+1,EASY,MILK,A white drink that comes from cows,Isang puting inumin na galing sa baka,Food
+1,EASY,RICE,Small white grains we eat with meals,Maliliit na puting butil na kinakain natin,Food
+1,EASY,BREAD,A soft food made from flour,Isang malambot na pagkain na gawa sa harina,Food
+1,EASY,EGG,An oval food that chickens lay,Isang hugis itlog na pagkain mula sa manok,Food
+1,EASY,RED,The color of apples and fire trucks,Ang kulay ng mansanas at fire truck,Colors
+1,EASY,BLUE,The color of the sky and ocean,Ang kulay ng langit at dagat,Colors
+1,EASY,GREEN,The color of grass and leaves,Ang kulay ng damo at dahon,Colors
+1,EASY,YELLOW,The color of the sun and bananas,Ang kulay ng araw at saging,Colors
+1,EASY,BIG,Large in size not small,Malaki sa sukat hindi maliit,Size
+1,EASY,SMALL,Little in size not big,Maliit sa sukat hindi malaki,Size
+1,EASY,HOT,Very warm like fire or the sun,Napakainit tulad ng apoy o araw,Temperature
+1,EASY,COLD,Not warm like ice or snow,Hindi mainit tulad ng yelo o niyebe,Temperature
+1,MEDIUM,APPLE,A crunchy red or green fruit,Isang malutong na pula o berdeng prutas,Fruits
+1,MEDIUM,HOUSE,A building where a family lives together,Isang gusali kung saan nakatira ang pamilya,Places
+1,MEDIUM,WATER,A clear liquid we drink when thirsty,Isang malinaw na likido na iniinom,Nature
+1,MEDIUM,CHAIR,Something you sit on with four legs,Isang bagay na inuupuan na may apat na binti,Furniture
+1,MEDIUM,TABLE,A flat surface where you eat or study,Isang patag na ibabaw kung saan kumakain,Furniture
+1,MEDIUM,HAPPY,The feeling when something good happens,Ang nararamdaman kapag may magandang nangyari,Emotions
+1,MEDIUM,SMILE,What you do with your mouth when happy,Ang ginagawa mo sa bibig kapag masaya,Actions
+1,MEDIUM,CLOUD,White fluffy things in the sky,Puting malambot na bagay sa langit,Nature
+1,MEDIUM,GRASS,Green plants that cover the ground,Berdeng halaman na sumasaklaw sa lupa,Nature
+1,MEDIUM,FLOWER,A colorful plant that smells nice,Isang makulay na halaman na mabango,Nature
+1,MEDIUM,MOTHER,The woman who gave birth to you,Ang babae na nanganak sa iyo,Family
+1,MEDIUM,FATHER,The man who is your parent,Ang lalaki na iyong magulang,Family
+1,MEDIUM,SISTER,A girl who shares your parents,Isang babae na may parehong magulang,Family
+1,MEDIUM,BROTHER,A boy who shares your parents,Isang lalaki na may parehong magulang,Family
+1,MEDIUM,TEACHER,A person who helps you learn at school,Isang tao na tumutulong sa iyo na matuto,School
+1,MEDIUM,STUDENT,A person who goes to school to learn,Isang tao na pumupunta sa paaralan upang matuto,School
+1,MEDIUM,PENCIL,A tool you use to write that can be erased,Isang gamit sa pagsulat na maaaring burahin,School
+1,MEDIUM,PAPER,Thin sheets you write or draw on,Manipis na papel na sinusulatan o ginuguhitan,School

@@ -897,37 +897,37 @@ const GameOverlay: React.FC<{
         </div>
       </div>
 
-      {/* Main Content Area - Flexible with proper spacing for mobile keyboard */}
-      <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-2 min-h-0 overflow-y-auto">
+      {/* Main Content Area - Compact layout for mobile */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-4 min-h-0 overflow-y-auto">
         {/* Practice Mode Banner - Compact */}
         {(isPracticeMode || isQuickPlay) && (
-          <div className="mb-3 bg-blue-500/20 border border-blue-500/50 rounded-xl p-2 text-center w-full max-w-lg">
+          <div className="mb-2 bg-blue-500/20 border border-blue-500/50 rounded-xl p-2 text-center w-full max-w-lg">
             <p className="text-blue-300 font-bold text-xs">🎯 Practice Mode</p>
           </div>
         )}
 
-        {/* Content based on difficulty - Optimized spacing */}
-        <div className="flex flex-col items-center justify-center w-full max-w-2xl space-y-4 mb-4">
+        {/* Content based on difficulty - Compact spacing */}
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl space-y-3">
           {difficulty === Difficulty.EASY && (
             <>
-              <div className="bg-[#162031] p-4 rounded-2xl border border-[#00c2a0]/20 shadow-xl w-full">
+              <div className="bg-[#162031] p-3 rounded-2xl border border-[#00c2a0]/20 shadow-xl w-full">
                 <span className="text-[#00c2a0] text-[9px] font-black uppercase tracking-wider block mb-1">
                   {t('wordClue', userLanguage)}
                 </span>
-                <p className="text-base text-white font-medium leading-snug italic">
+                <p className="text-sm text-white font-medium leading-snug italic">
                   "{userLanguage === 'fil' && currentWord.hintFil 
                     ? currentWord.hintFil 
                     : (currentWord.hint || currentWord.scenario || 'Can you spell this word?')}"
                 </p>
               </div>
               
-              <h2 className="text-3xl font-bold tracking-wider text-white mt-4">
+              <h2 className="text-2xl font-bold tracking-wider text-white">
                 {isFeedback === 'correct' 
                   ? currentWord.term.split('').join(' ')
                   : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
                 }
               </h2>
-              <button onClick={useHint} className="bg-white/5 px-4 py-2 rounded-xl text-[#f39c12] text-sm font-bold border border-white/5 hover:bg-white/10 active:scale-95 transition-all">
+              <button onClick={useHint} className="bg-white/5 px-3 py-1.5 rounded-xl text-[#f39c12] text-xs font-bold border border-white/5 hover:bg-white/10 active:scale-95 transition-all">
                  💡 {t('hint', userLanguage)} {revealedIndices.length > 0 ? t('hintCost', userLanguage) : '(Free!)'}
               </button>
             </>
@@ -935,15 +935,15 @@ const GameOverlay: React.FC<{
 
           {difficulty === Difficulty.MEDIUM && (
             <>
-              <button onClick={() => speakWord(currentWord.term)} className="w-20 h-20 bg-[#00c2a0] rounded-full flex items-center justify-center text-3xl shadow-xl active:scale-90">🔊</button>
-              <p className="text-[#00c2a0] font-bold uppercase tracking-widest text-sm">{t('listenAndType', userLanguage)}</p>
+              <button onClick={() => speakWord(currentWord.term)} className="w-16 h-16 bg-[#00c2a0] rounded-full flex items-center justify-center text-2xl shadow-xl active:scale-90">🔊</button>
+              <p className="text-[#00c2a0] font-bold uppercase tracking-widest text-xs">{t('listenAndType', userLanguage)}</p>
             </>
           )}
 
           {difficulty === Difficulty.HARD && (
-            <div className="bg-[#162031] p-6 rounded-2xl border border-orange-500/20 shadow-inner w-full">
-              <p className="text-gray-500 uppercase text-[9px] font-bold mb-2 tracking-widest">{t('scenario', userLanguage)}</p>
-              <p className="text-lg text-white italic leading-relaxed">
+            <div className="bg-[#162031] p-4 rounded-2xl border border-orange-500/20 shadow-inner w-full">
+              <p className="text-gray-500 uppercase text-[9px] font-bold mb-1 tracking-widest">{t('scenario', userLanguage)}</p>
+              <p className="text-sm text-white italic leading-relaxed">
                 "{userLanguage === 'fil' && currentWord.scenarioFil 
                   ? currentWord.scenarioFil 
                   : currentWord.scenario}"
@@ -963,40 +963,40 @@ const GameOverlay: React.FC<{
               type="text" 
               value={input} 
               onChange={e => setInput(e.target.value)}
-              className="w-full bg-[#162031] rounded-2xl py-4 text-2xl text-center text-white font-bold uppercase tracking-widest outline-none border-2 border-transparent focus:border-[#00c2a0] transition-all shadow-inner"
+              className="w-full bg-[#162031] rounded-2xl py-3 text-xl text-center text-white font-bold uppercase tracking-widest outline-none border-2 border-transparent focus:border-[#00c2a0] transition-all shadow-inner"
               placeholder="..."
               autoFocus
               onKeyDown={e => e.key === 'Enter' && checkAnswer()}
             />
             {isFeedback && (
-              <div className="absolute -top-14 left-1/2 -translate-x-1/2 animate-in zoom-in duration-300">
-                <div className={`font-bold px-6 py-2 rounded-full shadow-xl text-sm ${isFeedback === 'correct' ? 'bg-[#22c55e] text-white' : 'bg-red-500 text-white'}`}>
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-in zoom-in duration-300">
+                <div className={`font-bold px-4 py-1.5 rounded-full shadow-xl text-xs ${isFeedback === 'correct' ? 'bg-[#22c55e] text-white' : 'bg-red-500 text-white'}`}>
                   {isFeedback === 'correct' ? 'EXCELLENT! 🌟' : 'TRY AGAIN! 🧩'}
                 </div>
               </div>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Bottom Buttons - Sticky at bottom, always visible */}
-      <div className="sticky bottom-0 left-0 right-0 p-4 space-y-2 bg-[#0b1221] border-t border-white/5 z-10">
-        <button 
-          onClick={checkAnswer} 
-          disabled={isFeedback === 'correct'}
-          className="w-full bg-[#00c2a0] py-4 rounded-2xl text-white font-bold text-lg shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          Submit Word
-        </button>
-        
-        {isFeedback === 'wrong' && (
-          <button 
-            onClick={handleNext} 
-            className="w-full bg-orange-500 hover:bg-orange-600 py-4 rounded-2xl text-white font-bold text-lg shadow-xl active:scale-95 animate-in slide-in-from-bottom-4 duration-300"
-          >
-            {currentIdx < words.length - 1 ? 'Skip to Next →' : 'Finish →'}
-          </button>
-        )}
+          {/* Submit Button - Right below input */}
+          <div className="w-full space-y-2 pt-2">
+            <button 
+              onClick={checkAnswer} 
+              disabled={isFeedback === 'correct'}
+              className="w-full bg-[#00c2a0] py-3.5 rounded-2xl text-white font-bold text-base shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Submit Word
+            </button>
+            
+            {isFeedback === 'wrong' && (
+              <button 
+                onClick={handleNext} 
+                className="w-full bg-orange-500 hover:bg-orange-600 py-3.5 rounded-2xl text-white font-bold text-base shadow-xl active:scale-95 animate-in slide-in-from-bottom-4 duration-300"
+              >
+                {currentIdx < words.length - 1 ? 'Skip to Next →' : 'Finish →'}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Exit Confirmation Modal */}

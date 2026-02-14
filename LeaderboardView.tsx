@@ -6,8 +6,13 @@ interface LeaderboardViewProps {
   currentUser?: User;
 }
 
+// Extended User type with rank for leaderboard display
+interface RankedUser extends User {
+  rank: number;
+}
+
 const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
-  const [students, setStudents] = useState<User[]>([]);
+  const [students, setStudents] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'section'>('all');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -30,12 +35,18 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
   const loadLeaderboard = async () => {
     setLoading(true);
     try {
-      const allStudents = await getTopStudentsWithRank(50); // Get top 50 with ranks
+      const allStudents = await getTopStudentsWithRank(100); // Get more students for filtering
       
       // Filter by section if needed
-      let filteredStudents = allStudents;
+      let filteredStudents: RankedUser[] = allStudents as RankedUser[];
       if (filter === 'section' && currentUser?.section) {
-        filteredStudents = allStudents.filter(s => s.section === currentUser.section);
+        const sectionStudents = allStudents.filter(s => s.section === currentUser.section);
+        
+        // Recalculate ranks for section-filtered students
+        filteredStudents = sectionStudents.map((student, index) => ({
+          ...student,
+          rank: index + 1 // Recalculate rank based on section position
+        })) as RankedUser[];
       }
       
       setStudents(filteredStudents.slice(0, 10)); // Show top 10
@@ -158,7 +169,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                         {top3[1].name[0].toUpperCase()}
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg animate-bounce">
-                        2
+                        {top3[1].rank}
                       </div>
                       {/* Silver Medal */}
                       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-3xl animate-swing">🥈</div>
@@ -171,7 +182,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                       <p className="text-white text-sm font-bold">✨ {top3[1].sparkies || 0}</p>
                     </div>
                     <div className="w-28 h-32 bg-gradient-to-t from-gray-400 to-gray-300 rounded-t-3xl flex items-center justify-center text-white text-5xl font-bold shadow-2xl transform hover:scale-105 transition-transform">
-                      2
+                      {top3[1].rank}
                     </div>
                   </div>
                 )}
@@ -192,7 +203,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                       </div>
                       
                       <div className="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg animate-bounce">
-                        1
+                        {top3[0].rank}
                       </div>
                       
                       {/* Crown */}
@@ -214,7 +225,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                     
                     <div className="w-32 h-44 bg-gradient-to-t from-yellow-600 via-yellow-500 to-yellow-400 rounded-t-3xl flex items-center justify-center text-white text-6xl font-bold shadow-2xl relative overflow-hidden transform hover:scale-105 transition-transform">
                       <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                      1
+                      {top3[0].rank}
                     </div>
                   </div>
                 )}
@@ -231,7 +242,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                         {top3[2].name[0].toUpperCase()}
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg animate-bounce">
-                        3
+                        {top3[2].rank}
                       </div>
                       {/* Bronze Medal */}
                       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-3xl animate-swing" style={{ animationDelay: '0.3s' }}>🥉</div>
@@ -244,7 +255,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
                       <p className="text-white text-sm font-bold">✨ {top3[2].sparkies || 0}</p>
                     </div>
                     <div className="w-28 h-28 bg-gradient-to-t from-orange-600 to-orange-400 rounded-t-3xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl transform hover:scale-105 transition-transform">
-                      3
+                      {top3[2].rank}
                     </div>
                   </div>
                 )}
@@ -261,7 +272,7 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
               </div>
               
               {rest.map((student, index) => {
-                const rank = index + 4;
+                const rank = student.rank;
                 const isCurrentUser = student.id === currentUser?.id;
                 
                 return (
