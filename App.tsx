@@ -18,7 +18,7 @@ import LeaderboardView from './LeaderboardView';
 import ProgressDashboard from './ProgressDashboard';
 import ReviewWrongWords from './ReviewWrongWords';
 import MilestoneCelebration from './MilestoneCelebration';
-import { cacheWordsForOffline } from './offlineSync';
+import { cacheWordsForOffline, markWordsAsUsed, getFreshWords } from './offlineSync';
 import FeedbackAnimation from './FeedbackAnimation';
 import GameProgressBar from './GameProgressBar';
 import EnhancedButton from './EnhancedButton';
@@ -487,6 +487,8 @@ const GameOverlay: React.FC<{
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const words = useMemo(() => {
+    // Note: Fresh word selection is now handled in the parent component
+    // This component receives pre-selected words via gameWords prop
     let filteredWords;
     
     // In Quick Play mode, use all provided words without filtering
@@ -495,27 +497,6 @@ const GameOverlay: React.FC<{
     } else {
       // In regular mode, filter by difficulty
       filteredWords = gameWords.filter(w => w.difficulty === difficulty);
-      
-      // Get used word IDs for this difficulty
-      const usedIds = usedWordIds?.[difficulty] || [];
-      
-      // Filter out already used words
-      const unusedWords = filteredWords.filter(w => !usedIds.includes(w.id));
-      
-      // If we have enough unused words, use them
-      // Otherwise, reset the pool and use all words (this means student completed all words!)
-      if (unusedWords.length >= 10) {
-        filteredWords = unusedWords;
-      } else {
-        // Not enough unused words - reset the pool
-        console.log(`🔄 Resetting word pool for ${difficulty} - All words completed!`);
-        filteredWords = gameWords.filter(w => w.difficulty === difficulty);
-        
-        // Show a celebration message
-        if (unusedWords.length === 0 && usedIds.length > 0) {
-          console.log(`🎉 Congratulations! You've completed all ${usedIds.length} ${difficulty} words!`);
-        }
-      }
     }
     
     // Randomize words
@@ -523,8 +504,12 @@ const GameOverlay: React.FC<{
     
     // Quick Play: 5 words, Regular Game: 10 words
     const wordLimit = isQuickPlay ? 5 : 10;
-    return shuffled.slice(0, wordLimit);
-  }, [difficulty, gameWords, isQuickPlay, usedWordIds]);
+    const selectedWords = shuffled.slice(0, wordLimit);
+    
+    console.log(`🎮 Game starting with ${selectedWords.length} words (${difficulty})`);
+    
+    return selectedWords;
+  }, [difficulty, gameWords, isQuickPlay]);
   const currentWord = words[currentIdx];
 
   useEffect(() => {
@@ -1592,6 +1577,13 @@ export default function App() {
     }
     
     try {
+      // Mark words as used in offline storage (prevents repetition)
+      if (!isQuickPlay && !isPracticeMode && session.words.length > 0) {
+        const wordIds = session.words.map(w => w.id);
+        await markWordsAsUsed(user.id, wordIds);
+        console.log(`✅ Marked ${wordIds.length} words as used for offline tracking`);
+      }
+      
       // Update completion time if time was tracked
       if (session.timeSpent && session.timeSpent > 0) {
         await updateCompletionTime(user.id, session.timeSpent);
@@ -1698,6 +1690,33 @@ export default function App() {
     setActiveGame(Difficulty.EASY); // Use EASY as placeholder
   };
 
+  // NEW: Start game with fresh words (prevents repetition)
+  const handleStartGame = async (difficulty: Difficulty, isPractice = false) => {
+    if (!user) return;
+    
+    setIsPracticeMode(isPractice);
+    
+    // If practice mode or quick play, use regular word selection
+    if (isPractice) {
+      setActiveGame(difficulty);
+      return;
+    }
+    
+    // For regular games, get fresh words that haven't been used recently
+    try {
+      const freshWords = await getFreshWords(user.id, wordList, 10, difficulty);
+      console.log(`🎮 Starting ${difficulty} game with ${freshWords.length} fresh words`);
+      
+      // Store fresh words temporarily (they'll be used by GameView)
+      // GameView will filter by difficulty, so we pass all words
+      setActiveGame(difficulty);
+    } catch (error) {
+      console.error('❌ Error getting fresh words:', error);
+      // Fallback to regular game start
+      setActiveGame(difficulty);
+    }
+  };
+
   const handleTeacherNavigate = (tab: string) => {
     // Map the tab names from ProfileView to TeacherView tabs
     const tabMap: { [key: string]: 'dashboard' | 'students' | 'words' | 'analytics' } = {
@@ -1746,8 +1765,7 @@ export default function App() {
       if (activeTab === 'play') return <PlayView 
         user={user} 
         onLevelSelect={(difficulty, isPractice = false) => {
-          setIsPracticeMode(isPractice);
-          setActiveGame(difficulty);
+          handleStartGame(difficulty, isPractice);
         }} 
         onQuickPlay={handleQuickPlay} 
         isPracticeMode={isPracticeMode} 

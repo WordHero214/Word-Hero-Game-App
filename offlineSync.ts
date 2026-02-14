@@ -7,7 +7,12 @@ import {
   clearSyncedResults, 
   isOnline,
   saveWordsOffline,
-  getWordsOffline
+  getWordsOffline,
+  markWordsAsUsed,
+  getUsedWordIds,
+  getFreshWords,
+  resetUsedWords,
+  getWordMetadata
 } from './offlineStorage';
 import { Word, GameSession } from './types';
 
@@ -54,10 +59,10 @@ export const syncPendingResults = async (userId: string): Promise<number> => {
   }
 };
 
-// Cache words for offline use
-export const cacheWordsForOffline = async (words: Word[]): Promise<void> => {
+// Cache words for offline use with version tracking
+export const cacheWordsForOffline = async (words: Word[], forceUpdate = false): Promise<void> => {
   try {
-    await saveWordsOffline(words);
+    await saveWordsOffline(words, forceUpdate);
     console.log(`✅ Cached ${words.length} words for offline use`);
   } catch (error) {
     console.error('❌ Failed to cache words:', error);
@@ -122,4 +127,13 @@ export const setupOnlineListeners = (
     window.removeEventListener('online', handleOnline);
     window.removeEventListener('offline', handleOffline);
   };
+};
+
+// Export word tracking functions
+export { 
+  markWordsAsUsed, 
+  getUsedWordIds, 
+  getFreshWords, 
+  resetUsedWords,
+  getWordMetadata 
 };
