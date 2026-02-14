@@ -183,12 +183,26 @@ vercel
 
 Follow prompts to deploy.
 
-### 4. Set Environment Variables
+### 4. Set Environment Variables (CRITICAL!)
+
+⚠️ **Without these, you'll get "API Key must be set" error!**
 
 In Vercel dashboard:
-1. Go to Project Settings
-2. Environment Variables
-3. Add `VITE_GEMINI_API_KEY`
+1. Go to Project Settings → Environment Variables
+2. Add ALL 8 variables (see `VERCEL_ENV_SETUP.txt` for quick copy-paste):
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+   - `VITE_FIREBASE_MEASUREMENT_ID`
+   - `VITE_GEMINI_API_KEY`
+3. Select: Production, Preview, Development
+4. Click Save for each
+5. **Redeploy** from Deployments tab
+
+📖 **Full guide**: `docs/VERCEL_DEPLOYMENT_GUIDE.md`
 
 ---
 

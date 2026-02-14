@@ -4,13 +4,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyChqt1VSOu7XIGqexvJm6ng2iI7vlut_6s",
-  authDomain: "word-hero-8143e.firebaseapp.com",
-  projectId: "word-hero-8143e",
-  storageBucket: "word-hero-8143e.firebasestorage.app",
-  messagingSenderId: "1047515656125",
-  appId: "1:1047515656125:web:3eefc5a475535f88836cd4",
-  measurementId: "G-HWZBHG29MW"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyChqt1VSOu7XIGqexvJm6ng2iI7vlut_6s",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "word-hero-8143e.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "word-hero-8143e",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "word-hero-8143e.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1047515656125",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1047515656125:web:3eefc5a475535f88836cd4",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-HWZBHG29MW"
 };
 
 // Initialize Firebase
