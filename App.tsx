@@ -1101,7 +1101,7 @@ export default function App() {
       bgMusicRef.current.loop = true;
       bgMusicRef.current.volume = musicVolume; // Use state volume
       
-      // Auto-play on user interaction
+      // Auto-play on user interaction - more aggressive approach
       const playMusic = () => {
         if (bgMusicRef.current && !isMusicPlaying) {
           bgMusicRef.current.play().then(() => {
@@ -1112,13 +1112,19 @@ export default function App() {
         }
       };
       
-      // Try to play on any user interaction
-      document.addEventListener('click', playMusic, { once: true });
-      document.addEventListener('keydown', playMusic, { once: true });
+      // Try to play immediately (might fail due to autoplay policy)
+      playMusic();
+      
+      // Also try on any user interaction
+      const events = ['click', 'touchstart', 'keydown', 'scroll'];
+      events.forEach(event => {
+        document.addEventListener(event, playMusic, { once: true });
+      });
       
       return () => {
-        document.removeEventListener('click', playMusic);
-        document.removeEventListener('keydown', playMusic);
+        events.forEach(event => {
+          document.removeEventListener(event, playMusic);
+        });
       };
     }
   }, [user, isMusicPlaying, musicVolume]);
@@ -1655,9 +1661,9 @@ export default function App() {
             )}
           </div>
           
-          <div className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider border border-white/10 flex items-center gap-1.5 flex-shrink-0 ${user.role === UserRole.ADMIN ? 'bg-purple-500 text-white' : user.role === UserRole.TEACHER ? 'bg-teal-500 text-white' : 'bg-blue-500 text-white'}`}>
-             <div className="w-1 h-1 bg-white rounded-full animate-pulse" />
-             <span className="whitespace-nowrap">{user.role}</span>
+          <div className={`px-2 py-1 rounded-lg text-[8px] sm:text-[9px] font-black uppercase tracking-wider border border-white/10 flex items-center gap-1 flex-shrink-0 max-w-[80px] sm:max-w-none ${user.role === UserRole.ADMIN ? 'bg-purple-500 text-white' : user.role === UserRole.TEACHER ? 'bg-teal-500 text-white' : 'bg-blue-500 text-white'}`}>
+             <div className="w-1 h-1 bg-white rounded-full animate-pulse flex-shrink-0" />
+             <span className="whitespace-nowrap truncate">{user.role}</span>
           </div>
         </div>
       </div>

@@ -7,18 +7,18 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Helper function to check user role
+    // Helper function to check user role (only call when authenticated)
     function getUserRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
     
     // Users collection
     match /users/{userId} {
-      // Allow reading all user profiles (unauthenticated users need to see teacher list during signup)
-      // Also needed for leaderboards
+      // Allow reading all user profiles (needed for teacher list during signup and leaderboards)
       allow read: if true;
       
-      // Users can create their own profile during signup (unauthenticated allowed)
+      // Allow user creation during signup (unauthenticated)
+      // Also allow authenticated users to create their own profile
       // Admins can create profiles for other users (teacher creation)
       allow create: if !isSignedIn() || 
                        request.auth.uid == userId || 
