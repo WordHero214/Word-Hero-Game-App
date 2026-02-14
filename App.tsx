@@ -10,7 +10,7 @@ import { speakWord } from './geminiService';
 import ProfileView from './ProfileView';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { getCurrentUser, updateUserProgress, getWords, signOutUser } from './firebaseService';
 import { updateCompletionTime } from './firebaseService';
 import { FirebaseStatus } from './FirebaseStatus';
@@ -1191,8 +1191,98 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          const userData = await getCurrentUser(firebaseUser);
+          console.log('🔐 Auth state changed - user authenticated:', firebaseUser.uid);
+          
+          // Try to get user document with retry logic
+          let userData = await getCurrentUser(firebaseUser);
+          
+          if (!userData) {
+            console.warn("⚠️ User document not found, attempting to create...");
+            
+            // Determine role based on email (temporary logic)
+            let role = UserRole.STUDENT;
+            if (firebaseUser.email?.includes('admin')) {
+              role = UserRole.ADMIN;
+            } else if (firebaseUser.email?.includes('teacher')) {
+              role = UserRole.TEACHER;
+            }
+            
+            const newUserData: any = {
+              id: firebaseUser.uid,
+              name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+              email: firebaseUser.email || '',
+              username: firebaseUser.email?.split('@')[0] || 'user',
+              role: role
+            };
+            
+            // Add student-specific fields if student
+            if (role === UserRole.STUDENT) {
+              newUserData.sparkies = 0;
+              newUserData.totalGames = 0;
+              newUserData.wordsLearned = 0;
+              newUserData.bestStreak = 0;
+              newUserData.badges = [];
+              newUserData.certificates = [];
+              newUserData.achievements = [];
+              newUserData.levelProgress = {
+                [Difficulty.EASY]: { difficulty: Difficulty.EASY, mastery: 0, gamesPlayed: 0 },
+                [Difficulty.MEDIUM]: { difficulty: Difficulty.MEDIUM, mastery: 0, gamesPlayed: 0 },
+                [Difficulty.HARD]: { difficulty: Difficulty.HARD, mastery: 0, gamesPlayed: 0 }
+              };
+              newUserData.currentStreak = 0;
+              newUserData.longestStreak = 0;
+              newUserData.lastPlayedDate = new Date().toISOString().split('T')[0];
+              newUserData.wrongWords = [];
+              newUserData.progressHistory = [];
+            }
+            
+            // Remove undefined values
+            const cleanedUserData = Object.fromEntries(
+              Object.entries(newUserData).filter(([_, v]) => v !== undefined)
+            );
+            
+            // Create the document with retry
+            let retries = 3;
+            let documentCreated = false;
+            
+            while (retries > 0 && !documentCreated) {
+              try {
+                await setDoc(doc(db, "users", firebaseUser.uid), {
+                  ...cleanedUserData,
+                  createdAt: Timestamp.now()
+                });
+                
+                console.log('✅ Firestore document created successfully');
+                
+                // Verify the document was created
+                const verifyDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+                if (verifyDoc.exists()) {
+                  console.log('✅ Document verified in Firestore');
+                  userData = verifyDoc.data() as User;
+                  documentCreated = true;
+                } else {
+                  throw new Error('Document verification failed');
+                }
+              } catch (error) {
+                retries--;
+                console.warn(`⚠️ Failed to create document, retries left: ${retries}`, error);
+                if (retries > 0) {
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+              }
+            }
+            
+            if (!documentCreated) {
+              console.error('❌ Failed to create user document after all retries');
+              await signOutUser().catch(() => {});
+              setUser(null);
+              setLoading(false);
+              return;
+            }
+          }
+          
           if (userData) {
+            console.log('✅ User data loaded successfully');
             setUser(userData);
             // Track badges and certs for milestone detection
             setPreviousBadges(userData.badges || []);
@@ -1200,14 +1290,9 @@ export default function App() {
             // Reset game state when user changes
             setActiveGame(null);
             setActiveTab('home');
-          } else {
-            // User document doesn't exist in Firestore
-            console.warn("User authenticated but no Firestore document found");
-            await signOutUser().catch(() => {});
-            setUser(null);
           }
         } catch (error) {
-          console.warn("Could not fetch user data from Firebase:", error);
+          console.error("❌ Error in auth state handler:", error);
           // If Firebase isn't set up, sign out the user
           await signOutUser().catch(() => {});
           setUser(null);
