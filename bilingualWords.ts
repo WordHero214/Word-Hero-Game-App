@@ -333,7 +333,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
     scenario: 'Many animals lose their homes because of _______.',
-    scenarioFil: 'Maraming hayop ang nawawalan ng tahanan dahil sa _______.'
+    scenarioFil: 'Maraming hayop ang nawawalan ng tahanan dahil sa _______.',
+    hint: 'Cutting down trees in forests (starts with D)',
+    hintFil: 'Pagputol ng mga puno sa kagubatan (nagsisimula sa D)'
   },
   { 
     id: 'h2', 
@@ -341,7 +343,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
     scenario: 'Throwing trash in rivers causes water _______.',
-    scenarioFil: 'Ang pagtatapon ng basura sa ilog ay nagiging sanhi ng _______ sa tubig.'
+    scenarioFil: 'Ang pagtatapon ng basura sa ilog ay nagiging sanhi ng _______ sa tubig.',
+    hint: 'Making air, water, or land dirty and unsafe (10 letters)',
+    hintFil: 'Pagdudumi ng hangin, tubig, o lupa (10 titik)'
   },
   { 
     id: 'h3', 
@@ -349,7 +353,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
     scenario: 'We can save the Earth by _______ our plastic bottles.',
-    scenarioFil: 'Maaari nating iligtas ang Daigdig sa pamamagitan ng _______ ng ating mga plastik na bote.'
+    scenarioFil: 'Maaari nating iligtas ang Daigdig sa pamamagitan ng _______ ng ating mga plastik na bote.',
+    hint: 'Using old things to make new things (starts with R)',
+    hintFil: 'Paggamit ng lumang bagay upang gumawa ng bago (nagsisimula sa R)'
   },
   { 
     id: 'h4', 
@@ -357,7 +363,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
     scenario: 'Using solar energy is a great example of _______.',
-    scenarioFil: 'Ang paggamit ng solar energy ay isang magandang halimbawa ng _______.'
+    scenarioFil: 'Ang paggamit ng solar energy ay isang magandang halimbawa ng _______.',
+    hint: 'Using resources wisely so they last for the future (14 letters)',
+    hintFil: 'Paggamit ng mga yaman nang matalino para sa kinabukasan (14 titik)'
   },
   { 
     id: 'h5', 
@@ -365,7 +373,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Science', 
     scenario: 'Plants make their own food through a process called _______.',
-    scenarioFil: 'Ang mga halaman ay gumagawa ng kanilang sariling pagkain sa pamamagitan ng prosesong tinatawag na _______.'
+    scenarioFil: 'Ang mga halaman ay gumagawa ng kanilang sariling pagkain sa pamamagitan ng prosesong tinatawag na _______.',
+    hint: 'How plants use sunlight to make food (starts with P)',
+    hintFil: 'Paano gumagamit ng liwanag ng araw ang halaman upang gumawa ng pagkain (nagsisimula sa P)'
   },
   { 
     id: 'h6', 
@@ -373,7 +383,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Arts', 
     scenario: 'The design and style of a building is called its _______.',
-    scenarioFil: 'Ang disenyo at istilo ng isang gusali ay tinatawag na _______.'
+    scenarioFil: 'Ang disenyo at istilo ng isang gusali ay tinatawag na _______.',
+    hint: 'The art and science of designing buildings (12 letters)',
+    hintFil: 'Ang sining at agham ng pagdidisenyo ng mga gusali (12 titik)'
   },
   { 
     id: 'h7', 
@@ -381,7 +393,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Social', 
     scenario: 'The study of the fundamental nature of knowledge is _______.',
-    scenarioFil: 'Ang pag-aaral ng pangunahing kalikasan ng kaalaman ay _______.'
+    scenarioFil: 'Ang pag-aaral ng pangunahing kalikasan ng kaalaman ay _______.',
+    hint: 'The study of big questions about life and thinking (10 letters)',
+    hintFil: 'Ang pag-aaral ng malalaking tanong tungkol sa buhay at pag-iisip (10 titik)'
   },
   { 
     id: 'h8', 
@@ -389,7 +403,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Science', 
     scenario: 'A scientist makes a _______ before starting an experiment.',
-    scenarioFil: 'Ang isang siyentipiko ay gumagawa ng _______ bago magsimula ng eksperimento.'
+    scenarioFil: 'Ang isang siyentipiko ay gumagawa ng _______ bago magsimula ng eksperimento.',
+    hint: 'An educated guess that can be tested (starts with H)',
+    hintFil: 'Isang marunong na hula na maaaring subukan (nagsisimula sa H)'
   },
   { 
     id: 'h9', 
@@ -397,7 +413,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Nature', 
     scenario: 'A rainforest has a lot of _______ because of its many species.',
-    scenarioFil: 'Ang isang rainforest ay may maraming _______ dahil sa maraming uri ng hayop at halaman.'
+    scenarioFil: 'Ang isang rainforest ay may maraming _______ dahil sa maraming uri ng hayop at halaman.',
+    hint: 'The variety of different plants and animals in an area (12 letters)',
+    hintFil: 'Ang iba\'t ibang uri ng halaman at hayop sa isang lugar (12 titik)'
   },
   { 
     id: 'h10', 
@@ -405,7 +423,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Nature', 
     scenario: 'A coral reef is a complex underwater _______.',
-    scenarioFil: 'Ang coral reef ay isang kumplikadong _______ sa ilalim ng tubig.'
+    scenarioFil: 'Ang coral reef ay isang kumplikadong _______ sa ilalim ng tubig.',
+    hint: 'A community of living things and their environment (9 letters)',
+    hintFil: 'Isang komunidad ng mga buhay na bagay at kanilang kapaligiran (9 titik)'
   },
   { 
     id: 'h11', 
@@ -413,7 +433,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Government', 
     scenario: 'A system where people vote to choose their leaders is called _______.',
-    scenarioFil: 'Ang sistema kung saan bumoboto ang mga tao upang pumili ng kanilang mga lider ay tinatawag na _______.'
+    scenarioFil: 'Ang sistema kung saan bumoboto ang mga tao upang pumili ng kanilang mga lider ay tinatawag na _______.',
+    hint: 'A government where people vote for their leaders (starts with D)',
+    hintFil: 'Isang pamahalaan kung saan bumoboto ang mga tao para sa kanilang mga lider (nagsisimula sa D)'
   },
   { 
     id: 'h12', 
@@ -421,7 +443,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Science', 
     scenario: 'Computers and smartphones are examples of modern _______.',
-    scenarioFil: 'Ang mga computer at smartphone ay mga halimbawa ng modernong _______.'
+    scenarioFil: 'Ang mga computer at smartphone ay mga halimbawa ng modernong _______.',
+    hint: 'Tools and machines that help us do things (10 letters)',
+    hintFil: 'Mga kasangkapan at makina na tumutulong sa atin (10 titik)'
   },
   { 
     id: 'h13', 
@@ -429,7 +453,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Mind', 
     scenario: 'The ability to create pictures and ideas in your mind is _______.',
-    scenarioFil: 'Ang kakayahang lumikha ng mga larawan at ideya sa iyong isipan ay _______.'
+    scenarioFil: 'Ang kakayahang lumikha ng mga larawan at ideya sa iyong isipan ay _______.',
+    hint: 'The power to think of new ideas and pictures in your mind (11 letters)',
+    hintFil: 'Ang kapangyarihang mag-isip ng mga bagong ideya at larawan sa iyong isipan (11 titik)'
   },
   { 
     id: 'h14', 
@@ -437,7 +463,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Character', 
     scenario: 'Being trusted to do important tasks shows _______.',
-    scenarioFil: 'Ang pagkakaroon ng tiwala upang gumawa ng mahahalagang gawain ay nagpapakita ng _______.'
+    scenarioFil: 'Ang pagkakaroon ng tiwala upang gumawa ng mahahalagang gawain ay nagpapakita ng _______.',
+    hint: 'Being trusted to do your duties and tasks (14 letters)',
+    hintFil: 'Ang pagiging mapagkakatiwalaan na gawin ang iyong mga tungkulin (14 titik)'
   },
   { 
     id: 'h15', 
@@ -445,7 +473,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Social', 
     scenario: 'Sharing ideas and feelings with others is called _______.',
-    scenarioFil: 'Ang pagbabahagi ng mga ideya at damdamin sa iba ay tinatawag na _______.'
+    scenarioFil: 'Ang pagbabahagi ng mga ideya at damdamin sa iba ay tinatawag na _______.',
+    hint: 'Talking and sharing information with others (13 letters)',
+    hintFil: 'Pakikipag-usap at pagbabahagi ng impormasyon sa iba (13 titik)'
   },
   { 
     id: 'h16', 
@@ -453,7 +483,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Events', 
     scenario: 'A party or special event to mark a happy occasion is a _______.',
-    scenarioFil: 'Ang isang party o espesyal na kaganapan upang markahan ang isang masayang okasyon ay isang _______.'
+    scenarioFil: 'Ang isang party o espesyal na kaganapan upang markahan ang isang masayang okasyon ay isang _______.',
+    hint: 'A party or special event for something happy (11 letters)',
+    hintFil: 'Isang party o espesyal na kaganapan para sa isang masayang bagay (11 titik)'
   },
   { 
     id: 'h17', 
@@ -461,7 +493,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Science', 
     scenario: 'How hot or cold something is measured by its _______.',
-    scenarioFil: 'Kung gaano kainit o kalamig ang isang bagay ay sinusukat sa pamamagitan ng _______.'
+    scenarioFil: 'Kung gaano kainit o kalamig ang isang bagay ay sinusukat sa pamamagitan ng _______.',
+    hint: 'How hot or cold something is (11 letters)',
+    hintFil: 'Kung gaano kainit o kalamig ang isang bagay (11 titik)'
   },
   { 
     id: 'h18', 
@@ -469,7 +503,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Science', 
     scenario: 'The power that makes lights and computers work is _______.',
-    scenarioFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at computer ay _______.'
+    scenarioFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at computer ay _______.',
+    hint: 'The power that makes lights and machines work (11 letters)',
+    hintFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at makina (11 titik)'
   },
   { 
     id: 'h19', 
@@ -477,7 +513,9 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Social', 
     scenario: 'Working together as a team requires _______.',
-    scenarioFil: 'Ang pagtutulungan bilang isang koponan ay nangangailangan ng _______.'
+    scenarioFil: 'Ang pagtutulungan bilang isang koponan ay nangangailangan ng _______.',
+    hint: 'Working together with others to achieve a goal (11 letters)',
+    hintFil: 'Pagtutulungan upang makamit ang isang layunin (11 titik)'
   },
   { 
     id: 'h20', 
@@ -485,6 +523,8 @@ export const BILINGUAL_WORDS: Word[] = [
     difficulty: Difficulty.HARD, 
     category: 'Math', 
     scenario: 'Repeated addition is also known as _______.',
-    scenarioFil: 'Ang paulit-ulit na pagdagdag ay kilala rin bilang _______.'
+    scenarioFil: 'Ang paulit-ulit na pagdagdag ay kilala rin bilang _______.',
+    hint: 'A math operation like 3 × 4 = 12 (14 letters)',
+    hintFil: 'Isang operasyon sa matematika tulad ng 3 × 4 = 12 (14 titik)'
   }
 ];

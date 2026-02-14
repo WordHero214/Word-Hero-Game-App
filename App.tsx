@@ -464,6 +464,7 @@ const GameOverlay: React.FC<{
   const [timeLeft, setTimeLeft] = useState(DIFFICULTY_CONFIG[difficulty].timePerWord);
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false); // NEW: Exit confirmation modal
+  const [showCloseHint, setShowCloseHint] = useState(false); // NEW: Show close hint in HARD mode
   
   // NEW: Feedback animation state
   const [showFeedbackAnimation, setShowFeedbackAnimation] = useState(false);
@@ -618,6 +619,7 @@ const GameOverlay: React.FC<{
       setInput('');
       setIsFeedback(null);
       setRevealedIndices([]);
+      setShowCloseHint(false); // Reset close hint for next word
       setTimeLeft(DIFFICULTY_CONFIG[difficulty].timePerWord); // Reset timer
       setIsTimeUp(false);
     } else {
@@ -730,12 +732,42 @@ const GameOverlay: React.FC<{
 
   const useHint = () => {
     if (!currentWord) return;
-    const isFree = revealedIndices.length === 0;
-    if (!isFree && sparkies < 5) return;
+    
+    // Calculate hint cost based on how many hints already used
+    const hintsUsed = revealedIndices.length;
+    const isFree = hintsUsed === 0;
+    
+    // Progressive cost: Free, 5, 10, 15, 20, 25...
+    const hintCost = isFree ? 0 : 5 + (hintsUsed - 1) * 5;
+    
+    // Check if user has enough sparkies
+    if (!isFree && sparkies < hintCost) {
+      // Show feedback that they don't have enough sparkies
+      playSound('wrong');
+      return;
+    }
+    
+    // Get available letters to reveal
     const available = [...currentWord.term].map((_, i) => i).filter(i => !revealedIndices.includes(i));
     if (available.length === 0) return;
+    
+    // Reveal a random unrevealed letter
     setRevealedIndices(prev => [...prev, available[Math.floor(Math.random() * available.length)]]);
-    if (!isFree) onUpdateSparkies(-5);
+    
+    // Deduct sparkies if not free
+    if (!isFree) {
+      onUpdateSparkies(-hintCost);
+      playSound('click');
+    } else {
+      playSound('correct');
+    }
+  };
+  
+  // Calculate next hint cost for display
+  const getNextHintCost = () => {
+    const hintsUsed = revealedIndices.length;
+    if (hintsUsed === 0) return 0; // First hint is free
+    return 5 + hintsUsed * 5; // Next hint cost
   };
 
   const handleClose = () => {
@@ -941,9 +973,28 @@ const GameOverlay: React.FC<{
                   : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
                 }
               </h2>
-              <button onClick={useHint} className="bg-white/5 px-3 py-1.5 rounded-xl text-[#f39c12] text-xs font-bold border border-white/5 hover:bg-white/10 active:scale-95 transition-all">
-                 💡 {t('hint', userLanguage)} {revealedIndices.length > 0 ? t('hintCost', userLanguage) : '(Free!)'}
+              <button 
+                onClick={useHint} 
+                disabled={revealedIndices.length > 0 && sparkies < getNextHintCost()}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                  revealedIndices.length > 0 && sparkies < getNextHintCost()
+                    ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                    : 'bg-white/5 text-[#f39c12] border-white/5 hover:bg-white/10 active:scale-95'
+                }`}
+              >
+                💡 {t('hint', userLanguage)} {
+                  revealedIndices.length === 0 
+                    ? '(Free!)' 
+                    : revealedIndices.length >= currentWord.term.length
+                    ? '(All revealed)'
+                    : `(-${getNextHintCost()} ✨)`
+                }
               </button>
+              {revealedIndices.length > 0 && sparkies < getNextHintCost() && (
+                <p className="text-xs text-red-400 animate-pulse">
+                  Not enough sparkies! Need {getNextHintCost()} ✨
+                </p>
+              )}
             </>
           )}
 
@@ -955,14 +1006,50 @@ const GameOverlay: React.FC<{
           )}
 
           {difficulty === Difficulty.HARD && (
-            <div className="bg-[#162031] p-4 rounded-2xl border border-orange-500/20 shadow-inner w-full">
-              <p className="text-gray-500 uppercase text-[9px] font-bold mb-1 tracking-widest">{t('scenario', userLanguage)}</p>
-              <p className="text-sm text-white italic leading-relaxed">
-                "{userLanguage === 'fil' && currentWord.scenarioFil 
-                  ? currentWord.scenarioFil 
-                  : currentWord.scenario}"
-              </p>
-            </div>
+            <>
+              <div className="bg-[#162031] p-4 rounded-2xl border border-orange-500/20 shadow-inner w-full">
+                <p className="text-gray-500 uppercase text-[9px] font-bold mb-1 tracking-widest">{t('scenario', userLanguage)}</p>
+                <p className="text-sm text-white italic leading-relaxed">
+                  "{userLanguage === 'fil' && currentWord.scenarioFil 
+                    ? currentWord.scenarioFil 
+                    : (currentWord.scenario || `Fill in the blank with the correct word (${currentWord.term.length} letters)`)}"
+                </p>
+              </div>
+              
+              {/* Close Hint Button */}
+              <button
+                onClick={() => setShowCloseHint(!showCloseHint)}
+                className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 px-4 py-2 rounded-xl text-blue-300 text-xs font-bold transition-all active:scale-95"
+              >
+                💡 {showCloseHint ? 'Hide Hint' : 'Show Hint'} (Close Hint)
+              </button>
+              
+              {/* Close Hint Display */}
+              {showCloseHint && currentWord.hint && (
+                <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-xl animate-in slide-in-from-top-2 duration-300">
+                  <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">💡 Hint:</p>
+                  <p className="text-white text-sm">
+                    {userLanguage === 'fil' && currentWord.hintFil 
+                      ? currentWord.hintFil 
+                      : currentWord.hint}
+                  </p>
+                </div>
+              )}
+              
+              {/* Show word structure to help students */}
+              <div className="text-center space-y-2">
+                <p className="text-[#f39c12] text-xs uppercase tracking-wider font-bold">Spell this word:</p>
+                <h2 className="text-2xl font-bold tracking-[0.5em] text-white">
+                  {isFeedback === 'correct' 
+                    ? currentWord.term.split('').join(' ')
+                    : currentWord.term.split('').map(() => '_').join(' ')
+                  }
+                </h2>
+                <p className="text-gray-500 text-xs">
+                  ({currentWord.term.length} {currentWord.term.length === 1 ? 'letter' : 'letters'})
+                </p>
+              </div>
+            </>
           )}
 
           {/* Input Field - Compact */}
