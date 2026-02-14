@@ -334,8 +334,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Environment', 
     scenario: 'Many animals lose their homes because of _______.',
     scenarioFil: 'Maraming hayop ang nawawalan ng tahanan dahil sa _______.',
-    hint: 'Cutting down trees in forests (starts with D)',
-    hintFil: 'Pagputol ng mga puno sa kagubatan (nagsisimula sa D)'
+    hint: 'When people cut down many trees in the forest. Starts with DE- and ends with -TION',
+    hintFil: 'Kapag pinutol ng mga tao ang maraming puno sa kagubatan. Nagsisimula sa DE- at nagtatapos sa -TION'
   },
   { 
     id: 'h2', 
@@ -344,8 +344,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Environment', 
     scenario: 'Throwing trash in rivers causes water _______.',
     scenarioFil: 'Ang pagtatapon ng basura sa ilog ay nagiging sanhi ng _______ sa tubig.',
-    hint: 'Making air, water, or land dirty and unsafe (10 letters)',
-    hintFil: 'Pagdudumi ng hangin, tubig, o lupa (10 titik)'
+    hint: 'When air, water, or land becomes dirty and harmful. Sounds like "POLL-U-SHUN"',
+    hintFil: 'Kapag ang hangin, tubig, o lupa ay nagiging marumi at makasama. Tunog na "POLL-U-SHUN"'
   },
   { 
     id: 'h3', 
@@ -354,8 +354,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Environment', 
     scenario: 'We can save the Earth by _______ our plastic bottles.',
     scenarioFil: 'Maaari nating iligtas ang Daigdig sa pamamagitan ng _______ ng ating mga plastik na bote.',
-    hint: 'Using old things to make new things (starts with R)',
-    hintFil: 'Paggamit ng lumang bagay upang gumawa ng bago (nagsisimula sa R)'
+    hint: 'Using old things again to make new things. Starts with RE- (means "again") and has CYCLE in it',
+    hintFil: 'Paggamit muli ng lumang bagay upang gumawa ng bago. Nagsisimula sa RE- (ibig sabihin "muli") at may CYCLE dito'
   },
   { 
     id: 'h4', 
@@ -364,8 +364,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Environment', 
     scenario: 'Using solar energy is a great example of _______.',
     scenarioFil: 'Ang paggamit ng solar energy ay isang magandang halimbawa ng _______.',
-    hint: 'Using resources wisely so they last for the future (14 letters)',
-    hintFil: 'Paggamit ng mga yaman nang matalino para sa kinabukasan (14 titik)'
+    hint: 'Using resources carefully so they last forever. Has the word SUSTAIN (keep going) in it',
+    hintFil: 'Paggamit ng mga yaman nang maingat upang tumagal magpakailanman. May salitang SUSTAIN (patuloy) dito'
   },
   { 
     id: 'h5', 
@@ -374,8 +374,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Science', 
     scenario: 'Plants make their own food through a process called _______.',
     scenarioFil: 'Ang mga halaman ay gumagawa ng kanilang sariling pagkain sa pamamagitan ng prosesong tinatawag na _______.',
-    hint: 'How plants use sunlight to make food (starts with P)',
-    hintFil: 'Paano gumagamit ng liwanag ng araw ang halaman upang gumawa ng pagkain (nagsisimula sa P)'
+    hint: 'How plants use sunlight to make food. PHOTO means light, SYNTHESIS means making',
+    hintFil: 'Paano gumagamit ng liwanag ng araw ang halaman upang gumawa ng pagkain. PHOTO ay liwanag, SYNTHESIS ay paggawa'
   },
   { 
     id: 'h6', 
@@ -384,8 +384,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Arts', 
     scenario: 'The design and style of a building is called its _______.',
     scenarioFil: 'Ang disenyo at istilo ng isang gusali ay tinatawag na _______.',
-    hint: 'The art and science of designing buildings (12 letters)',
-    hintFil: 'Ang sining at agham ng pagdidisenyo ng mga gusali (12 titik)'
+    hint: 'The art of designing buildings and houses. Starts with ARCH- (like an arch or curve)',
+    hintFil: 'Ang sining ng pagdidisenyo ng mga gusali at bahay. Nagsisimula sa ARCH- (tulad ng arko o kurba)'
   },
   { 
     id: 'h7', 
@@ -394,8 +394,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Social', 
     scenario: 'The study of the fundamental nature of knowledge is _______.',
     scenarioFil: 'Ang pag-aaral ng pangunahing kalikasan ng kaalaman ay _______.',
-    hint: 'The study of big questions about life and thinking (10 letters)',
-    hintFil: 'Ang pag-aaral ng malalaking tanong tungkol sa buhay at pag-iisip (10 titik)'
+    hint: 'Thinking about big questions like "Why are we here?" Sounds like "FIL-OSS-OH-FEE"',
+    hintFil: 'Pag-iisip tungkol sa malalaking tanong tulad ng "Bakit tayo nandito?" Tunog na "FIL-OSS-OH-FEE"'
   },
   { 
     id: 'h8', 
@@ -404,8 +404,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Science', 
     scenario: 'A scientist makes a _______ before starting an experiment.',
     scenarioFil: 'Ang isang siyentipiko ay gumagawa ng _______ bago magsimula ng eksperimento.',
-    hint: 'An educated guess that can be tested (starts with H)',
-    hintFil: 'Isang marunong na hula na maaaring subukan (nagsisimula sa H)'
+    hint: 'A smart guess that you test in an experiment. Starts with HY- and sounds like "high-POTH-uh-sis"',
+    hintFil: 'Isang matalinong hula na sinusubukan mo sa eksperimento. Nagsisimula sa HY- at tunog na "high-POTH-uh-sis"'
   },
   { 
     id: 'h9', 
@@ -414,8 +414,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Nature', 
     scenario: 'A rainforest has a lot of _______ because of its many species.',
     scenarioFil: 'Ang isang rainforest ay may maraming _______ dahil sa maraming uri ng hayop at halaman.',
-    hint: 'The variety of different plants and animals in an area (12 letters)',
-    hintFil: 'Ang iba\'t ibang uri ng halaman at hayop sa isang lugar (12 titik)'
+    hint: 'Many different types of plants and animals. BIO means life, DIVERSITY means variety',
+    hintFil: 'Maraming iba\'t ibang uri ng halaman at hayop. BIO ay buhay, DIVERSITY ay iba\'t iba'
   },
   { 
     id: 'h10', 
@@ -424,8 +424,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Nature', 
     scenario: 'A coral reef is a complex underwater _______.',
     scenarioFil: 'Ang coral reef ay isang kumplikadong _______ sa ilalim ng tubig.',
-    hint: 'A community of living things and their environment (9 letters)',
-    hintFil: 'Isang komunidad ng mga buhay na bagay at kanilang kapaligiran (9 titik)'
+    hint: 'A place where plants, animals, and nature work together. ECO means environment, SYSTEM means working together',
+    hintFil: 'Isang lugar kung saan ang halaman, hayop, at kalikasan ay nagtutulungan. ECO ay kapaligiran, SYSTEM ay nagtutulungan'
   },
   { 
     id: 'h11', 
@@ -434,8 +434,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Government', 
     scenario: 'A system where people vote to choose their leaders is called _______.',
     scenarioFil: 'Ang sistema kung saan bumoboto ang mga tao upang pumili ng kanilang mga lider ay tinatawag na _______.',
-    hint: 'A government where people vote for their leaders (starts with D)',
-    hintFil: 'Isang pamahalaan kung saan bumoboto ang mga tao para sa kanilang mga lider (nagsisimula sa D)'
+    hint: 'A government where people vote and choose. DEMO means people, CRACY means rule',
+    hintFil: 'Isang pamahalaan kung saan bumoboto at pumipili ang mga tao. DEMO ay tao, CRACY ay pamamahala'
   },
   { 
     id: 'h12', 
@@ -444,8 +444,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Science', 
     scenario: 'Computers and smartphones are examples of modern _______.',
     scenarioFil: 'Ang mga computer at smartphone ay mga halimbawa ng modernong _______.',
-    hint: 'Tools and machines that help us do things (10 letters)',
-    hintFil: 'Mga kasangkapan at makina na tumutulong sa atin (10 titik)'
+    hint: 'Machines and tools like computers, phones, and tablets. Sounds like "tek-NOL-oh-jee"',
+    hintFil: 'Mga makina at kasangkapan tulad ng computer, telepono, at tablet. Tunog na "tek-NOL-oh-jee"'
   },
   { 
     id: 'h13', 
@@ -454,8 +454,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Mind', 
     scenario: 'The ability to create pictures and ideas in your mind is _______.',
     scenarioFil: 'Ang kakayahang lumikha ng mga larawan at ideya sa iyong isipan ay _______.',
-    hint: 'The power to think of new ideas and pictures in your mind (11 letters)',
-    hintFil: 'Ang kapangyarihang mag-isip ng mga bagong ideya at larawan sa iyong isipan (11 titik)'
+    hint: 'Creating pictures and stories in your mind. Starts with IM- and has the word IMAGE in it',
+    hintFil: 'Paglikha ng mga larawan at kuwento sa iyong isipan. Nagsisimula sa IM- at may salitang IMAGE dito'
   },
   { 
     id: 'h14', 
@@ -464,8 +464,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Character', 
     scenario: 'Being trusted to do important tasks shows _______.',
     scenarioFil: 'Ang pagkakaroon ng tiwala upang gumawa ng mahahalagang gawain ay nagpapakita ng _______.',
-    hint: 'Being trusted to do your duties and tasks (14 letters)',
-    hintFil: 'Ang pagiging mapagkakatiwalaan na gawin ang iyong mga tungkulin (14 titik)'
+    hint: 'Being trusted to do your duties. Has the word RESPONSE (answer) and ABILITY (can do) in it',
+    hintFil: 'Ang pagiging mapagkakatiwalaan na gawin ang iyong mga tungkulin. May salitang RESPONSE (sagot) at ABILITY (kaya) dito'
   },
   { 
     id: 'h15', 
@@ -474,8 +474,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Social', 
     scenario: 'Sharing ideas and feelings with others is called _______.',
     scenarioFil: 'Ang pagbabahagi ng mga ideya at damdamin sa iba ay tinatawag na _______.',
-    hint: 'Talking and sharing information with others (13 letters)',
-    hintFil: 'Pakikipag-usap at pagbabahagi ng impormasyon sa iba (13 titik)'
+    hint: 'Talking and sharing with others. Starts with COM- (together) and sounds like "kuh-MYOO-nih-KAY-shun"',
+    hintFil: 'Pakikipag-usap at pagbabahagi sa iba. Nagsisimula sa COM- (sama-sama) at tunog na "kuh-MYOO-nih-KAY-shun"'
   },
   { 
     id: 'h16', 
@@ -484,8 +484,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Events', 
     scenario: 'A party or special event to mark a happy occasion is a _______.',
     scenarioFil: 'Ang isang party o espesyal na kaganapan upang markahan ang isang masayang okasyon ay isang _______.',
-    hint: 'A party or special event for something happy (11 letters)',
-    hintFil: 'Isang party o espesyal na kaganapan para sa isang masayang bagay (11 titik)'
+    hint: 'A party for birthdays, holidays, or special days. Has the word CELEBRATE in it',
+    hintFil: 'Isang party para sa kaarawan, pista, o espesyal na araw. May salitang CELEBRATE dito'
   },
   { 
     id: 'h17', 
@@ -494,8 +494,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Science', 
     scenario: 'How hot or cold something is measured by its _______.',
     scenarioFil: 'Kung gaano kainit o kalamig ang isang bagay ay sinusukat sa pamamagitan ng _______.',
-    hint: 'How hot or cold something is (11 letters)',
-    hintFil: 'Kung gaano kainit o kalamig ang isang bagay (11 titik)'
+    hint: 'How hot or cold it is. We measure it with a thermometer. Sounds like "TEM-per-uh-chur"',
+    hintFil: 'Kung gaano kainit o kalamig. Sinusukat natin ito gamit ang thermometer. Tunog na "TEM-per-uh-chur"'
   },
   { 
     id: 'h18', 
@@ -504,8 +504,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Science', 
     scenario: 'The power that makes lights and computers work is _______.',
     scenarioFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at computer ay _______.',
-    hint: 'The power that makes lights and machines work (11 letters)',
-    hintFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at makina (11 titik)'
+    hint: 'The power from outlets that makes lights work. Has the word ELECTRIC in it',
+    hintFil: 'Ang kapangyarihan mula sa outlet na nagpapagana ng mga ilaw. May salitang ELECTRIC dito'
   },
   { 
     id: 'h19', 
@@ -514,8 +514,8 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Social', 
     scenario: 'Working together as a team requires _______.',
     scenarioFil: 'Ang pagtutulungan bilang isang koponan ay nangangailangan ng _______.',
-    hint: 'Working together with others to achieve a goal (11 letters)',
-    hintFil: 'Pagtutulungan upang makamit ang isang layunin (11 titik)'
+    hint: 'Working together as a team. CO means together, OPERATION means working',
+    hintFil: 'Pagtutulungan bilang isang koponan. CO ay sama-sama, OPERATION ay paggawa'
   },
   { 
     id: 'h20', 
@@ -524,7 +524,7 @@ export const BILINGUAL_WORDS: Word[] = [
     category: 'Math', 
     scenario: 'Repeated addition is also known as _______.',
     scenarioFil: 'Ang paulit-ulit na pagdagdag ay kilala rin bilang _______.',
-    hint: 'A math operation like 3 × 4 = 12 (14 letters)',
-    hintFil: 'Isang operasyon sa matematika tulad ng 3 × 4 = 12 (14 titik)'
+    hint: 'Math with times tables like 3 × 4 = 12. Has the word MULTIPLY (times) in it',
+    hintFil: 'Matematika na may times tables tulad ng 3 × 4 = 12. May salitang MULTIPLY (beses) dito'
   }
 ];
