@@ -1,0 +1,102 @@
+═══════════════════════════════════════════════════════════════
+  LOGO PIXELATION FIX - QUICK GUIDE
+═══════════════════════════════════════════════════════════════
+
+PROBLEM: Logo appears pixelated when installed as PWA on mobile
+
+SOLUTION: Updated manifest.json to properly configure icons
+
+═══════════════════════════════════════════════════════════════
+  CURRENT LOGO FILES
+═══════════════════════════════════════════════════════════════
+
+Location: masteringword-main/logo/
+
+Files:
+  ✓ web-app-manifest-192x192.png (73 KB)
+  ✓ web-app-manifest-512x512.png (452 KB)
+  ✓ apple-touch-icon.png (65 KB)
+  ✓ favicon-96x96.png (19 KB)
+  ✓ favicon.ico
+  ✓ favicon.svg
+
+═══════════════════════════════════════════════════════════════
+  IF LOGO STILL LOOKS PIXELATED
+═══════════════════════════════════════════════════════════════
+
+Option 1: Clear PWA Cache
+  1. Uninstall PWA from mobile device
+  2. Clear browser cache
+  3. Reinstall PWA
+
+Option 2: Regenerate Logo Files (if needed)
+  
+  You'll need higher resolution source image. Use these specs:
+  
+  Required Sizes:
+  - 192x192px (Android standard)
+  - 512x512px (Android high-res)
+  - 180x180px (iOS apple-touch-icon)
+  - 96x96px (Favicon)
+  
+  Tools to Generate:
+  - https://realfavicongenerator.net/
+  - https://www.pwabuilder.com/imageGenerator
+  - Photoshop/GIMP/Figma
+  
+  Steps:
+  1. Create 1024x1024px source image (PNG)
+  2. Use online tool to generate all sizes
+  3. Replace files in logo/ folder
+  4. Redeploy
+
+Option 3: Use SVG (Best Quality)
+  
+  SVG logos never pixelate! But requires:
+  - Converting current logo to SVG format
+  - Updating manifest.json to use SVG
+  - Testing on all devices
+
+═══════════════════════════════════════════════════════════════
+  LOGO DESIGN SPECS
+═══════════════════════════════════════════════════════════════
+
+Current Design:
+  - Letter "W" in rounded square
+  - Background: #00c2a0 (teal/cyan)
+  - Text: White
+  - Style: Bold, modern, friendly
+
+Recommended Improvements:
+  - Increase resolution to 1024x1024px source
+  - Use vector graphics (SVG) if possible
+  - Add subtle shadow or gradient
+  - Ensure good contrast
+  - Test on light and dark backgrounds
+
+═══════════════════════════════════════════════════════════════
+  TESTING
+═══════════════════════════════════════════════════════════════
+
+After deploying:
+  □ Install PWA on Android device
+  □ Check home screen icon quality
+  □ Install PWA on iOS device
+  □ Check home screen icon quality
+  □ Compare with other professional apps
+  □ Test on different screen densities
+
+═══════════════════════════════════════════════════════════════
+  QUICK FIX APPLIED
+═══════════════════════════════════════════════════════════════
+
+✓ Updated manifest.json with proper icon configuration
+✓ Separated "any" and "maskable" purposes
+✓ Added explicit apple-touch-icon entry
+
+This should improve logo quality. If still pixelated, regenerate
+PNG files at higher resolution using the tools mentioned above.
+
+═══════════════════════════════════════════════════════════════
+
+See: docs/VERCEL_DEPLOYMENT_FIXES.md for complete guide
