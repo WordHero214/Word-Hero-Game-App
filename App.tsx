@@ -583,10 +583,8 @@ const GameOverlay: React.FC<{
     setSessionResults(prev => [...prev, newResult]);
     sessionResultsRef.current = [...sessionResultsRef.current, newResult];
     
-    // Show time-up message for 2 seconds, then complete game
-    setTimeout(() => {
-      handleGameEnd();
-    }, 2000);
+    // Show time-up message - user must click exit button to continue
+    // Removed automatic timeout - user controls when to exit
   };
 
   const handleGameEnd = () => {
@@ -762,7 +760,7 @@ const GameOverlay: React.FC<{
   if (isTimeUp) {
     return (
       <div className="fixed inset-0 bg-[#0b1221] z-[100] p-8 flex items-center justify-center animate-in fade-in duration-300">
-        <div className="text-center space-y-6 animate-in zoom-in duration-500">
+        <div className="text-center space-y-6 animate-in zoom-in duration-500 max-w-md">
           <div className="text-8xl mb-4">⏰</div>
           <h2 className="text-4xl font-bold text-white mb-4">Time's Up!</h2>
           <p className="text-xl text-gray-400 mb-2">Better luck next time!</p>
@@ -771,6 +769,21 @@ const GameOverlay: React.FC<{
             <p>You earned: <span className="text-[#f39c12] font-bold">{sessionSparkiesRef.current} sparkies</span></p>
             <p>Words completed: <span className="text-white font-bold">{sessionResultsRef.current.length}/{words.length}</span></p>
           </div>
+          
+          {/* Exit Button */}
+          <button
+            onClick={() => {
+              // Stop background music
+              if (bgMusicRef.current) {
+                bgMusicRef.current.pause();
+                bgMusicRef.current = null;
+              }
+              handleGameEnd();
+            }}
+            className="mt-8 bg-[#00c2a0] hover:bg-[#00d8b3] text-white font-bold py-4 px-8 rounded-2xl transition-all active:scale-95 shadow-lg"
+          >
+            Exit Game
+          </button>
         </div>
       </div>
     );
@@ -1133,6 +1146,13 @@ export default function App() {
   useEffect(() => {
     if (bgMusicRef.current) {
       bgMusicRef.current.volume = musicVolume;
+      
+      // Pause music if volume is 0, resume if volume > 0
+      if (musicVolume === 0) {
+        bgMusicRef.current.pause();
+      } else if (bgMusicRef.current.paused) {
+        bgMusicRef.current.play().catch(() => {});
+      }
     }
   }, [musicVolume]);
   
