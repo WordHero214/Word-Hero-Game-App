@@ -2205,6 +2205,7 @@ export default function App() {
           isPracticeMode={isPracticeMode}
           usedWordIds={user.usedWordIds}
           userLanguage={(user.language as Language) || 'en'}
+          user={user}
         />
       )}
 
