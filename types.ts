@@ -80,6 +80,9 @@ export interface User {
   deletedAt?: any; // Timestamp
   passwordChanged?: boolean; // Flag for password change
   passwordChangedAt?: any; // Timestamp
+  
+  // NEW: Onboarding Tour
+  hasSeenTour?: boolean; // Track if user has completed the intro tour
 }
 
 export interface ProgressHistoryEntry {

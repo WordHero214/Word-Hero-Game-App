@@ -1,0 +1,261 @@
+/* Custom Intro.js Styling for Word Hero */
+
+/* Overlay */
+.introjs-overlay {
+  background-color: rgba(11, 18, 33, 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Tooltip Container */
+.customIntroTooltip {
+  background: linear-gradient(135deg, #162031 0%, #0b1221 100%) !important;
+  border: 2px solid rgba(0, 194, 160, 0.3) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+  max-width: 500px !important;
+  padding: 0 !important;
+}
+
+/* Tooltip Header */
+.customIntroTooltip .introjs-tooltip-header {
+  background: linear-gradient(135deg, #00c2a0 0%, #00d8b3 100%) !important;
+  border-radius: 22px 22px 0 0 !important;
+  padding: 20px 24px !important;
+  border-bottom: none !important;
+}
+
+.customIntroTooltip .introjs-tooltip-title {
+  color: white !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+/* Close Button */
+.customIntroTooltip .introjs-skipbutton {
+  color: white !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  opacity: 0.8 !important;
+  transition: opacity 0.2s !important;
+}
+
+.customIntroTooltip .introjs-skipbutton:hover {
+  opacity: 1 !important;
+}
+
+/* Tooltip Content */
+.customIntroTooltip .introjs-tooltiptext {
+  color: #e5e7eb !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  padding: 24px !important;
+}
+
+.customIntroTooltip .introjs-tooltiptext ul {
+  margin: 12px 0 !important;
+  padding-left: 24px !important;
+}
+
+.customIntroTooltip .introjs-tooltiptext li {
+  margin: 8px 0 !important;
+  color: #d1d5db !important;
+}
+
+.customIntroTooltip .introjs-tooltiptext strong {
+  color: #00c2a0 !important;
+  font-weight: 600 !important;
+}
+
+/* Progress Bar */
+.customIntroTooltip .introjs-progress {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  height: 6px !important;
+  margin: 0 24px 16px !important;
+  overflow: hidden !important;
+}
+
+.customIntroTooltip .introjs-progressbar {
+  background: linear-gradient(90deg, #00c2a0 0%, #00d8b3 100%) !important;
+  border-radius: 12px !important;
+  height: 100% !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Bullets */
+.customIntroTooltip .introjs-bullets {
+  padding: 12px 24px !important;
+}
+
+.customIntroTooltip .introjs-bullets ul {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.customIntroTooltip .introjs-bullets ul li {
+  list-style: none !important;
+  margin: 0 !important;
+}
+
+.customIntroTooltip .introjs-bullets ul li a {
+  width: 10px !important;
+  height: 10px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid transparent !important;
+  border-radius: 50% !important;
+  display: block !important;
+  transition: all 0.3s !important;
+}
+
+.customIntroTooltip .introjs-bullets ul li a:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+
+.customIntroTooltip .introjs-bullets ul li a.active {
+  background: #00c2a0 !important;
+  border-color: #00c2a0 !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* Buttons Container */
+.customIntroTooltip .introjs-tooltipbuttons {
+  background: rgba(22, 32, 49, 0.5) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 16px 24px !important;
+  border-radius: 0 0 22px 22px !important;
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: space-between !important;
+}
+
+/* Buttons */
+.customIntroTooltip .introjs-button {
+  background: linear-gradient(135deg, #00c2a0 0%, #00d8b3 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  padding: 12px 24px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+  flex: 1 !important;
+}
+
+.customIntroTooltip .introjs-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 194, 160, 0.4) !important;
+}
+
+.customIntroTooltip .introjs-button:active {
+  transform: translateY(0) !important;
+}
+
+/* Previous Button */
+.customIntroTooltip .introjs-prevbutton {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.customIntroTooltip .introjs-prevbutton:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Disabled Button */
+.customIntroTooltip .introjs-disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+
+.customIntroTooltip .introjs-disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Highlight */
+.customIntroHighlight {
+  border: 3px solid #00c2a0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 0 0 4px rgba(0, 194, 160, 0.2), 
+              0 0 20px rgba(0, 194, 160, 0.4) !important;
+  animation: pulse-highlight 2s infinite !important;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(0, 194, 160, 0.2), 
+                0 0 20px rgba(0, 194, 160, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 194, 160, 0.3), 
+                0 0 30px rgba(0, 194, 160, 0.6);
+  }
+}
+
+/* Arrow */
+.customIntroTooltip .introjs-arrow {
+  border-color: #162031 !important;
+}
+
+.customIntroTooltip .introjs-arrow.top {
+  border-bottom-color: #00c2a0 !important;
+}
+
+.customIntroTooltip .introjs-arrow.bottom {
+  border-top-color: rgba(22, 32, 49, 0.5) !important;
+}
+
+.customIntroTooltip .introjs-arrow.left {
+  border-right-color: #162031 !important;
+}
+
+.customIntroTooltip .introjs-arrow.right {
+  border-left-color: #162031 !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .customIntroTooltip {
+    max-width: 90vw !important;
+    margin: 0 auto !important;
+  }
+  
+  .customIntroTooltip .introjs-tooltip-title {
+    font-size: 18px !important;
+  }
+  
+  .customIntroTooltip .introjs-tooltiptext {
+    font-size: 14px !important;
+    padding: 20px !important;
+  }
+  
+  .customIntroTooltip .introjs-button {
+    font-size: 13px !important;
+    padding: 10px 16px !important;
+  }
+}
+
+/* Animations */
+.customIntroTooltip {
+  animation: slideIn 0.3s ease-out !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
