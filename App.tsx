@@ -1696,8 +1696,14 @@ export default function App() {
     // Apply filtering for students
     if (gradeLevel || section) {
       localWords = BILINGUAL_WORDS.filter(word => {
+        // CUMULATIVE GRADE FILTERING: Grade 2 sees Grade 1-2 words
+        // Check if ANY of the word's grade levels <= student's grade
         const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
-                         (gradeLevel && word.gradeLevels.includes(gradeLevel));
+                         (gradeLevel && word.gradeLevels.some(wordGrade => {
+                           const studentGradeNum = parseInt(gradeLevel);
+                           const wordGradeNum = parseInt(wordGrade);
+                           return !isNaN(studentGradeNum) && !isNaN(wordGradeNum) && wordGradeNum <= studentGradeNum;
+                         }));
         const sectionMatch = !word.sections || word.sections.length === 0 || 
                            (section && word.sections.includes(section));
         return gradeMatch && sectionMatch;
@@ -1743,8 +1749,14 @@ export default function App() {
           let filteredWords = allWords;
           if (gradeLevel || section) {
             filteredWords = allWords.filter(word => {
-              const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
-                               (gradeLevel && word.gradeLevels.includes(gradeLevel));
+              // CUMULATIVE GRADE FILTERING: Grade 2 sees Grade 1-2 words
+              // Check if ANY of the word's grade levels <= student's grade
+              const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 ||
+                               (gradeLevel && word.gradeLevels.some(wordGrade => {
+                                 const studentGradeNum = parseInt(gradeLevel);
+                                 const wordGradeNum = parseInt(wordGrade);
+                                 return !isNaN(studentGradeNum) && !isNaN(wordGradeNum) && wordGradeNum <= studentGradeNum;
+                               }));
               const sectionMatch = !word.sections || word.sections.length === 0 || 
                                  (section && word.sections.includes(section));
               return gradeMatch && sectionMatch;
