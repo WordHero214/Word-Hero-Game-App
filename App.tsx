@@ -1065,36 +1065,188 @@ const GameOverlay: React.FC<{
                   "{userLanguage === 'fil' && currentWord.scenarioFil 
                     ? currentWord.scenarioFil 
                     : (currentWord.scenario || (() => {
-                        // Enhanced fallback with descriptive scenarios (not revealing the answer)
-                        const category = currentWord.category?.toLowerCase() || '';
+                        // Comprehensive word-specific fallbacks with clear descriptions
                         const term = currentWord.term.toLowerCase();
                         
-                        // Specific word-based fallbacks (more educational)
-                        if (term.includes('animal')) return 'A living creature that moves and breathes is called _______.';
-                        if (term.includes('plant')) return 'A living thing that grows in soil and makes oxygen is _______.';
-                        if (term.includes('water')) return 'The liquid we drink to stay alive is _______.';
-                        if (term.includes('sun')) return 'The bright star that gives us light and warmth is the _______.';
-                        if (term.includes('moon')) return 'The object that shines in the night sky is the _______.';
-                        if (term.includes('star')) return 'A bright point of light in the night sky is a _______.';
-                        if (term.includes('tree')) return 'A tall plant with a trunk and branches is a _______.';
-                        if (term.includes('flower')) return 'The colorful part of a plant that blooms is a _______.';
-                        if (term.includes('bird')) return 'An animal with wings and feathers that can fly is a _______.';
-                        if (term.includes('fish')) return 'An animal that lives and breathes underwater is a _______.';
+                        // Common words with specific descriptions
+                        const wordDescriptions: {[key: string]: string} = {
+                          // Clothing & Accessories
+                          'sandal': 'You wear this on your feet when going outside to protect them.',
+                          'shoes': 'You wear these on your feet to walk comfortably.',
+                          'shirt': 'You wear this on the upper part of your body.',
+                          'pants': 'You wear these on your legs to cover them.',
+                          'dress': 'Girls and women wear this clothing that covers the body.',
+                          'hat': 'You wear this on your head to protect from sun or cold.',
+                          'socks': 'You wear these inside your shoes to keep feet warm.',
+                          'jacket': 'You wear this over your clothes when it\'s cold.',
+                          
+                          // Animals
+                          'animal': 'A living creature that moves, eats, and breathes.',
+                          'dog': 'A friendly pet that barks and wags its tail.',
+                          'cat': 'A furry pet that meows and likes to sleep.',
+                          'bird': 'A creature with wings and feathers that can fly.',
+                          'fish': 'A creature that lives and swims in water.',
+                          'lion': 'A big wild cat known as the king of the jungle.',
+                          'tiger': 'A large striped wild cat that lives in Asia.',
+                          'elephant': 'The largest land animal with a long trunk.',
+                          'monkey': 'A playful animal that swings from trees.',
+                          'rabbit': 'A small furry animal with long ears that hops.',
+                          'horse': 'A large animal that people can ride.',
+                          'cow': 'A farm animal that gives us milk.',
+                          'pig': 'A farm animal that says oink.',
+                          'chicken': 'A farm bird that lays eggs.',
+                          'duck': 'A water bird that quacks.',
+                          'butterfly': 'A beautiful insect with colorful wings.',
+                          'bee': 'An insect that makes honey and can sting.',
+                          'ant': 'A tiny insect that works in colonies.',
+                          'spider': 'A small creature with eight legs that makes webs.',
+                          
+                          // Nature & Plants
+                          'tree': 'A tall plant with a trunk, branches, and leaves.',
+                          'flower': 'The colorful part of a plant that blooms.',
+                          'grass': 'Short green plants that cover the ground.',
+                          'leaf': 'The flat green part that grows on plants.',
+                          'seed': 'A tiny thing you plant to grow a new plant.',
+                          'root': 'The part of a plant that grows underground.',
+                          'fruit': 'The sweet part of a plant that you can eat.',
+                          'vegetable': 'A plant or part of a plant that we eat.',
+                          
+                          // Weather & Sky
+                          'sun': 'The bright star that gives us light and warmth.',
+                          'moon': 'The bright object you see in the night sky.',
+                          'star': 'A tiny point of light you see at night.',
+                          'cloud': 'The white fluffy thing floating in the sky.',
+                          'rain': 'Water drops that fall from the sky.',
+                          'snow': 'White frozen water that falls in winter.',
+                          'wind': 'Moving air that you can feel but not see.',
+                          'storm': 'Bad weather with strong wind and rain.',
+                          'rainbow': 'Colorful arc in the sky after rain.',
+                          
+                          // Body Parts
+                          'hand': 'The part at the end of your arm with fingers.',
+                          'foot': 'The part at the end of your leg that you stand on.',
+                          'head': 'The top part of your body where your brain is.',
+                          'eye': 'The part of your face that you see with.',
+                          'ear': 'The part of your head that you hear with.',
+                          'nose': 'The part of your face that you smell with.',
+                          'mouth': 'The part of your face that you eat and talk with.',
+                          'tooth': 'The hard white thing in your mouth for chewing.',
+                          'hair': 'The strands that grow on your head.',
+                          'finger': 'One of the five parts at the end of your hand.',
+                          'toe': 'One of the five parts at the end of your foot.',
+                          
+                          // Food & Drinks
+                          'water': 'The clear liquid you drink to stay alive.',
+                          'milk': 'The white drink that comes from cows.',
+                          'juice': 'A sweet drink made from fruits.',
+                          'bread': 'A soft food made from flour that you eat.',
+                          'rice': 'Small white grains that you cook and eat.',
+                          'apple': 'A round red or green fruit that is crunchy.',
+                          'banana': 'A long yellow fruit that monkeys love.',
+                          'orange': 'A round citrus fruit that is orange colored.',
+                          'egg': 'An oval thing from chickens that you can cook.',
+                          'meat': 'Food that comes from animals.',
+                          'seafood': 'Food from the sea that you can cook and eat.',
+                          
+                          // Places
+                          'house': 'A building where people live.',
+                          'school': 'A place where children go to learn.',
+                          'park': 'An outdoor place with grass and trees to play.',
+                          'store': 'A place where you buy things.',
+                          'hospital': 'A place where sick people go to get better.',
+                          'church': 'A place where people go to pray.',
+                          'beach': 'A sandy place by the ocean.',
+                          'farm': 'A place where crops and animals are raised.',
+                          'forest': 'A large area with many trees.',
+                          'mountain': 'A very tall natural hill.',
+                          'river': 'A long flowing body of water.',
+                          'ocean': 'A very large body of salt water.',
+                          
+                          // Objects & Things
+                          'book': 'Something with pages that you read.',
+                          'pen': 'A tool you use to write with ink.',
+                          'pencil': 'A tool you use to write that can be erased.',
+                          'paper': 'A thin sheet you write or draw on.',
+                          'table': 'A flat surface with legs that you eat or work on.',
+                          'chair': 'Something with legs that you sit on.',
+                          'bed': 'A soft place where you sleep.',
+                          'door': 'Something you open to enter or leave a room.',
+                          'window': 'An opening in a wall that lets in light.',
+                          'car': 'A vehicle with four wheels that people drive.',
+                          'bike': 'A vehicle with two wheels that you pedal.',
+                          'ball': 'A round object you play with.',
+                          'toy': 'Something children play with for fun.',
+                          'phone': 'A device you use to talk to people far away.',
+                          'computer': 'A machine you use to work or play games.',
+                          'television': 'A screen that shows programs and movies.',
+                          
+                          // Actions & Concepts
+                          'love': 'A strong feeling of caring deeply for someone.',
+                          'happy': 'Feeling good and joyful inside.',
+                          'sad': 'Feeling unhappy or down.',
+                          'angry': 'Feeling mad or upset about something.',
+                          'friend': 'Someone you like and enjoy spending time with.',
+                          'family': 'The people you live with and are related to.',
+                          'help': 'When you do something good for someone.',
+                          'play': 'Having fun with games or toys.',
+                          'work': 'Doing tasks or jobs to earn money.',
+                          'learn': 'Getting new knowledge or skills.',
+                          'teach': 'Helping someone else learn something.',
+                          'read': 'Looking at words and understanding them.',
+                          'write': 'Making words with a pen or pencil.',
+                          'draw': 'Making pictures with pencils or crayons.',
+                          'sing': 'Making music with your voice.',
+                          'dance': 'Moving your body to music.',
+                          'run': 'Moving very fast on your feet.',
+                          'walk': 'Moving by putting one foot in front of the other.',
+                          'jump': 'Pushing yourself up into the air.',
+                          'swim': 'Moving through water using your arms and legs.',
+                          'eat': 'Putting food in your mouth and swallowing it.',
+                          'drink': 'Swallowing liquid into your body.',
+                          'sleep': 'Resting with your eyes closed at night.',
+                          'wake': 'Opening your eyes and getting up.',
+                          
+                          // Colors
+                          'red': 'The color of apples and fire trucks.',
+                          'blue': 'The color of the sky and ocean.',
+                          'green': 'The color of grass and leaves.',
+                          'yellow': 'The color of the sun and bananas.',
+                          'orangecolor': 'The color between red and yellow.',
+                          'purple': 'The color you get when you mix red and blue.',
+                          'pink': 'A light red color.',
+                          'brown': 'The color of chocolate and tree trunks.',
+                          'black': 'The darkest color, like the night sky.',
+                          'white': 'The lightest color, like snow.',
+                          
+                          // Numbers & Math
+                          'number': 'A symbol used for counting.',
+                          'count': 'Saying numbers in order.',
+                          'add': 'Putting numbers together to get more.',
+                          'subtract': 'Taking away to get less.',
+                          'multiply': 'Adding the same number many times.',
+                          'divide': 'Splitting into equal parts.',
+                        };
                         
-                        // Category-based descriptive fallbacks
-                        if (category.includes('science')) return 'Scientists study this important concept in their research: _______.';
-                        if (category.includes('nature')) return 'You can find this living thing in forests, oceans, or gardens: _______.';
-                        if (category.includes('environment')) return 'This affects the health of our planet and all living things: _______.';
-                        if (category.includes('math')) return 'You use this mathematical operation to solve problems: _______.';
-                        if (category.includes('social')) return 'People interact with each other through this important concept: _______.';
-                        if (category.includes('government')) return 'Countries use this system to organize and lead their people: _______.';
-                        if (category.includes('character')) return 'This personal trait helps you become a better person: _______.';
-                        if (category.includes('mind')) return 'Your brain uses this special ability to think and create: _______.';
-                        if (category.includes('arts')) return 'Artists and designers use this principle in their creative work: _______.';
-                        if (category.includes('events')) return 'People gather together to celebrate this special moment: _______.';
+                        // Check if we have a specific description for this word
+                        if (wordDescriptions[term]) {
+                          return wordDescriptions[term] + ' Can you spell it?';
+                        }
                         
-                        // Default fallback - encourages using hints
-                        return `Can you spell this ${currentWord.term.length}-letter word? Use "Show Hint" if you need help!`;
+                        // Category-based descriptive fallbacks for words not in the list
+                        const category = currentWord.category?.toLowerCase() || '';
+                        if (category.includes('science')) return 'Scientists study this important concept. Can you spell it?';
+                        if (category.includes('nature')) return 'You can find this in forests, oceans, or gardens. Can you spell it?';
+                        if (category.includes('environment')) return 'This affects the health of our planet. Can you spell it?';
+                        if (category.includes('math')) return 'You use this in mathematics to solve problems. Can you spell it?';
+                        if (category.includes('social')) return 'People use this when interacting with each other. Can you spell it?';
+                        if (category.includes('government')) return 'Countries use this system to organize their people. Can you spell it?';
+                        if (category.includes('character')) return 'This personal trait helps you become better. Can you spell it?';
+                        if (category.includes('mind')) return 'Your brain uses this special ability. Can you spell it?';
+                        if (category.includes('arts')) return 'Artists use this in their creative work. Can you spell it?';
+                        if (category.includes('events')) return 'People celebrate this special moment. Can you spell it?';
+                        
+                        // Final fallback
+                        return `This is a ${currentWord.term.length}-letter word. Use "Show Hint" for help!`;
                       })())}"
                 </p>
               </div>
