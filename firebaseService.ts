@@ -70,12 +70,14 @@ export const signUpUser = async (
       lastPlayedDate: new Date().toISOString().split('T')[0],
       wrongWords: [],
       progressHistory: [],
+      hasSeenTour: false, // NEW: Enable intro tour for new users
       ...(additionalData?.gradeLevel && { gradeLevel: additionalData.gradeLevel }),
       ...(additionalData?.section && { section: additionalData.section }),
       ...(additionalData?.teacherName && { teacherName: additionalData.teacherName }),
       ...(additionalData?.teacherId && { teacherId: additionalData.teacherId })
     } : {
       ...baseUser,
+      hasSeenTour: false, // NEW: Enable intro tour for teachers/admins too
       ...(additionalData?.subject && { subject: additionalData.subject })
     };
 
@@ -193,6 +195,10 @@ export const signInUser = async (email: string, password: string): Promise<User>
       newUserData.lastPlayedDate = new Date().toISOString().split('T')[0];
       newUserData.wrongWords = [];
       newUserData.progressHistory = [];
+      newUserData.hasSeenTour = false; // NEW: Enable intro tour
+    } else {
+      // Teachers and admins also get intro tour
+      newUserData.hasSeenTour = false;
     }
     
     // Remove undefined values
