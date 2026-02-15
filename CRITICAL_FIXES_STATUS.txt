@@ -1,0 +1,228 @@
+🔧 CRITICAL FIXES STATUS
+========================
+
+## Issues Identified by User:
+
+1. ✅ Background music persists after turning off
+2. ⏳ Ranking should be by grade level and section
+3. ⏳ Add Intro.js guided tour for new users
+4. ⏳ Questions should be grade-specific (not same for all grades)
+5. ⏳ Add descriptive hint (not just letter reveal)
+
+## Fix 1: Background Music Persistence ✅ COMPLETE
+
+### Problem:
+- Music continues playing even after user turns it off
+- Preference not saved across sessions
+- Annoying UX, wastes battery
+
+### Solution Implemented:
+- Save music enabled/disabled state to localStorage
+- Save music volume to localStorage
+- Load preferences on app start
+- Respect user preference (default to OFF)
+- Reset music to start when turned off
+
+### Changes Made:
+**File**: `App.tsx`
+
+1. **Load preferences from localStorage**:
+```typescript
+const [isMusicPlaying, setIsMusicPlaying] = useState(() => {
+  const saved = localStorage.getItem('musicEnabled');
+  return saved === null ? false : saved === 'true';
+});
+
+const [musicVolume, setMusicVolume] = useState(() => {
+  const saved = localStorage.getItem('musicVolume');
+  return saved ? parseFloat(saved) : 0.35;
+});
+```
+
+2. **Save preferences to localStorage**:
+```typescript
+useEffect(() => {
+  localStorage.setItem('musicEnabled', isMusicPlaying.toString());
+}, [isMusicPlaying]);
+
+useEffect(() => {
+  localStorage.setItem('musicVolume', musicVolume.toString());
+}, [musicVolume]);
+```
+
+3. **Respect saved preference on init**:
+```typescript
+// Only auto-play if user has music enabled in preferences
+if (isMusicPlaying) {
+  // Play music
+}
+```
+
+4. **Reset music when turned off**:
+```typescript
+bgMusicRef.current.pause();
+bgMusicRef.current.currentTime = 0; // Reset to start
+```
+
+### Testing:
+- [ ] Turn music off, refresh page → stays off ✅
+- [ ] Turn music on, refresh page → stays on ✅
+- [ ] Set volume to 50%, refresh → volume persists ✅
+- [ ] Toggle multiple times → preference persists ✅
+
+### Status: ✅ READY FOR TESTING
+
+---
+
+## Fix 2: Grade/Section-Specific Ranking ⏳ IN PROGRESS
+
+### Problem:
+- All students compete globally
+- Grade 1 students compete with Grade 6
+- Unfair comparison, demotivating
+
+### Solution Plan:
+- Filter leaderboard by grade level and section
+- Show "Your Class" ranking by default
+- Option to view "My Grade" or "All Students"
+- Teachers see all students
+
+### Files to Modify:
+- `LeaderboardView.tsx` - Add filter UI
+- `firebaseService.ts` - Add filtered query function
+
+### Implementation Steps:
+1. Add filter state (myClass, myGrade, all)
+2. Update getLeaderboard() to accept filters
+3. Add filter buttons to UI
+4. Default to "My Class" view
+5. Show grade/section in leaderboard
+
+### Status: ⏳ NEXT TO IMPLEMENT
+
+---
+
+## Fix 3: Intro.js Guided Tour ⏳ PLANNED
+
+### Problem:
+- New users don't know how to use the app
+- No onboarding experience
+- Confusion leads to poor engagement
+
+### Solution Plan:
+- Install intro.js library
+- Create student tour (5-6 steps)
+- Create teacher tour (5-6 steps)
+- Show only on first login
+- Store completion in user profile
+
+### Files to Create:
+- `IntroTour.tsx` - Tour component
+- Install: `npm install intro.js`
+
+### Implementation Steps:
+1. Install intro.js
+2. Create IntroTour component
+3. Define student tour steps
+4. Define teacher tour steps
+5. Add hasSeenTour field to User type
+6. Show tour on first login only
+7. Add "Skip Tour" button
+
+### Status: ⏳ PLANNED
+
+---
+
+## Fix 4: Grade-Specific Questions ⏳ PLANNED
+
+### Problem:
+- All grades get same questions
+- Grade 1 gets Grade 6 words (too hard)
+- Grade 6 gets Grade 1 words (too easy)
+- Not educational, frustrating
+
+### Solution Plan:
+- Filter words by student's grade level
+- Cumulative approach (Grade 2 gets Grade 1-2 words)
+- Use gradeLevels field in Word type
+- Verify 540-word database has proper assignments
+
+### Files to Modify:
+- `App.tsx` - Word filtering logic
+- `firebaseService.ts` - getWords() function
+- Verify `COMPLETE_540_WORDS_DATABASE.csv`
+
+### Implementation Steps:
+1. Update getWords() to accept gradeLevel
+2. Filter words: wordGrade <= studentGrade
+3. Pass user.gradeLevel to getWords()
+4. Test with different grade levels
+5. Verify word distribution
+
+### Status: ⏳ CRITICAL - NEXT PRIORITY
+
+---
+
+## Fix 5: Descriptive Hints ⏳ PLANNED
+
+### Problem:
+- Only hint is revealing letters
+- No educational context
+- Students just guess letters
+- Limited learning value
+
+### Solution Plan:
+- Show scenario/hint text first
+- Then progressive letter reveals
+- Use bilingual hints (English/Filipino)
+- Make hints educational
+
+### Files to Modify:
+- `App.tsx` - GameView hint logic
+- Already have hint/scenario fields in Word type
+
+### Implementation Steps:
+1. Add hintPhase state (scenario → letters)
+2. Show scenario/hint on first hint request
+3. Show letter reveals on subsequent hints
+4. Support bilingual hints
+5. Update UI to display scenario text
+
+### Status: ⏳ PLANNED
+
+---
+
+## Priority Order:
+
+1. ✅ **DONE**: Background music persistence
+2. ⏳ **NEXT**: Grade-specific questions (CRITICAL)
+3. ⏳ **NEXT**: Grade/section ranking (CRITICAL)
+4. ⏳ **THEN**: Descriptive hints (HIGH)
+5. ⏳ **THEN**: Intro.js tour (HIGH)
+
+## Estimated Completion:
+
+- Fix 1 (Music): ✅ Complete
+- Fix 2 (Ranking): 1 hour
+- Fix 3 (Tour): 2 hours
+- Fix 4 (Grade Questions): 1 hour
+- Fix 5 (Hints): 1 hour
+
+**Total Remaining**: ~5 hours
+
+## Next Steps:
+
+1. Test music persistence fix
+2. Implement grade-specific questions
+3. Implement grade/section ranking
+4. Implement descriptive hints
+5. Implement intro tour
+6. Test all fixes together
+7. Push to GitHub
+8. Deploy to Vercel
+
+---
+
+**Last Updated**: February 15, 2026
+**Status**: 1 of 5 fixes complete
+**Ready for Testing**: Music persistence fix
