@@ -1064,7 +1064,38 @@ const GameOverlay: React.FC<{
                 <p className="text-sm text-white italic leading-relaxed">
                   "{userLanguage === 'fil' && currentWord.scenarioFil 
                     ? currentWord.scenarioFil 
-                    : (currentWord.scenario || `Fill in the blank with the correct word (${currentWord.term.length} letters)`)}"
+                    : (currentWord.scenario || (() => {
+                        // Enhanced fallback with descriptive scenarios (not revealing the answer)
+                        const category = currentWord.category?.toLowerCase() || '';
+                        const term = currentWord.term.toLowerCase();
+                        
+                        // Specific word-based fallbacks (more educational)
+                        if (term.includes('animal')) return 'A living creature that moves and breathes is called _______.';
+                        if (term.includes('plant')) return 'A living thing that grows in soil and makes oxygen is _______.';
+                        if (term.includes('water')) return 'The liquid we drink to stay alive is _______.';
+                        if (term.includes('sun')) return 'The bright star that gives us light and warmth is the _______.';
+                        if (term.includes('moon')) return 'The object that shines in the night sky is the _______.';
+                        if (term.includes('star')) return 'A bright point of light in the night sky is a _______.';
+                        if (term.includes('tree')) return 'A tall plant with a trunk and branches is a _______.';
+                        if (term.includes('flower')) return 'The colorful part of a plant that blooms is a _______.';
+                        if (term.includes('bird')) return 'An animal with wings and feathers that can fly is a _______.';
+                        if (term.includes('fish')) return 'An animal that lives and breathes underwater is a _______.';
+                        
+                        // Category-based descriptive fallbacks
+                        if (category.includes('science')) return 'Scientists study this important concept in their research: _______.';
+                        if (category.includes('nature')) return 'You can find this living thing in forests, oceans, or gardens: _______.';
+                        if (category.includes('environment')) return 'This affects the health of our planet and all living things: _______.';
+                        if (category.includes('math')) return 'You use this mathematical operation to solve problems: _______.';
+                        if (category.includes('social')) return 'People interact with each other through this important concept: _______.';
+                        if (category.includes('government')) return 'Countries use this system to organize and lead their people: _______.';
+                        if (category.includes('character')) return 'This personal trait helps you become a better person: _______.';
+                        if (category.includes('mind')) return 'Your brain uses this special ability to think and create: _______.';
+                        if (category.includes('arts')) return 'Artists and designers use this principle in their creative work: _______.';
+                        if (category.includes('events')) return 'People gather together to celebrate this special moment: _______.';
+                        
+                        // Default fallback - encourages using hints
+                        return `Can you spell this ${currentWord.term.length}-letter word? Use "Show Hint" if you need help!`;
+                      })())}"
                 </p>
               </div>
               
