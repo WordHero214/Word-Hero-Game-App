@@ -7,6 +7,15 @@ interface BulkWordUploadProps {
   onSuccess: () => void;
 }
 
+interface UploadStats {
+  total: number;
+  uploaded: number;
+  failed: number;
+  currentWord: string;
+  byGrade: { [key: string]: number };
+  byDifficulty: { [key: string]: number };
+}
+
 const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -14,6 +23,8 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
   const [error, setError] = useState('');
   const [preview, setPreview] = useState<Partial<Word>[]>([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [uploadStats, setUploadStats] = useState<UploadStats | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -40,9 +51,12 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
       
       // Skip header if present
       const startIndex = lines[0].toLowerCase().includes('word') || 
-                        lines[0].toLowerCase().includes('term') ? 1 : 0;
+                        lines[0].toLowerCase().includes('term') ||
+                        lines[0].toLowerCase().includes('grade') ? 1 : 0;
       
       const parsedWords: Partial<Word>[] = [];
+      const gradeStats: { [key: string]: number } = {};
+      const difficultyStats: { [key: string]: number } = {};
       
       for (let i = startIndex; i < lines.length; i++) {
         const line = lines[i].trim();
@@ -51,15 +65,19 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
         // Support both comma and tab delimiters
         const parts = line.includes('\t') ? line.split('\t') : line.split(',');
         
-        if (parts.length < 2) continue; // Need at least word and difficulty
+        if (parts.length < 3) continue; // Need at least grade, level, word
         
-        const word = parts[0].trim();
-        const difficultyStr = parts[1].trim().toUpperCase();
-        const gradeLevel = parts[2]?.trim() || '';
+        // NEW FORMAT: grade,level,word,englishHint,englishScenario,tagalogHint,tagalogScenario,category
+        const gradeLevel = parts[0]?.trim() || '';
+        const difficultyStr = parts[1]?.trim().toUpperCase();
+        const word = parts[2]?.trim();
         const hint = parts[3]?.trim() || '';
         const scenario = parts[4]?.trim() || '';
         const hintFil = parts[5]?.trim() || '';
         const scenarioFil = parts[6]?.trim() || '';
+        const category = parts[7]?.trim() || 'Imported';
+        
+        if (!word) continue;
         
         // Validate difficulty
         let difficulty: Difficulty;
@@ -73,10 +91,14 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
           continue; // Skip invalid difficulty
         }
         
+        // Track statistics
+        gradeStats[gradeLevel] = (gradeStats[gradeLevel] || 0) + 1;
+        difficultyStats[difficulty] = (difficultyStats[difficulty] || 0) + 1;
+        
         parsedWords.push({
-          term: word,
+          term: word.toUpperCase(),
           difficulty,
-          category: 'Imported',
+          category: category || 'Imported',
           gradeLevels: gradeLevel ? [gradeLevel] : [],
           hint: hint || undefined,
           scenario: scenario || undefined,
@@ -87,6 +109,16 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
       
       setPreview(parsedWords);
       setShowPreview(true);
+      
+      // Initialize upload stats
+      setUploadStats({
+        total: parsedWords.length,
+        uploaded: 0,
+        failed: 0,
+        currentWord: '',
+        byGrade: gradeStats,
+        byDifficulty: difficultyStats
+      });
       
       if (parsedWords.length === 0) {
         setError('No valid words found in file. Please check the format.');
@@ -114,6 +146,15 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
       for (let i = 0; i < preview.length; i++) {
         try {
           const wordData = preview[i];
+          
+          // Update current word being uploaded
+          setUploadStats(prev => prev ? {
+            ...prev,
+            currentWord: wordData.term!,
+            uploaded: successCount,
+            failed: failCount
+          } : null);
+          
           await addWord(
             wordData.term!,
             wordData.difficulty!,
@@ -126,23 +167,47 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
             wordData.scenarioFil
           );
           successCount++;
+          
+          // Update stats after successful upload
+          setUploadStats(prev => prev ? {
+            ...prev,
+            uploaded: successCount,
+            failed: failCount
+          } : null);
         } catch (err) {
           console.error(`Failed to add word: ${preview[i].term}`, err);
           failCount++;
+          
+          // Update stats after failed upload
+          setUploadStats(prev => prev ? {
+            ...prev,
+            uploaded: successCount,
+            failed: failCount
+          } : null);
         }
         
         setProgress(Math.round(((i + 1) / preview.length) * 100));
       }
 
+      // Show success modal with final stats
+      setUploadStats(prev => prev ? {
+        ...prev,
+        currentWord: 'Complete!',
+        uploaded: successCount,
+        failed: failCount
+      } : null);
+      
+      setShowSuccess(true);
+      
       if (failCount > 0) {
         setError(`Uploaded ${successCount} words. ${failCount} failed.`);
       }
       
-      // Wait a moment to show completion
+      // Wait to show success animation
       setTimeout(() => {
         onSuccess();
         onClose();
-      }, 1000);
+      }, 3000);
     } catch (err) {
       console.error('Upload error:', err);
       setError('Failed to upload words. Please try again.');
@@ -151,10 +216,10 @@ const BulkWordUpload: React.FC<BulkWordUploadProps> = ({ onClose, onSuccess }) =
   };
 
   const downloadTemplate = () => {
-    const template = `Word,Difficulty,Grade,Hint (English),Scenario (English),Hint (Filipino),Scenario (Filipino)
-apple,EASY,1,A red or green fruit,I ate an ___ for breakfast,Isang pulang o berdeng prutas,Kumain ako ng ___ sa almusal
-beautiful,MEDIUM,3,Very pretty or attractive,The sunset was ___,Napakaganda o kaakit-akit,Ang takipsilim ay ___
-photosynthesis,HARD,5,How plants make food,Plants use ___ to create energy,Paano gumagawa ng pagkain ang halaman,Gumagamit ang halaman ng ___ upang lumikha ng enerhiya`;
+    const template = `grade,level,word,englishHint,englishScenario,tagalogHint,tagalogScenario,category
+1,EASY,CAT,A small furry pet that says meow,This small animal purrs and likes to chase mice. Can you spell it?,Isang maliit na alaga na tumutunog ng meow,Ang maliit na hayop na ito ay umuungol at mahilig humabol ng daga. Marunong ka bang magbaybay nito?,Animals
+2,MEDIUM,APPLE,A crunchy red or green fruit,This round fruit grows on trees and is crunchy. Can you spell it?,Isang malutong na pula o berdeng prutas,Ang bilog na prutas na ito ay tumutubo sa puno at malutong. Marunong ka bang magbaybay nito?,Fruits
+3,HARD,RAINBOW,Colorful arc in the sky after rain,This beautiful arc of colors appears after the rain. Can you spell it?,Makulay na arko sa langit pagkatapos ng ulan,Ang magandang arko ng mga kulay na ito ay lumilitaw pagkatapos ng ulan. Marunong ka bang magbaybay nito?,Nature`;
 
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -193,16 +258,17 @@ photosynthesis,HARD,5,How plants make food,Plants use ___ to create energy,Paano
           <div className="text-gray-300 text-sm space-y-2">
             <p>Your CSV file should have the following columns (in order):</p>
             <ol className="list-decimal list-inside space-y-1 ml-2">
+              <li><strong>Grade</strong> - Grade level (1-6, required)</li>
+              <li><strong>Level</strong> - EASY, MEDIUM, or HARD (required)</li>
               <li><strong>Word</strong> - The spelling word (required)</li>
-              <li><strong>Difficulty</strong> - EASY, MEDIUM, or HARD (required)</li>
-              <li><strong>Grade</strong> - Grade level (1-6, optional)</li>
-              <li><strong>Hint (English)</strong> - English hint text (optional)</li>
-              <li><strong>Scenario (English)</strong> - English context sentence (optional)</li>
-              <li><strong>Hint (Filipino)</strong> - Filipino hint text (optional)</li>
-              <li><strong>Scenario (Filipino)</strong> - Filipino context sentence (optional)</li>
+              <li><strong>English Hint</strong> - Short English hint (optional)</li>
+              <li><strong>English Scenario</strong> - English context sentence (optional)</li>
+              <li><strong>Filipino Hint</strong> - Filipino/Tagalog hint (optional)</li>
+              <li><strong>Filipino Scenario</strong> - Filipino context sentence (optional)</li>
+              <li><strong>Category</strong> - Word category like Animals, Nature (optional)</li>
             </ol>
             <p className="mt-3 text-xs text-gray-400">
-              💡 Tip: You can use E, M, H as shortcuts for difficulty levels
+              💡 Tip: Download the template below to see the exact format
             </p>
           </div>
         </div>
@@ -319,6 +385,115 @@ photosynthesis,HARD,5,How plants make food,Plants use ___ to create energy,Paano
                 className="h-full bg-[#00c2a0] transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Upload Stats - Real-time Progress */}
+        {uploading && uploadStats && (
+          <div className="mb-6 bg-[#0b1221] rounded-2xl p-6 border border-[#00c2a0]/20 animate-in fade-in duration-300">
+            {/* Current Word Being Uploaded */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 border-2 border-[#00c2a0] border-t-transparent rounded-full animate-spin" />
+              <div>
+                <p className="text-xs text-gray-400">Currently uploading:</p>
+                <p className="text-white font-bold text-lg">{uploadStats.currentWord}</p>
+              </div>
+            </div>
+
+            {/* Progress Stats */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="bg-[#162031] rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-[#00c2a0]">{uploadStats.uploaded}</p>
+                <p className="text-xs text-gray-400">Uploaded</p>
+              </div>
+              <div className="bg-[#162031] rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-gray-400">{uploadStats.total - uploadStats.uploaded - uploadStats.failed}</p>
+                <p className="text-xs text-gray-400">Remaining</p>
+              </div>
+              <div className="bg-[#162031] rounded-xl p-3 text-center">
+                <p className="text-2xl font-bold text-red-400">{uploadStats.failed}</p>
+                <p className="text-xs text-gray-400">Failed</p>
+              </div>
+            </div>
+
+            {/* Grade Distribution */}
+            <div className="mb-4">
+              <p className="text-xs text-gray-400 mb-2">Distribution by Grade:</p>
+              <div className="grid grid-cols-6 gap-2">
+                {Object.entries(uploadStats.byGrade).map(([grade, count]) => (
+                  <div key={grade} className="bg-[#162031] rounded-lg p-2 text-center">
+                    <p className="text-sm font-bold text-white">{count}</p>
+                    <p className="text-xs text-gray-400">Grade {grade}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Difficulty Distribution */}
+            <div>
+              <p className="text-xs text-gray-400 mb-2">Distribution by Difficulty:</p>
+              <div className="grid grid-cols-3 gap-2">
+                {Object.entries(uploadStats.byDifficulty).map(([difficulty, count]) => (
+                  <div key={difficulty} className={`rounded-lg p-2 text-center ${
+                    difficulty === Difficulty.EASY ? 'bg-green-500/20' :
+                    difficulty === Difficulty.MEDIUM ? 'bg-yellow-500/20' :
+                    'bg-red-500/20'
+                  }`}>
+                    <p className="text-sm font-bold text-white">{count}</p>
+                    <p className={`text-xs ${
+                      difficulty === Difficulty.EASY ? 'text-green-400' :
+                      difficulty === Difficulty.MEDIUM ? 'text-yellow-400' :
+                      'text-red-400'
+                    }`}>{difficulty}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Modal */}
+        {showSuccess && uploadStats && (
+          <div className="mb-6 bg-gradient-to-br from-green-500/20 to-[#00c2a0]/20 rounded-2xl p-6 border border-green-500/30 animate-in zoom-in duration-500">
+            <div className="text-center">
+              <div className="text-6xl mb-4 animate-bounce">🎉</div>
+              <h3 className="text-2xl font-bold text-white mb-2">Upload Complete!</h3>
+              <p className="text-gray-300 mb-4">
+                Successfully uploaded {uploadStats.uploaded} out of {uploadStats.total} words
+              </p>
+              
+              {/* Final Stats */}
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="bg-[#0b1221] rounded-xl p-4">
+                  <p className="text-xs text-gray-400 mb-1">By Grade</p>
+                  <div className="space-y-1">
+                    {Object.entries(uploadStats.byGrade).map(([grade, count]) => (
+                      <div key={grade} className="flex justify-between text-sm">
+                        <span className="text-gray-400">Grade {grade}:</span>
+                        <span className="text-white font-bold">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-[#0b1221] rounded-xl p-4">
+                  <p className="text-xs text-gray-400 mb-1">By Difficulty</p>
+                  <div className="space-y-1">
+                    {Object.entries(uploadStats.byDifficulty).map(([difficulty, count]) => (
+                      <div key={difficulty} className="flex justify-between text-sm">
+                        <span className={
+                          difficulty === Difficulty.EASY ? 'text-green-400' :
+                          difficulty === Difficulty.MEDIUM ? 'text-yellow-400' :
+                          'text-red-400'
+                        }>{difficulty}:</span>
+                        <span className="text-white font-bold">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-400">Closing automatically...</p>
             </div>
           </div>
         )}
