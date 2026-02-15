@@ -567,13 +567,22 @@ export const getWords = async (userGradeLevel?: string, userSection?: string): P
   
   // Filter words based on student's grade level and section
   return allWords.filter(word => {
-    // If word has no grade levels specified, it's available to all
-    const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
-                       (userGradeLevel && word.gradeLevels.includes(userGradeLevel));
+    // Grade filtering: Cumulative approach (Grade 2 gets Grade 1-2 words)
+    let gradeMatch = true;
+    if (word.gradeLevels && word.gradeLevels.length > 0 && userGradeLevel) {
+      const studentGrade = parseInt(userGradeLevel);
+      // Check if any of the word's grade levels <= student's grade
+      gradeMatch = word.gradeLevels.some(grade => {
+        const wordGrade = parseInt(grade);
+        return !isNaN(wordGrade) && !isNaN(studentGrade) && wordGrade <= studentGrade;
+      });
+    }
     
-    // If word has no sections specified, it's available to all
-    const sectionMatch = !word.sections || word.sections.length === 0 || 
-                         (userSection && word.sections.includes(userSection));
+    // Section filtering: If word has sections, student must be in one of them
+    let sectionMatch = true;
+    if (word.sections && word.sections.length > 0 && userSection) {
+      sectionMatch = word.sections.includes(userSection);
+    }
     
     return gradeMatch && sectionMatch;
   });

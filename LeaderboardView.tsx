@@ -14,7 +14,7 @@ interface RankedUser extends User {
 const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
   const [students, setStudents] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'section'>('all');
+  const [filter, setFilter] = useState<'myClass' | 'myGrade' | 'all'>('myClass'); // Default to myClass
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -37,15 +37,26 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
     try {
       const allStudents = await getTopStudentsWithRank(100); // Get more students for filtering
       
-      // Filter by section if needed
+      // Filter based on selected filter
       let filteredStudents: RankedUser[] = allStudents as RankedUser[];
-      if (filter === 'section' && currentUser?.section) {
-        const sectionStudents = allStudents.filter(s => s.section === currentUser.section);
-        
-        // Recalculate ranks for section-filtered students
-        filteredStudents = sectionStudents.map((student, index) => ({
+      
+      if (filter === 'myClass' && currentUser?.gradeLevel && currentUser?.section) {
+        // Show only students in same grade AND section
+        const classStudents = allStudents.filter(s => 
+          s.gradeLevel === currentUser.gradeLevel && s.section === currentUser.section
+        );
+        filteredStudents = classStudents.map((student, index) => ({
           ...student,
-          rank: index + 1 // Recalculate rank based on section position
+          rank: index + 1
+        })) as RankedUser[];
+      } else if (filter === 'myGrade' && currentUser?.gradeLevel) {
+        // Show only students in same grade (all sections)
+        const gradeStudents = allStudents.filter(s => 
+          s.gradeLevel === currentUser.gradeLevel
+        );
+        filteredStudents = gradeStudents.map((student, index) => ({
+          ...student,
+          rank: index + 1
         })) as RankedUser[];
       }
       
@@ -110,34 +121,48 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
           <div className="absolute -top-4 -left-4 text-3xl animate-bounce" style={{ animationDelay: '0.2s' }}>⭐</div>
         </div>
         <p className="text-gray-400 text-lg mt-2">
-          {filter === 'section' && currentUser?.section 
-            ? `🎯 Section ${currentUser.section} Champions` 
-            : '🌟 Top Spelling Stars'}
+          {filter === 'myClass' && currentUser?.gradeLevel && currentUser?.section
+            ? `🎯 Grade ${currentUser.gradeLevel} - Section ${currentUser.section} Champions` 
+            : filter === 'myGrade' && currentUser?.gradeLevel
+            ? `📚 Grade ${currentUser.gradeLevel} Top Spellers`
+            : '🌟 All Students Ranking'}
         </p>
       </div>
 
       {/* Filter Buttons */}
-      {currentUser?.section && (
-        <div className="flex gap-3 justify-center">
+      {currentUser?.gradeLevel && (
+        <div className="flex gap-2 justify-center flex-wrap px-4">
+          <button
+            onClick={() => setFilter('myClass')}
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all transform hover:scale-105 ${
+              filter === 'myClass' 
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30' 
+                : 'bg-[#162031] text-gray-400 hover:bg-[#1a2638]'
+            }`}
+          >
+            🎯 My Class
+            {currentUser?.section && <span className="ml-1 text-xs opacity-75">(Grade {currentUser.gradeLevel}-{currentUser.section})</span>}
+          </button>
+          <button
+            onClick={() => setFilter('myGrade')}
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all transform hover:scale-105 ${
+              filter === 'myGrade' 
+                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30' 
+                : 'bg-[#162031] text-gray-400 hover:bg-[#1a2638]'
+            }`}
+          >
+            📚 My Grade
+            <span className="ml-1 text-xs opacity-75">(Grade {currentUser.gradeLevel})</span>
+          </button>
           <button
             onClick={() => setFilter('all')}
-            className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all transform hover:scale-105 ${
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all transform hover:scale-105 ${
               filter === 'all' 
                 ? 'bg-gradient-to-r from-[#00c2a0] to-[#00d8b3] text-white shadow-lg shadow-teal-500/30' 
                 : 'bg-[#162031] text-gray-400 hover:bg-[#1a2638]'
             }`}
           >
             🌍 All Students
-          </button>
-          <button
-            onClick={() => setFilter('section')}
-            className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all transform hover:scale-105 ${
-              filter === 'section' 
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30' 
-                : 'bg-[#162031] text-gray-400 hover:bg-[#1a2638]'
-            }`}
-          >
-            🎯 My Section
           </button>
         </div>
       )}
