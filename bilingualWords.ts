@@ -2,336 +2,457 @@ import { Word, Difficulty } from './types';
 
 // Bilingual words with English and Filipino (Tagalog) translations
 export const BILINGUAL_WORDS: Word[] = [
-  // EASY - 20 Words (Elementary Level)
+  // EASY - 20 Words (Elementary Level - Grade 1-2)
   { 
     id: 'e1', 
     term: 'APPLE', 
     difficulty: Difficulty.EASY, 
     category: 'Fruits', 
-    hint: 'A crunchy red or green fruit that keeps the doctor away!',
-    hintFil: 'Isang malutong na pula o berdeng prutas na nakakaiwas sa doktor!'
+    gradeLevels: ['1', '2'], // Grade 1-2
+    hint: 'A crunchy red or green fruit',
+    scenario: 'This round fruit grows on trees and is crunchy. Can you spell it?',
+    hintFil: 'Isang malutong na pula o berdeng prutas',
+    scenarioFil: 'Ang bilog na prutas na ito ay tumutubo sa puno at malutong. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e2', 
     term: 'HOUSE', 
     difficulty: Difficulty.EASY, 
     category: 'Places', 
-    hint: 'A building where a family lives together.',
-    hintFil: 'Isang gusali kung saan nakatira ang isang pamilya.'
+    gradeLevels: ['1', '2'],
+    hint: 'A building where a family lives together',
+    scenario: 'This is where your family sleeps and eats together. Can you spell it?',
+    hintFil: 'Isang gusali kung saan nakatira ang pamilya',
+    scenarioFil: 'Dito natutulog at kumakain ang iyong pamilya. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e3', 
     term: 'BREAD', 
     difficulty: Difficulty.EASY, 
     category: 'Food', 
-    hint: 'A soft food made from flour, used to make sandwiches.',
-    hintFil: 'Isang malambot na pagkain na gawa sa harina, ginagamit sa paggawa ng sandwich.'
+    gradeLevels: ['1', '2'],
+    hint: 'A soft food made from flour',
+    scenario: 'This soft food is used to make sandwiches. Can you spell it?',
+    hintFil: 'Isang malambot na pagkain na gawa sa harina',
+    scenarioFil: 'Ang malambot na pagkain na ito ay ginagamit sa paggawa ng sandwich. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e4', 
     term: 'WATER', 
     difficulty: Difficulty.EASY, 
     category: 'Nature', 
-    hint: 'A clear liquid we drink when we are thirsty.',
-    hintFil: 'Isang malinaw na likido na iniinom natin kapag nauuhaw.'
+    gradeLevels: ['1', '2'],
+    hint: 'A clear liquid we drink when thirsty',
+    scenario: 'This clear liquid keeps you alive and healthy. Can you spell it?',
+    hintFil: 'Isang malinaw na likido na iniinom',
+    scenarioFil: 'Ang malinaw na likido na ito ay nagpapanatili sa iyo na buhay at malusog. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e5', 
     term: 'SCHOOL', 
     difficulty: Difficulty.EASY, 
     category: 'Places', 
-    hint: 'A place where children go to learn and play with friends.',
-    hintFil: 'Isang lugar kung saan pumupunta ang mga bata para mag-aral at maglaro kasama ang mga kaibigan.'
+    gradeLevels: ['1', '2'],
+    hint: 'A place where children go to learn',
+    scenario: 'Children go here every day to study and make friends. Can you spell it?',
+    hintFil: 'Isang lugar kung saan nag-aaral ang mga bata',
+    scenarioFil: 'Pumupunta ang mga bata dito araw-araw upang mag-aral at gumawa ng mga kaibigan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e6', 
     term: 'GARDEN', 
     difficulty: Difficulty.EASY, 
     category: 'Nature', 
+    gradeLevels: ['1', '2'],
     hint: 'An outdoor area with flowers, plants, and grass.',
-    hintFil: 'Isang lugar sa labas na may mga bulaklak, halaman, at damo.'
+    scenario: 'This place has beautiful flowers and green plants. Can you spell it?',
+    hintFil: 'Isang lugar sa labas na may mga bulaklak, halaman, at damo.',
+    scenarioFil: 'Ang lugar na ito ay may magagandang bulaklak at berdeng halaman. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e7', 
     term: 'FAMILY', 
     difficulty: Difficulty.EASY, 
     category: 'Social', 
+    gradeLevels: ['1', '2'],
     hint: 'A group of people like mom, dad, and siblings.',
-    hintFil: 'Isang grupo ng mga tao tulad ng nanay, tatay, at mga kapatid.'
+    scenario: 'Mom, dad, brothers, and sisters all together. Can you spell it?',
+    hintFil: 'Isang grupo ng mga tao tulad ng nanay, tatay, at mga kapatid.',
+    scenarioFil: 'Nanay, tatay, mga kapatid na magkakasama. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e8', 
     term: 'FRIEND', 
     difficulty: Difficulty.EASY, 
     category: 'Social', 
+    gradeLevels: ['1', '2'],
     hint: 'Someone you like to play and share secrets with.',
-    hintFil: 'Isang tao na gusto mong maglaro at magbahagi ng mga lihim.'
+    scenario: 'Someone you play with and trust. Can you spell it?',
+    hintFil: 'Isang tao na gusto mong maglaro at magbahagi ng mga lihim.',
+    scenarioFil: 'Isang tao na kasama mong maglaro at pinagkakatiwalaan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e9', 
     term: 'ORANGE', 
     difficulty: Difficulty.EASY, 
     category: 'Fruits', 
+    gradeLevels: ['1', '2'],
     hint: 'A round citrus fruit that is the same name as its color.',
-    hintFil: 'Isang bilog na prutas na may asim na pareho ang pangalan sa kulay nito.'
+    scenario: 'This round fruit is the same color as its name. Can you spell it?',
+    hintFil: 'Isang bilog na prutas na may asim na pareho ang pangalan sa kulay nito.',
+    scenarioFil: 'Ang bilog na prutas na ito ay pareho ang kulay sa pangalan nito. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e10', 
     term: 'SMILE', 
     difficulty: Difficulty.EASY, 
     category: 'Social', 
+    gradeLevels: ['1', '2'],
     hint: 'What you do with your mouth when you are happy.',
-    hintFil: 'Ang ginagawa mo sa iyong bibig kapag masaya ka.'
+    scenario: 'Your mouth curves up when you feel happy. Can you spell it?',
+    hintFil: 'Ang ginagawa mo sa iyong bibig kapag masaya ka.',
+    scenarioFil: 'Ang iyong bibig ay umaangat kapag masaya ka. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e11', 
     term: 'HAPPY', 
     difficulty: Difficulty.EASY, 
     category: 'Emotions', 
+    gradeLevels: ['1', '2'],
     hint: 'The feeling you get when something good happens.',
-    hintFil: 'Ang nararamdaman mo kapag may magandang nangyari.'
+    scenario: 'This is how you feel when something good happens. Can you spell it?',
+    hintFil: 'Ang nararamdaman mo kapag may magandang nangyari.',
+    scenarioFil: 'Ito ang nararamdaman mo kapag may magandang nangyari. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e12', 
     term: 'CHAIR', 
     difficulty: Difficulty.EASY, 
     category: 'Furniture', 
+    gradeLevels: ['1', '2'],
     hint: 'Something you sit on with four legs and a back.',
-    hintFil: 'Isang bagay na inuupuan na may apat na binti at sandalan.'
+    scenario: 'You sit on this furniture when eating or studying. Can you spell it?',
+    hintFil: 'Isang bagay na inuupuan na may apat na binti at sandalan.',
+    scenarioFil: 'Umuupo ka sa muwebles na ito kapag kumakain o nag-aaral. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e13', 
     term: 'TABLE', 
     difficulty: Difficulty.EASY, 
     category: 'Furniture', 
+    gradeLevels: ['1', '2'],
     hint: 'A flat surface where you eat or do homework.',
-    hintFil: 'Isang patag na ibabaw kung saan kumakain o gumagawa ng takdang-aralin.'
+    scenario: 'You put your food and books on this flat surface. Can you spell it?',
+    hintFil: 'Isang patag na ibabaw kung saan kumakain o gumagawa ng takdang-aralin.',
+    scenarioFil: 'Inilalagay mo ang iyong pagkain at libro sa patag na ibabaw na ito. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e14', 
     term: 'PENCIL', 
     difficulty: Difficulty.EASY, 
     category: 'School', 
+    gradeLevels: ['1', '2'],
     hint: 'A tool you use to write that can be erased.',
-    hintFil: 'Isang gamit na ginagamit sa pagsulat na maaaring burahin.'
+    scenario: 'You write with this and can erase mistakes. Can you spell it?',
+    hintFil: 'Isang gamit na ginagamit sa pagsulat na maaaring burahin.',
+    scenarioFil: 'Sumusulat ka gamit ito at maaari mong burahin ang mga pagkakamali. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e15', 
     term: 'BOOK', 
     difficulty: Difficulty.EASY, 
     category: 'School', 
+    gradeLevels: ['1', '2'],
     hint: 'Something with pages that you read for stories.',
-    hintFil: 'Isang bagay na may mga pahina na binabasa para sa mga kuwento.'
+    scenario: 'You read stories from the pages of this. Can you spell it?',
+    hintFil: 'Isang bagay na may mga pahina na binabasa para sa mga kuwento.',
+    scenarioFil: 'Binabasa mo ang mga kuwento mula sa mga pahina nito. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e16', 
     term: 'FLOWER', 
     difficulty: Difficulty.EASY, 
     category: 'Nature', 
+    gradeLevels: ['1', '2'],
     hint: 'A colorful plant that smells nice and grows in gardens.',
-    hintFil: 'Isang makulay na halaman na mabango at tumutubo sa hardin.'
+    scenario: 'This colorful plant smells sweet and grows in gardens. Can you spell it?',
+    hintFil: 'Isang makulay na halaman na mabango at tumutubo sa hardin.',
+    scenarioFil: 'Ang makulay na halaman na ito ay mabango at tumutubo sa hardin. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e17', 
     term: 'CLOUD', 
     difficulty: Difficulty.EASY, 
     category: 'Nature', 
+    gradeLevels: ['1', '2'],
     hint: 'White fluffy things in the sky that bring rain.',
-    hintFil: 'Puting malambot na bagay sa langit na nagdadala ng ulan.'
+    scenario: 'These white fluffy things float in the sky. Can you spell it?',
+    hintFil: 'Puting malambot na bagay sa langit na nagdadala ng ulan.',
+    scenarioFil: 'Ang puting malambot na bagay na ito ay lumulutang sa langit. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e18', 
     term: 'MOON', 
     difficulty: Difficulty.EASY, 
     category: 'Space', 
+    gradeLevels: ['1', '2'],
     hint: 'A bright circle in the night sky.',
-    hintFil: 'Isang maliwanag na bilog sa gabi sa langit.'
+    scenario: 'You see this bright circle in the sky at night. Can you spell it?',
+    hintFil: 'Isang maliwanag na bilog sa gabi sa langit.',
+    scenarioFil: 'Nakikita mo ang maliwanag na bilog na ito sa langit sa gabi. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e19', 
     term: 'STAR', 
     difficulty: Difficulty.EASY, 
     category: 'Space', 
+    gradeLevels: ['1', '2'],
     hint: 'Tiny lights that twinkle in the night sky.',
-    hintFil: 'Maliliit na ilaw na kumikislap sa gabi sa langit.'
+    scenario: 'These tiny lights twinkle in the night sky. Can you spell it?',
+    hintFil: 'Maliliit na ilaw na kumikislap sa gabi sa langit.',
+    scenarioFil: 'Ang maliliit na ilaw na ito ay kumikislap sa gabi sa langit. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'e20', 
     term: 'HEART', 
     difficulty: Difficulty.EASY, 
     category: 'Body', 
+    gradeLevels: ['1', '2'],
     hint: 'The shape of love, also an organ that pumps blood.',
-    hintFil: 'Ang hugis ng pag-ibig, at isang organo na pumapadaloy ng dugo.'
+    scenario: 'This shape means love and it pumps blood in your body. Can you spell it?',
+    hintFil: 'Ang hugis ng pag-ibig, at isang organo na pumapadaloy ng dugo.',
+    scenarioFil: 'Ang hugis na ito ay nangangahulugan ng pag-ibig at pumapadaloy ng dugo sa iyong katawan. Marunong ka bang magbaybay nito?'
   },
 
-  // MEDIUM - 20 Words (Intermediate Level)
+  // MEDIUM - 20 Words (Intermediate Level - Grade 2-4)
   { 
     id: 'm1', 
     term: 'GUITAR', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Music', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A musical instrument with strings you strum.',
-    hintFil: 'Isang instrumentong pangmusika na may mga kuwerdas na kinakalabit.'
+    scenario: 'Musicians play this instrument with strings to make music. Can you spell it?',
+    hintFil: 'Isang instrumentong pangmusika na may mga kuwerdas na kinakalabit.',
+    scenarioFil: 'Ang mga musikero ay tumutugtog ng instrumentong ito na may kuwerdas upang gumawa ng musika. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm2', 
     term: 'BICYCLE', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Transport', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A two-wheeled vehicle you pedal with your feet.',
-    hintFil: 'Isang sasakyan na may dalawang gulong na pinepedal ng paa.'
+    scenario: 'You ride this two-wheeled vehicle by pedaling. Can you spell it?',
+    hintFil: 'Isang sasakyan na may dalawang gulong na pinepedal ng paa.',
+    scenarioFil: 'Sinasakyan mo ang dalawang gulong na sasakyang ito sa pamamagitan ng pagpedal. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm3', 
     term: 'CALENDAR', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Time', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'Shows all the days, weeks, and months of the year.',
-    hintFil: 'Nagpapakita ng lahat ng araw, linggo, at buwan ng taon.'
+    scenario: 'You check this to see what day it is and plan your schedule. Can you spell it?',
+    hintFil: 'Nagpapakita ng lahat ng araw, linggo, at buwan ng taon.',
+    scenarioFil: 'Sinusuri mo ito upang makita kung anong araw at planuhin ang iyong iskedyul. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm4', 
     term: 'JOURNEY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Action', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A long trip from one place to another.',
-    hintFil: 'Isang mahabang biyahe mula sa isang lugar patungo sa iba.'
+    scenario: 'A long trip or adventure from one place to another. Can you spell it?',
+    hintFil: 'Isang mahabang biyahe mula sa isang lugar patungo sa iba.',
+    scenarioFil: 'Isang mahabang biyahe o pakikipagsapalaran mula sa isang lugar patungo sa iba. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm5', 
     term: 'MYSTERY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Books', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A puzzle or secret that needs to be solved.',
-    hintFil: 'Isang palaisipan o lihim na kailangang lutasin.'
+    scenario: 'A puzzle or secret that detectives try to solve. Can you spell it?',
+    hintFil: 'Isang palaisipan o lihim na kailangang lutasin.',
+    scenarioFil: 'Isang palaisipan o lihim na sinusubukang lutasin ng mga detektib. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm6', 
     term: 'WEATHER', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Nature', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The condition outside: sunny, rainy, or cloudy.',
-    hintFil: 'Ang kalagayan sa labas: maaraw, maulan, o maulap.'
+    scenario: 'The condition outside that tells you if it will be sunny or rainy. Can you spell it?',
+    hintFil: 'Ang kalagayan sa labas: maaraw, maulan, o maulap.',
+    scenarioFil: 'Ang kalagayan sa labas na nagsasabi kung maaraw o maulan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm7', 
     term: 'SCIENCE', 
     difficulty: Difficulty.MEDIUM, 
     category: 'School', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The study of how things work in nature.',
-    hintFil: 'Ang pag-aaral kung paano gumagana ang mga bagay sa kalikasan.'
+    scenario: 'The subject where you learn about experiments and how things work. Can you spell it?',
+    hintFil: 'Ang pag-aaral kung paano gumagana ang mga bagay sa kalikasan.',
+    scenarioFil: 'Ang asignatura kung saan natututo ka tungkol sa mga eksperimento at kung paano gumagana ang mga bagay. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm8', 
     term: 'HISTORY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'School', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The study of events that happened in the past.',
-    hintFil: 'Ang pag-aaral ng mga pangyayaring naganap noong nakaraan.'
+    scenario: 'The subject where you learn about events from long ago. Can you spell it?',
+    hintFil: 'Ang pag-aaral ng mga pangyayaring naganap noong nakaraan.',
+    scenarioFil: 'Ang asignatura kung saan natututo ka tungkol sa mga pangyayari noong nakaraan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm9', 
     term: 'THROUGH', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Common', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'Going from one side to the other side.',
-    hintFil: 'Pagdaan mula sa isang gilid patungo sa kabilang gilid.'
+    scenario: 'You walk _____ the door to enter a room. Can you spell it?',
+    hintFil: 'Pagdaan mula sa isang gilid patungo sa kabilang gilid.',
+    scenarioFil: 'Lumalakad ka _____ sa pinto upang pumasok sa silid. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm10', 
     term: 'ALTHOUGH', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Common', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A word meaning "even though" or "despite".',
-    hintFil: 'Isang salitang nangangahulugang "kahit na" o "sa kabila ng".'
+    scenario: '_____ it was raining, we still played outside. Can you spell it?',
+    hintFil: 'Isang salitang nangangahulugang "kahit na" o "sa kabila ng".',
+    scenarioFil: '_____ umuulan, naglaro pa rin kami sa labas. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm11', 
     term: 'MOUNTAIN', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Nature', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A very tall natural landform with a peak.',
-    hintFil: 'Isang napakataas na natural na anyong lupa na may tuktok.'
+    scenario: 'A very tall landform that reaches high into the sky. Can you spell it?',
+    hintFil: 'Isang napakataas na natural na anyong lupa na may tuktok.',
+    scenarioFil: 'Isang napakataas na anyong lupa na umaabot sa langit. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm12', 
     term: 'LIBRARY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Places', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A quiet place with many books to read.',
-    hintFil: 'Isang tahimik na lugar na may maraming aklat na babasahin.'
+    scenario: 'A quiet place where you borrow books to read. Can you spell it?',
+    hintFil: 'Isang tahimik na lugar na may maraming aklat na babasahin.',
+    scenarioFil: 'Isang tahimik na lugar kung saan humiram ka ng mga aklat na babasahin. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm13', 
     term: 'KITCHEN', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Home', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The room where food is cooked and prepared.',
-    hintFil: 'Ang silid kung saan niluluto at inihahanda ang pagkain.'
+    scenario: 'The room in your house where meals are cooked. Can you spell it?',
+    hintFil: 'Ang silid kung saan niluluto at inihahanda ang pagkain.',
+    scenarioFil: 'Ang silid sa iyong bahay kung saan niluluto ang mga pagkain. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm14', 
     term: 'PICTURE', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Art', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'An image or drawing that shows something.',
-    hintFil: 'Isang larawan o guhit na nagpapakita ng isang bagay.'
+    scenario: 'An image or photo that shows a person, place, or thing. Can you spell it?',
+    hintFil: 'Isang larawan o guhit na nagpapakita ng isang bagay.',
+    scenarioFil: 'Isang larawan o litrato na nagpapakita ng tao, lugar, o bagay. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm15', 
     term: 'QUESTION', 
     difficulty: Difficulty.MEDIUM, 
     category: 'School', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'Something you ask when you want to know more.',
-    hintFil: 'Isang bagay na itinatanong mo kapag gusto mong malaman ang higit pa.'
+    scenario: 'Something you ask when you want to learn or understand. Can you spell it?',
+    hintFil: 'Isang bagay na itinatanong mo kapag gusto mong malaman ang higit pa.',
+    scenarioFil: 'Isang bagay na itinatanong mo kapag gusto mong matuto o maintindihan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm16', 
     term: 'ANSWER', 
     difficulty: Difficulty.MEDIUM, 
     category: 'School', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The response or solution to a question.',
-    hintFil: 'Ang tugon o solusyon sa isang tanong.'
+    scenario: 'The response you give when someone asks a question. Can you spell it?',
+    hintFil: 'Ang tugon o solusyon sa isang tanong.',
+    scenarioFil: 'Ang tugon na ibinibigay mo kapag may nagtanong. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm17', 
     term: 'BIRTHDAY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Events', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'The day you were born, celebrated every year.',
-    hintFil: 'Ang araw na ipinanganak ka, ipinagdiriwang bawat taon.'
+    scenario: 'The special day when you celebrate the day you were born. Can you spell it?',
+    hintFil: 'Ang araw na ipinanganak ka, ipinagdiriwang bawat taon.',
+    scenarioFil: 'Ang espesyal na araw kung kailan ipinagdiriwang ang araw na ipinanganak ka. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm18', 
     term: 'RAINBOW', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Nature', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'Colorful arc in the sky after rain.',
-    hintFil: 'Makulay na arko sa langit pagkatapos ng ulan.'
+    scenario: 'A colorful arc that appears in the sky after it rains. Can you spell it?',
+    hintFil: 'Makulay na arko sa langit pagkatapos ng ulan.',
+    scenarioFil: 'Isang makulay na arko na lumilitaw sa langit pagkatapos ng ulan. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm19', 
     term: 'ELEPHANT', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Animals', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A huge gray animal with a long trunk.',
-    hintFil: 'Isang napakalaking kulay-abong hayop na may mahabang nguso.'
+    scenario: 'The largest land animal with a long trunk and big ears. Can you spell it?',
+    hintFil: 'Isang napakalaking kulay-abong hayop na may mahabang nguso.',
+    scenarioFil: 'Ang pinakamalaking hayop sa lupa na may mahabang nguso at malalaking tainga. Marunong ka bang magbaybay nito?'
   },
   { 
     id: 'm20', 
     term: 'BUTTERFLY', 
     difficulty: Difficulty.MEDIUM, 
     category: 'Animals', 
+    gradeLevels: ['2', '3', '4'],
     hint: 'A colorful insect with beautiful wings.',
-    hintFil: 'Isang makulay na insekto na may magagandang pakpak.'
+    scenario: 'A beautiful insect with colorful wings that flies from flower to flower. Can you spell it?',
+    hintFil: 'Isang makulay na insekto na may magagandang pakpak.',
+    scenarioFil: 'Isang magandang insekto na may makulay na pakpak na lumilipad mula bulaklak patungo sa bulaklak. Marunong ka bang magbaybay nito?'
   },
 
-  // HARD - 20 Words (Advanced Level)
+  // HARD - 20 Words (Advanced Level - Grade 4-6)
   { 
     id: 'h1', 
     term: 'DEFORESTATION', 
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Many animals lose their homes because of _______.',
     scenarioFil: 'Maraming hayop ang nawawalan ng tahanan dahil sa _______.',
     hint: 'When people cut down many trees in the forest. Starts with DE- and ends with -TION',
@@ -342,6 +463,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'POLLUTION', 
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Throwing trash in rivers causes water _______.',
     scenarioFil: 'Ang pagtatapon ng basura sa ilog ay nagiging sanhi ng _______ sa tubig.',
     hint: 'When air, water, or land becomes dirty and harmful. Sounds like "POLL-U-SHUN"',
@@ -352,6 +474,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'RECYCLING', 
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'We can save the Earth by _______ our plastic bottles.',
     scenarioFil: 'Maaari nating iligtas ang Daigdig sa pamamagitan ng _______ ng ating mga plastik na bote.',
     hint: 'Using old things again to make new things. Starts with RE- (means "again") and has CYCLE in it',
@@ -362,6 +485,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'SUSTAINABILITY', 
     difficulty: Difficulty.HARD, 
     category: 'Environment', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Using solar energy is a great example of _______.',
     scenarioFil: 'Ang paggamit ng solar energy ay isang magandang halimbawa ng _______.',
     hint: 'Using resources carefully so they last forever. Has the word SUSTAIN (keep going) in it',
@@ -372,6 +496,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'PHOTOSYNTHESIS', 
     difficulty: Difficulty.HARD, 
     category: 'Science', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Plants make their own food through a process called _______.',
     scenarioFil: 'Ang mga halaman ay gumagawa ng kanilang sariling pagkain sa pamamagitan ng prosesong tinatawag na _______.',
     hint: 'How plants use sunlight to make food. PHOTO means light, SYNTHESIS means making',
@@ -382,6 +507,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'ARCHITECTURE', 
     difficulty: Difficulty.HARD, 
     category: 'Arts', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'The design and style of a building is called its _______.',
     scenarioFil: 'Ang disenyo at istilo ng isang gusali ay tinatawag na _______.',
     hint: 'The art of designing buildings and houses. Starts with ARCH- (like an arch or curve)',
@@ -392,6 +518,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'PHILOSOPHY', 
     difficulty: Difficulty.HARD, 
     category: 'Social', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'The study of the fundamental nature of knowledge is _______.',
     scenarioFil: 'Ang pag-aaral ng pangunahing kalikasan ng kaalaman ay _______.',
     hint: 'Thinking about big questions like "Why are we here?" Sounds like "FIL-OSS-OH-FEE"',
@@ -402,6 +529,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'HYPOTHESIS', 
     difficulty: Difficulty.HARD, 
     category: 'Science', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'A scientist makes a _______ before starting an experiment.',
     scenarioFil: 'Ang isang siyentipiko ay gumagawa ng _______ bago magsimula ng eksperimento.',
     hint: 'A smart guess that you test in an experiment. Starts with HY- and sounds like "high-POTH-uh-sis"',
@@ -412,6 +540,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'BIODIVERSITY', 
     difficulty: Difficulty.HARD, 
     category: 'Nature', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'A rainforest has a lot of _______ because of its many species.',
     scenarioFil: 'Ang isang rainforest ay may maraming _______ dahil sa maraming uri ng hayop at halaman.',
     hint: 'Many different types of plants and animals. BIO means life, DIVERSITY means variety',
@@ -422,6 +551,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'ECOSYSTEM', 
     difficulty: Difficulty.HARD, 
     category: 'Nature', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'A coral reef is a complex underwater _______.',
     scenarioFil: 'Ang coral reef ay isang kumplikadong _______ sa ilalim ng tubig.',
     hint: 'A place where plants, animals, and nature work together. ECO means environment, SYSTEM means working together',
@@ -432,6 +562,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'DEMOCRACY', 
     difficulty: Difficulty.HARD, 
     category: 'Government', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'A system where people vote to choose their leaders is called _______.',
     scenarioFil: 'Ang sistema kung saan bumoboto ang mga tao upang pumili ng kanilang mga lider ay tinatawag na _______.',
     hint: 'A government where people vote and choose. DEMO means people, CRACY means rule',
@@ -442,6 +573,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'TECHNOLOGY', 
     difficulty: Difficulty.HARD, 
     category: 'Science', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Computers and smartphones are examples of modern _______.',
     scenarioFil: 'Ang mga computer at smartphone ay mga halimbawa ng modernong _______.',
     hint: 'Machines and tools like computers, phones, and tablets. Sounds like "tek-NOL-oh-jee"',
@@ -452,6 +584,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'IMAGINATION', 
     difficulty: Difficulty.HARD, 
     category: 'Mind', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'The ability to create pictures and ideas in your mind is _______.',
     scenarioFil: 'Ang kakayahang lumikha ng mga larawan at ideya sa iyong isipan ay _______.',
     hint: 'Creating pictures and stories in your mind. Starts with IM- and has the word IMAGE in it',
@@ -462,6 +595,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'RESPONSIBILITY', 
     difficulty: Difficulty.HARD, 
     category: 'Character', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Being trusted to do important tasks shows _______.',
     scenarioFil: 'Ang pagkakaroon ng tiwala upang gumawa ng mahahalagang gawain ay nagpapakita ng _______.',
     hint: 'Being trusted to do your duties. Has the word RESPONSE (answer) and ABILITY (can do) in it',
@@ -472,6 +606,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'COMMUNICATION', 
     difficulty: Difficulty.HARD, 
     category: 'Social', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Sharing ideas and feelings with others is called _______.',
     scenarioFil: 'Ang pagbabahagi ng mga ideya at damdamin sa iba ay tinatawag na _______.',
     hint: 'Talking and sharing with others. Starts with COM- (together) and sounds like "kuh-MYOO-nih-KAY-shun"',
@@ -482,6 +617,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'CELEBRATION', 
     difficulty: Difficulty.HARD, 
     category: 'Events', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'A party or special event to mark a happy occasion is a _______.',
     scenarioFil: 'Ang isang party o espesyal na kaganapan upang markahan ang isang masayang okasyon ay isang _______.',
     hint: 'A party for birthdays, holidays, or special days. Has the word CELEBRATE in it',
@@ -492,6 +628,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'TEMPERATURE', 
     difficulty: Difficulty.HARD, 
     category: 'Science', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'How hot or cold something is measured by its _______.',
     scenarioFil: 'Kung gaano kainit o kalamig ang isang bagay ay sinusukat sa pamamagitan ng _______.',
     hint: 'How hot or cold it is. We measure it with a thermometer. Sounds like "TEM-per-uh-chur"',
@@ -502,6 +639,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'ELECTRICITY', 
     difficulty: Difficulty.HARD, 
     category: 'Science', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'The power that makes lights and computers work is _______.',
     scenarioFil: 'Ang kapangyarihang nagpapagana ng mga ilaw at computer ay _______.',
     hint: 'The power from outlets that makes lights work. Has the word ELECTRIC in it',
@@ -512,6 +650,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'COOPERATION', 
     difficulty: Difficulty.HARD, 
     category: 'Social', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Working together as a team requires _______.',
     scenarioFil: 'Ang pagtutulungan bilang isang koponan ay nangangailangan ng _______.',
     hint: 'Working together as a team. CO means together, OPERATION means working',
@@ -522,6 +661,7 @@ export const BILINGUAL_WORDS: Word[] = [
     term: 'MULTIPLICATION', 
     difficulty: Difficulty.HARD, 
     category: 'Math', 
+    gradeLevels: ['4', '5', '6'],
     scenario: 'Repeated addition is also known as _______.',
     scenarioFil: 'Ang paulit-ulit na pagdagdag ay kilala rin bilang _______.',
     hint: 'Math with times tables like 3 × 4 = 12. Has the word MULTIPLY (times) in it',
