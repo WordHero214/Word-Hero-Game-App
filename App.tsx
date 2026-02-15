@@ -28,6 +28,7 @@ import { BILINGUAL_WORDS } from './bilingualWords';
 import { t, tr, Language } from './translations';
 import LanguageSelector from './LanguageSelector';
 import RankDisplay from './RankDisplay';
+import PostGameEngagement from './PostGameEngagement';
 
 // --- INITIAL DEFAULT WORDS (Practice Mode) ---
 const INITIAL_MOCK_WORDS: Word[] = BILINGUAL_WORDS;
@@ -1446,6 +1447,8 @@ export default function App() {
   const [previousBadges, setPreviousBadges] = useState<string[]>([]);
   const [previousCerts, setPreviousCerts] = useState<number>(0);
   const [teacherTab, setTeacherTab] = useState<'dashboard' | 'students' | 'words' | 'analytics'>('dashboard');
+  const [showPostGameEngagement, setShowPostGameEngagement] = useState(false);
+  const [lastCompletedDifficulty, setLastCompletedDifficulty] = useState<Difficulty | null>(null);
   
   // Background music
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
@@ -1833,13 +1836,15 @@ export default function App() {
     console.log('   Time spent:', session.timeSpent, 'seconds');
     console.log('   Is Practice/Quick Play?', isQuickPlay || isPracticeMode);
     
-    // If in practice/quick play mode, don't save progress
+    // If in practice/quick play mode, don't save progress but show engagement screen
     if (isQuickPlay || isPracticeMode) {
       console.log('🎯 Practice Mode - Progress not saved');
       setActiveGame(null);
       setIsQuickPlay(false);
       setIsPracticeMode(false);
-      setActiveTab('home');
+      // Show post-game engagement even for practice mode
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
       return;
     }
     
@@ -1888,14 +1893,13 @@ export default function App() {
       setActiveGame(null);
       setIsQuickPlay(false);
       setIsPracticeMode(false);
-      setActiveTab('home');
       
       // Check if word pool was reset (all words completed)
       const oldUsedIds = user.usedWordIds?.[session.difficulty] || [];
       const newUsedIds = updates.usedWordIds?.[session.difficulty] || [];
       const wasReset = oldUsedIds.length > newUsedIds.length && oldUsedIds.length > 0;
       
-      // Show milestone celebration
+      // Show milestone celebration first, then post-game engagement
       if (wasReset) {
         // Word pool reset - student completed all words!
         setMilestone({
@@ -1934,9 +1938,17 @@ export default function App() {
           color: '#ef4444'
         });
       }
+      
+      // Show post-game engagement screen after milestone (if any)
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
+      
     } catch (error) {
       console.error("❌ Error updating progress:", error);
       alert("Failed to save progress. Please try again.");
+      // Still show engagement screen even if save failed
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
     }
   };
 
@@ -2217,6 +2229,45 @@ export default function App() {
           milestone={milestone}
           onClose={() => setMilestone(null)}
         />
+      )}
+
+      {/* Post-Game Engagement Screen */}
+      {showPostGameEngagement && user && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300 overflow-y-auto">
+          <div className="bg-gradient-to-br from-[#162031] to-[#0b1221] rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+            <PostGameEngagement
+              user={user}
+              language={user.language || 'en'}
+              onPlayAgain={(difficulty) => {
+                setShowPostGameEngagement(false);
+                handleStartGame(difficulty, false);
+              }}
+              onReviewWrongWords={() => {
+                setShowPostGameEngagement(false);
+                setShowReviewWords(true);
+              }}
+              onViewLeaderboard={() => {
+                setShowPostGameEngagement(false);
+                setActiveTab('rank');
+              }}
+              onViewStats={() => {
+                setShowPostGameEngagement(false);
+                setShowProgressDashboard(true);
+              }}
+            />
+            
+            {/* Close button */}
+            <button
+              onClick={() => {
+                setShowPostGameEngagement(false);
+                setActiveTab('home');
+              }}
+              className="mt-6 w-full bg-[#0b1221] hover:bg-[#162031] text-gray-400 hover:text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 border border-white/10"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Logout Confirmation Modal */}
