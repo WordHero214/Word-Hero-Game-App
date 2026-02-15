@@ -10,28 +10,36 @@ interface IntroTourProps {
 
 const IntroTour: React.FC<IntroTourProps> = ({ userRole, onComplete }) => {
   useEffect(() => {
-    // Initialize intro.js
-    const intro = introJs();
+    console.log('🎯 IntroTour component mounted');
+    console.log('   User role:', userRole);
     
-    // Configure intro.js options
-    intro.setOptions({
-      exitOnOverlayClick: false,
-      exitOnEsc: false,
-      showStepNumbers: true,
-      showBullets: true,
-      showProgress: true,
-      scrollToElement: true,
-      overlayOpacity: 0.8,
-      doneLabel: 'Start Playing! 🎮',
-      nextLabel: 'Next →',
-      prevLabel: '← Back',
-      skipLabel: 'Skip Tour',
-      tooltipClass: 'customIntroTooltip',
-      highlightClass: 'customIntroHighlight',
-    });
+    // Wait a bit longer for DOM to be ready
+    const timer = setTimeout(() => {
+      try {
+        console.log('🎯 Starting intro.js initialization...');
+        
+        // Initialize intro.js
+        const intro = introJs();
+        
+        // Configure intro.js options
+        intro.setOptions({
+          exitOnOverlayClick: false,
+          exitOnEsc: false,
+          showStepNumbers: true,
+          showBullets: true,
+          showProgress: true,
+          scrollToElement: true,
+          overlayOpacity: 0.8,
+          doneLabel: 'Start Playing! 🎮',
+          nextLabel: 'Next →',
+          prevLabel: '← Back',
+          skipLabel: 'Skip Tour',
+          tooltipClass: 'customIntroTooltip',
+          highlightClass: 'customIntroHighlight',
+        });
 
-    // Define tour steps based on user role
-    if (userRole === UserRole.STUDENT) {
+        // Define tour steps based on user role
+        if (userRole === UserRole.STUDENT) {
       intro.setOptions({
         steps: [
           {
@@ -319,22 +327,32 @@ const IntroTour: React.FC<IntroTourProps> = ({ userRole, onComplete }) => {
       });
     }
 
-    // Start the tour
-    intro.start();
+        // Start the tour
+        console.log('🎯 Starting tour with', intro.getOptions().steps?.length || 0, 'steps');
+        intro.start();
+        console.log('✅ Tour started successfully!');
 
-    // Handle tour completion
-    intro.oncomplete(() => {
-      onComplete();
-    });
+        // Handle tour completion
+        intro.oncomplete(() => {
+          console.log('✅ Tour completed');
+          onComplete();
+        });
 
-    // Handle tour exit
-    intro.onexit(() => {
-      onComplete();
-    });
+        // Handle tour exit
+        intro.onexit(() => {
+          console.log('⏭️ Tour exited/skipped');
+          onComplete();
+        });
+      } catch (error) {
+        console.error('❌ Error starting intro tour:', error);
+        // Still call onComplete to prevent user from being stuck
+        onComplete();
+      }
+    }, 2000); // Increased delay to 2 seconds
 
     // Cleanup
     return () => {
-      intro.exit();
+      clearTimeout(timer);
     };
   }, [userRole, onComplete]);
 

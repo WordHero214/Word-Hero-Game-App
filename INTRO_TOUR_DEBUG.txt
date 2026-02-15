@@ -1,0 +1,82 @@
+═══════════════════════════════════════════════════════════════
+  INTRO TOUR DEBUGGING GUIDE
+═══════════════════════════════════════════════════════════════
+
+🐛 ISSUE: Intro tour not showing for new users
+
+✅ FIXES APPLIED:
+
+1. Added console logging to track tour initialization
+2. Increased delays:
+   - App.tsx: 1s → 3s (tour trigger delay)
+   - IntroTour.tsx: 0s → 2s (intro.js start delay)
+3. Added error handling in IntroTour component
+4. Added try-catch to prevent tour from breaking app
+
+📋 HOW TO DEBUG:
+
+1. Open browser console (F12)
+2. Register new student account
+3. Watch for these console messages:
+
+   Expected console output:
+   ✅ "User data loaded successfully"
+   ✅ "🎯 New user detected - showing intro tour"
+   ✅ "🎯 Triggering intro tour now..."
+   ✅ "🎯 IntroTour component mounted"
+   ✅ "🎯 Starting intro.js initialization..."
+   ✅ "🎯 Starting tour with X steps"
+   ✅ "✅ Tour started successfully!"
+
+4. If you see errors, check:
+   - Is intro.js installed? (npm list intro.js)
+   - Are data-intro attributes in DOM? (Inspect BottomNav buttons)
+   - Is IntroTour component rendering? (Check React DevTools)
+
+🔍 COMMON ISSUES:
+
+Issue: "Cannot find module 'intro.js'"
+Fix: Run: npm install intro.js
+
+Issue: "intro is not a function"
+Fix: Check import: import introJs from 'intro.js'
+
+Issue: "No element found for selector"
+Fix: Elements with data-intro attributes must exist in DOM
+
+Issue: Tour starts but no tooltips show
+Fix: Check if introTour.css is loaded
+
+🧪 MANUAL TEST:
+
+1. Clear browser cache (Ctrl+Shift+Delete)
+2. Go to Vercel app
+3. Register NEW student account:
+   - Email: test123@student.com
+   - Password: test123
+   - Name: Test Student
+   - Grade: 1
+   - Section: A
+4. Wait 5 seconds after login
+5. Tour should start automatically
+
+📝 TIMING BREAKDOWN:
+
+Login → 3s delay → setShowIntroTour(true) → 
+IntroTour mounts → 2s delay → intro.start() → 
+Tour appears!
+
+Total: ~5 seconds from login to tour start
+
+🚀 IF STILL NOT WORKING:
+
+Check these files are deployed:
+✓ IntroTour.tsx
+✓ introTour.css  
+✓ App.tsx (with tour trigger)
+✓ firebaseService.ts (with hasSeenTour: false)
+✓ types.ts (with hasSeenTour field)
+
+Verify in Vercel deployment logs that all files were built.
+
+═══════════════════════════════════════════════════════════════
