@@ -21,6 +21,9 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [wordToDelete, setWordToDelete] = useState<string | null>(null);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set());
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     term: '',
     difficulty: Difficulty.EASY,
@@ -143,6 +146,69 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
     }
   };
 
+  // Bulk selection handlers
+  const toggleWordSelection = (wordId: string) => {
+    const newSelected = new Set(selectedWords);
+    if (newSelected.has(wordId)) {
+      newSelected.delete(wordId);
+    } else {
+      newSelected.add(wordId);
+    }
+    setSelectedWords(newSelected);
+  };
+
+  const selectAllFiltered = () => {
+    const allFilteredIds = new Set(filteredWords.map(w => w.id));
+    setSelectedWords(allFilteredIds);
+  };
+
+  const deselectAll = () => {
+    setSelectedWords(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedWords.size === 0) return;
+    setShowBulkDeleteConfirm(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedWords.size === 0) return;
+    
+    setIsDeleting(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      // Delete words one by one
+      for (const wordId of Array.from(selectedWords)) {
+        try {
+          await deleteWord(wordId);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+          console.error(`Failed to delete word ${wordId}:`, error);
+        }
+      }
+
+      setShowBulkDeleteConfirm(false);
+      setIsDeleting(false);
+      setSelectedWords(new Set());
+      
+      if (errorCount === 0) {
+        setSuccessMessage(`Successfully deleted ${successCount} word${successCount !== 1 ? 's' : ''}!`);
+      } else {
+        setSuccessMessage(`Deleted ${successCount} word${successCount !== 1 ? 's' : ''}. ${errorCount} failed.`);
+      }
+      setShowSuccessModal(true);
+      onWordsChange();
+    } catch (error: any) {
+      setIsDeleting(false);
+      setShowBulkDeleteConfirm(false);
+      setErrorMessage('An error occurred during bulk deletion');
+      setShowErrorModal(true);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       term: '',
@@ -224,6 +290,30 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
           </div>
         </div>
 
+        {/* Bulk Selection Actions */}
+        {selectedWords.size > 0 && (
+          <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-orange-400 font-bold">
+                {selectedWords.size} word{selectedWords.size !== 1 ? 's' : ''} selected
+              </span>
+              <button
+                onClick={deselectAll}
+                className="text-gray-400 hover:text-white text-sm underline"
+              >
+                Deselect All
+              </button>
+            </div>
+            <button
+              onClick={handleBulkDelete}
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-xl flex items-center gap-2 transition-all active:scale-95"
+            >
+              <span className="text-xl">🗑️</span>
+              Delete Selected
+            </button>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex gap-2 mt-4">
           <button
@@ -263,9 +353,31 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
 
       {/* Word List */}
       <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
-        <h3 className="text-xl font-bold text-white mb-6">
-          {filteredWords.length} Word{filteredWords.length !== 1 ? 's' : ''}
-        </h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-white">
+            {filteredWords.length} Word{filteredWords.length !== 1 ? 's' : ''}
+          </h3>
+          
+          {filteredWords.length > 0 && (
+            <div className="flex gap-2">
+              <button
+                onClick={selectAllFiltered}
+                className="text-[#00c2a0] hover:text-[#00d8b3] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#00c2a0]/10 transition-all flex items-center gap-2"
+              >
+                <span>☑️</span>
+                Select All ({filteredWords.length})
+              </button>
+              {selectedWords.size > 0 && (
+                <button
+                  onClick={deselectAll}
+                  className="text-gray-400 hover:text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-white/5 transition-all"
+                >
+                  Deselect All
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         
         {filteredWords.length === 0 ? (
           <div className="text-center py-12">
@@ -281,13 +393,31 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
                 [Difficulty.HARD]: 'bg-orange-500/10 border-orange-500/20 text-orange-500'
               };
 
+              const isSelected = selectedWords.has(word.id);
+
               return (
                 <div
                   key={word.id}
-                  className="bg-[#0b1221] rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all"
+                  className={`bg-[#0b1221] rounded-xl p-4 border transition-all ${
+                    isSelected 
+                      ? 'border-orange-500 bg-orange-500/5' 
+                      : 'border-white/5 hover:border-white/10'
+                  }`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3 flex-1">
+                      {/* Checkbox */}
+                      <button
+                        onClick={() => toggleWordSelection(word.id)}
+                        className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'bg-orange-500 border-orange-500'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        {isSelected && <span className="text-white text-sm">✓</span>}
+                      </button>
+                      
                       <h4 className="text-xl font-bold text-white">{word.term}</h4>
                       <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${difficultyColors[word.difficulty]}`}>
                         {word.difficulty}
@@ -310,10 +440,10 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
                     </div>
                   </div>
                   {word.hint && (
-                    <p className="text-gray-400 text-sm italic mb-2">💡 {word.hint}</p>
+                    <p className="text-gray-400 text-sm italic mb-2 ml-9">💡 {word.hint}</p>
                   )}
                   {word.scenario && (
-                    <p className="text-gray-400 text-sm italic">📝 {word.scenario}</p>
+                    <p className="text-gray-400 text-sm italic ml-9">📝 {word.scenario}</p>
                   )}
                 </div>
               );
@@ -618,6 +748,48 @@ const WordBankManager: React.FC<WordBankManagerProps> = ({ words, onWordsChange 
             onWordsChange(); // Refresh word list
           }}
         />
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {showBulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#162031] rounded-3xl p-8 max-w-md w-full border-2 border-red-500 shadow-2xl animate-in zoom-in duration-500">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto animate-bounce shadow-lg shadow-red-500/50">
+                <span className="text-4xl">⚠️</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white">Delete {selectedWords.size} Words?</h3>
+              <p className="text-gray-300 text-lg">
+                Are you sure you want to delete {selectedWords.size} selected word{selectedWords.size !== 1 ? 's' : ''}? 
+                This action cannot be undone.
+              </p>
+              {isDeleting && (
+                <div className="py-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+                  <p className="text-gray-400 text-sm mt-3">Deleting words...</p>
+                </div>
+              )}
+              <div className="pt-4 space-y-3">
+                <button
+                  onClick={confirmBulkDelete}
+                  disabled={isDeleting}
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? 'Deleting...' : `Yes, Delete ${selectedWords.size} Word${selectedWords.size !== 1 ? 's' : ''}`}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowBulkDeleteConfirm(false);
+                  }}
+                  disabled={isDeleting}
+                  className="w-full bg-[#0b1221] hover:bg-[#162031] text-gray-400 hover:text-white font-bold py-3 rounded-xl transition-all active:scale-95 border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

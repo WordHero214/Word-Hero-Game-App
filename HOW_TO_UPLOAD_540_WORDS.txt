@@ -10,6 +10,8 @@
   STEP 1: DELETE OLD WORDS WITH BAD SCENARIOS
 ═══════════════════════════════════════════════════════════════
 
+✨ NEW FEATURE: Bulk Delete is now available!
+
 1. Open Word Hero app: https://word-hero-game-app.vercel.app
 2. Log in as ADMIN or TEACHER
 3. Go to "Word Bank Manager" section
@@ -17,8 +19,25 @@
    - "I have a _____"
    - "I see a _____"
    - "I use a _____"
-5. Delete these words (approximately 180 words)
-6. This cleans up the database
+
+OPTION A: Delete All at Once (FASTEST)
+   5a. Click "Select All" button (top right)
+   6a. Click "Delete Selected" button
+   7a. Confirm deletion in modal
+   8a. Wait for completion (may take 1-2 minutes for 180 words)
+
+OPTION B: Delete by Search
+   5b. Search for "I have" in search box
+   6b. Click "Select All" to select all matching words
+   7b. Click "Delete Selected" button
+   8b. Confirm and wait for completion
+
+OPTION C: Delete Individually (if needed)
+   5c. Click checkbox on each word you want to delete
+   6c. Click "Delete Selected" when ready
+   7c. Confirm deletion
+
+This cleans up the database!
 
 ═══════════════════════════════════════════════════════════════
   STEP 2: UPLOAD NEW 540-WORD DATABASE
