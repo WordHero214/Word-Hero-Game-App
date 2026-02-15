@@ -10,6 +10,7 @@ import {
   setDoc, 
   getDoc, 
   updateDoc, 
+  deleteDoc,
   collection, 
   query, 
   where, 
@@ -585,10 +586,8 @@ export const getWordsByDifficulty = async (difficulty: Difficulty): Promise<Word
 };
 
 export const deleteWord = async (wordId: string): Promise<void> => {
-  await updateDoc(doc(db, "words", wordId), {
-    deleted: true,
-    deletedAt: Timestamp.now()
-  });
+  // Permanently delete the word from Firestore
+  await deleteDoc(doc(db, "words", wordId));
 };
 
 // --- TEACHER FUNCTIONS ---

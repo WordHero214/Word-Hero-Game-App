@@ -1732,24 +1732,14 @@ export default function App() {
         if (firestoreWords.length > 0) {
           console.log('📡 Real-time update: Received', firestoreWords.length, 'words from Firestore');
           
-          // Merge Firestore words with local words (Firestore takes priority for duplicates)
-          const mergedWords = [...localWords];
-          
-          firestoreWords.forEach(fsWord => {
-            const existingIndex = mergedWords.findIndex(w => w.id === fsWord.id || w.term === fsWord.term);
-            if (existingIndex >= 0) {
-              // Replace with Firestore version
-              mergedWords[existingIndex] = fsWord;
-            } else {
-              // Add new Firestore word
-              mergedWords.push(fsWord);
-            }
-          });
+          // Use Firestore words as the source of truth (don't merge with local)
+          // This ensures deleted words are removed
+          const allWords = firestoreWords;
           
           // Apply filtering for students
-          let filteredWords = mergedWords;
+          let filteredWords = allWords;
           if (gradeLevel || section) {
-            filteredWords = mergedWords.filter(word => {
+            filteredWords = allWords.filter(word => {
               const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
                                (gradeLevel && word.gradeLevels.includes(gradeLevel));
               const sectionMatch = !word.sections || word.sections.length === 0 || 
@@ -1758,13 +1748,17 @@ export default function App() {
             });
           }
           
-          console.log('✅ Merged Firestore + Local words:', filteredWords.length, 'total');
+          console.log('✅ Loaded words from Firestore:', filteredWords.length, 'total');
           
-          // Cache merged words for offline use
-          await cacheWordsForOffline(filteredWords);
+          // Cache words for offline use (this will replace old cache)
+          await cacheWordsForOffline(filteredWords, true); // Force update cache
           
           setWordList(filteredWords);
           setIsPracticeMode(false);
+        } else {
+          // No words in Firestore, use local words
+          console.log('⚠️ No words in Firestore, using local words');
+          setWordList(localWords);
         }
       } catch (error) {
         console.warn('⚠️ Firestore sync failed (offline mode):', error);
