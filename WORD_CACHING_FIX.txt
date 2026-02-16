@@ -1,0 +1,125 @@
+═══════════════════════════════════════════════════════════════
+  WORD CACHING & SHUFFLING FIX
+═══════════════════════════════════════════════════════════════
+
+🐛 PROBLEM REPORTED:
+  • Students completing all levels get same questions next day
+  • 540 words uploaded but students only see 60 local words
+  • No shuffling/randomization happening
+  • Questions not changing between sessions
+
+✅ ROOT CAUSE:
+  • Previous optimization made students use ONLY local 60 words
+  • Firestore words (540) were not being loaded for students
+  • Cache was preventing fresh word selection
+
+🔧 FIX APPLIED:
+
+1. SMART CACHING SYSTEM
+   - First login: Fetch 540 words from Firestore (1 read)
+   - Cache words in localStorage for 24 hours
+   - Subsequent logins: Use cached words (0 reads!)
+   - Cache expires after 24 hours, then re-fetch
+
+2. ALL USERS GET FIRESTORE WORDS
+   - Students now get the 540 uploaded words
+   - Teachers/Admins get the same words
+   - Local 60 words only used as fallback
+
+3. AUTOMATIC CACHE EXPIRY
+   - Cache lasts 24 hours
+   - After 24 hours, fresh fetch from Firestore
+   - Ensures students get new/updated words
+
+📊 QUOTA SAVINGS:
+
+Before Fix:
+  • Every login = 540 Firestore reads
+  • 20 students × 5 logins/day = 54,000 reads/day
+  • Quota exceeded immediately!
+
+After Fix:
+  • First login = 540 reads (fetch + cache)
+  • Next 24 hours = 0 reads (use cache)
+  • 20 students × 540 reads = 10,800 reads/day
+  • Then 0 reads for 24 hours!
+
+Effective Rate:
+  • ~10,800 reads on day 1
+  • ~0 reads on day 2 (cache valid)
+  • ~10,800 reads on day 3 (cache expired)
+  • Average: ~5,400 reads/day (90% savings!)
+
+🎲 WORD SHUFFLING:
+
+The app already has shuffling built-in:
+  1. Words are shuffled in GameOverlay component
+  2. Each game gets random 10 words
+  3. Used words tracked in user.usedWordIds
+  4. Fresh words selected each game
+
+With 540 words available:
+  • Grade 1: ~90 words (Easy: 30, Medium: 30, Hard: 30)
+  • Grade 2: ~180 words (cumulative)
+  • Grade 6: All 540 words
+
+Students will see different words each game!
+
+🔄 HOW IT WORKS NOW:
+
+DAY 1 (First Login):
+  1. Student logs in
+  2. Load local 60 words (instant)
+  3. Fetch 540 words from Firestore
+  4. Cache for 24 hours
+  5. Student plays with 540 words
+
+DAY 2 (Within 24 hours):
+  1. Student logs in
+  2. Load local 60 words (instant)
+  3. Check cache - found! (0 Firestore reads)
+  4. Use cached 540 words
+  5. Student plays with 540 words
+
+DAY 3 (After 24 hours):
+  1. Student logs in
+  2. Load local 60 words (instant)
+  3. Check cache - expired!
+  4. Fetch fresh 540 words from Firestore
+  5. Cache for another 24 hours
+  6. Student plays with 540 words (possibly updated)
+
+💡 BENEFITS:
+
+✓ Students get all 540 uploaded words
+✓ Words shuffle randomly each game
+✓ Cache reduces Firestore reads by 90%
+✓ Fresh words every 24 hours
+✓ Works offline with cached words
+✓ Teachers can update words anytime
+✓ Students see updates within 24 hours
+
+🧪 TESTING:
+
+1. Clear browser cache (Ctrl+Shift+Delete)
+2. Login as student
+3. Check console: "Fetched 540 words from Firestore"
+4. Play a game - should see different words
+5. Logout and login again
+6. Check console: "Using cached words"
+7. Play again - different words shuffled
+
+📝 CACHE MANAGEMENT:
+
+Cache stored in localStorage:
+  • Key: words_cache_{userId}
+  • Timestamp: words_cache_timestamp_{userId}
+  • Duration: 24 hours
+  • Auto-expires and re-fetches
+
+To force refresh:
+  • Clear browser cache
+  • Wait 24 hours
+  • Or manually clear localStorage
+
+═══════════════════════════════════════════════════════════════
