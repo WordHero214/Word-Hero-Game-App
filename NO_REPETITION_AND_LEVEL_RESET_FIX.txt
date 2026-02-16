@@ -1,0 +1,70 @@
+# Word Repetition and Level Reset Fix
+
+## Problem 1: Word Repetition
+**Issue**: Students see the same questions repeatedly after completing all levels
+**Root Cause**: 
+- Words ARE loading correctly (557 words from Firestore)
+- `getFreshWords` tracks used words in IndexedDB
+- When all words are used, it resets but doesn't shuffle properly
+- Students get same words in same order
+
+**Solution**: Improve shuffling algorithm in `getFreshWords`
+- Use Fisher-Yates shuffle (already implemented)
+- Ensure words are shuffled EVERY time, not just on reset
+- Add additional randomization layer
+
+## Problem 2: Level Reset After Completion
+**Issue**: After completing all three difficulty levels, they stay unlocked
+**User Request**: "After the student completed all levels the three level must be reset so means to say it will be locked until one level is completed with the new set of questions given"
+
+**Solution**: Detect when all three levels reach 100% mastery and reset them
+- Keep sparkies, badges, certificates, and achievements
+- Reset `levelProgress` for all difficulties back to 0%
+- Lock Medium and Hard again (require 85% Easy to unlock Medium, etc.)
+- Show celebration modal for completing all levels
+- Give bonus sparkies for completing all levels
+
+## Implementation Plan
+
+### Fix 1: Improve Word Randomization
+**File**: `masteringword-main/offlineStorage.ts`
+**Function**: `getFreshWords`
+**Changes**:
+1. Always shuffle words before selection (not just on reset)
+2. Add timestamp-based randomization seed
+3. Ensure truly random selection every game
+
+### Fix 2: Level Reset System
+**File**: `masteringword-main/firebaseService.ts`
+**Function**: `updateUserProgress`
+**Changes**:
+1. After updating progress, check if all three levels are at 100%
+2. If yes, reset all level progress to 0%
+3. Award bonus sparkies (e.g., 100 sparkies)
+4. Add special achievement for completing all levels
+5. Return flag indicating levels were reset
+
+**File**: `masteringword-main/App.tsx`
+**Function**: `handleGameComplete`
+**Changes**:
+1. Check if levels were reset in the response
+2. Show special celebration modal for completing all levels
+3. Update UI to reflect locked levels
+
+## Testing Steps
+1. Create test student account
+2. Upload 540 words to Firestore (already done)
+3. Play multiple games in each difficulty
+4. Verify different words appear each game
+5. Complete all three levels to 100%
+6. Verify levels reset and lock
+7. Verify bonus sparkies awarded
+8. Play again and verify new random words
+
+## Expected Behavior After Fix
+- Students get different random words every game
+- No repetition until all words in difficulty pool are used
+- After using all words, pool resets with new random order
+- After completing all three levels (100% each), levels reset to 0% and lock
+- Student gets bonus sparkies and celebration for completing all levels
+- Progressive unlocking re-applies (need 85% Easy for Medium, etc.)

@@ -294,6 +294,9 @@ export const getFreshWords = async (
       ? allWords.filter(w => w.difficulty === difficulty)
       : allWords;
     
+    // ALWAYS shuffle available words first for true randomization
+    availableWords = shuffleArray(availableWords);
+    
     // Separate fresh and used words
     const freshWords = availableWords.filter(w => !usedWordIds.includes(w.id));
     const usedWords = availableWords.filter(w => usedWordIds.includes(w.id));
@@ -303,10 +306,10 @@ export const getFreshWords = async (
     console.log(`   Fresh (unused): ${freshWords.length}`);
     console.log(`   Previously used: ${usedWords.length}`);
     
-    // If we have enough fresh words, use them
+    // If we have enough fresh words, use them (already shuffled)
     if (freshWords.length >= count) {
-      const selected = shuffleArray(freshWords).slice(0, count);
-      console.log(`✅ Selected ${selected.length} fresh words`);
+      const selected = freshWords.slice(0, count);
+      console.log(`✅ Selected ${selected.length} fresh words (randomly shuffled)`);
       return selected;
     }
     
@@ -314,17 +317,19 @@ export const getFreshWords = async (
     if (freshWords.length === 0 && usedWords.length > 0) {
       console.log('🔄 All words used! Resetting word pool...');
       await resetUsedWords(userId);
-      const selected = shuffleArray(availableWords).slice(0, count);
-      console.log(`✅ Selected ${selected.length} words from reset pool`);
+      // Shuffle again after reset for maximum randomization
+      const reshuffled = shuffleArray(availableWords);
+      const selected = reshuffled.slice(0, count);
+      console.log(`✅ Selected ${selected.length} words from reset pool (newly shuffled)`);
       return selected;
     }
     
-    // Mix fresh and used words if needed
+    // Mix fresh and used words if needed (both already shuffled)
     const selected = [
       ...freshWords,
-      ...shuffleArray(usedWords).slice(0, count - freshWords.length)
+      ...usedWords.slice(0, count - freshWords.length)
     ];
-    console.log(`✅ Selected ${selected.length} words (${freshWords.length} fresh + ${selected.length - freshWords.length} used)`);
+    console.log(`✅ Selected ${selected.length} words (${freshWords.length} fresh + ${selected.length - freshWords.length} used, all shuffled)`);
     return selected;
   } catch (error) {
     console.error('❌ Error getting fresh words:', error);

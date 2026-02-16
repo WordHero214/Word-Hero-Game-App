@@ -457,34 +457,96 @@ export const updateUserProgress = async (
     lastPlayed: Timestamp.now()
   };
 
+  // NEW: Check if all three levels are at 100% mastery
+  const updatedLevelProgress = {
+    ...userData.levelProgress!,
+    [session.difficulty]: {
+      difficulty: session.difficulty,
+      mastery: newMastery,
+      gamesPlayed: currentLevel.gamesPlayed + 1
+    }
+  };
+  
+  const allLevelsComplete = Object.values(updatedLevelProgress).every(
+    (lp: LevelProgress) => lp.mastery >= 100
+  );
+  
+  let levelsReset = false;
+  let bonusSparkies = 0;
+  
+  if (allLevelsComplete) {
+    console.log('🎓 ALL LEVELS COMPLETED! Resetting levels and awarding bonus...');
+    
+    // Award bonus sparkies for completing all levels
+    bonusSparkies = 100;
+    
+    // Reset all level progress to 0% but keep games played
+    updates[`levelProgress.${Difficulty.EASY}`] = {
+      difficulty: Difficulty.EASY,
+      mastery: 0,
+      gamesPlayed: updatedLevelProgress[Difficulty.EASY].gamesPlayed
+    };
+    updates[`levelProgress.${Difficulty.MEDIUM}`] = {
+      difficulty: Difficulty.MEDIUM,
+      mastery: 0,
+      gamesPlayed: updatedLevelProgress[Difficulty.MEDIUM].gamesPlayed
+    };
+    updates[`levelProgress.${Difficulty.HARD}`] = {
+      difficulty: Difficulty.HARD,
+      mastery: 0,
+      gamesPlayed: updatedLevelProgress[Difficulty.HARD].gamesPlayed
+    };
+    
+    // Add bonus sparkies
+    updates.sparkies = finalSparkies + bonusSparkies;
+    
+    // Add special achievement for completing all levels
+    const achievementsSet = new Set(Array.from(newAchievements));
+    achievementsSet.add('a6'); // All levels mastered achievement
+    updates.achievements = Array.from(achievementsSet);
+    
+    levelsReset = true;
+    
+    console.log('   Bonus sparkies awarded:', bonusSparkies);
+    console.log('   All levels reset to 0%');
+    console.log('   Special achievement unlocked: a6');
+  }
+
   await updateDoc(userRef, updates);
 
   console.log('✅ Firebase document updated successfully');
-  console.log('   Final sparkies:', finalSparkies);
+  console.log('   Final sparkies:', updates.sparkies);
   console.log('   Final games:', totalGames);
   console.log('   Final words:', totalWordsLearned);
+  console.log('   Levels reset?', levelsReset);
 
   return {
-    sparkies: finalSparkies,
+    sparkies: updates.sparkies,
     totalGames: totalGames,
     wordsLearned: totalWordsLearned,
     bestStreak: bestStreak,
     certificates: newCerts,
     badges: Array.from(newBadges),
-    achievements: Array.from(newAchievements),
+    achievements: updates.achievements,
     currentStreak: currentStreak,
     longestStreak: longestStreak,
     lastPlayedDate: today,
     wrongWords: updatedWrongWords,
     progressHistory: filteredHistory,
-    levelProgress: {
+    levelProgress: levelsReset ? {
+      [Difficulty.EASY]: updates[`levelProgress.${Difficulty.EASY}`],
+      [Difficulty.MEDIUM]: updates[`levelProgress.${Difficulty.MEDIUM}`],
+      [Difficulty.HARD]: updates[`levelProgress.${Difficulty.HARD}`]
+    } : {
       ...userData.levelProgress!,
       [session.difficulty]: {
         difficulty: session.difficulty,
         mastery: newMastery,
         gamesPlayed: currentLevel.gamesPlayed + 1
       }
-    }
+    },
+    levelsReset: levelsReset, // NEW: Flag to indicate levels were reset
+    bonusSparkies: bonusSparkies // NEW: Bonus sparkies for completing all levels
   };
 };
 

@@ -34,7 +34,8 @@ export const ACHIEVEMENTS = [
   { id: 'a2', name: '7-Day Streak', description: 'Play 7 days in a row', icon: '📅' },
   { id: 'a3', name: 'Vocabulary Star', description: 'Master all difficulty levels', icon: '🌟' },
   { id: 'a4', name: 'Level Up: Medium', description: 'Unlock Medium difficulty', icon: '⬆️' },
-  { id: 'a5', name: 'Level Up: Hard', description: 'Unlock Hard difficulty', icon: '⬆️' }
+  { id: 'a5', name: 'Level Up: Hard', description: 'Unlock Hard difficulty', icon: '⬆️' },
+  { id: 'a6', name: 'Champion', description: 'Complete all three levels at 100%', icon: '👑' }
 ];
 
 export const DIFFICULTY_CONFIG = {
