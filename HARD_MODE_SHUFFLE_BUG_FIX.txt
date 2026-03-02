@@ -1,0 +1,206 @@
+═══════════════════════════════════════════════════════════════
+  HARD MODE WORD SHUFFLING BUG - FIX SUMMARY
+═══════════════════════════════════════════════════════════════
+
+🐛 BUG DESCRIPTION:
+
+When playing HARD mode:
+1. First question shows "I have a _____" (incomplete scenario)
+2. Clicking "Reveal Letter" button causes the question to change
+3. Each click reveals a letter BUT also changes to a different word
+4. Question keeps changing until all letters are revealed
+
+EXAMPLE OF BUG:
+- Start: "I have a _____" (word: TEMPERATURE)
+- Click Reveal: "Many animals lose..." (word: DEFORESTATION) + T revealed
+- Click Reveal: "Throwing trash..." (word: POLLUTION) + E revealed
+- Click Reveal: "We can save..." (word: RECYCLING) + M revealed
+- Question keeps changing with each reveal!
+
+═══════════════════════════════════════════════════════════════
+  ROOT CAUSE
+═══════════════════════════════════════════════════════════════
+
+The `words` array was being re-shuffled on EVERY render because:
+
+1. Words array created in useMemo with Math.random() sort:
+   ```typescript
+   const shuffled = [...filteredWords].sort(() => Math.random() - 0.5);
+   ```
+
+2. When "Reveal Letter" clicked:
+   - Updates `revealedIndices` state
+   - Triggers component re-render
+   - useMemo recalculates (dependencies unchanged)
+   - Math.random() creates NEW random order
+   - Word at currentIdx changes!
+
+3. This happened on EVERY state change:
+   - Clicking reveal letter
+   - Typing in input
+   - Any state update
+
+═══════════════════════════════════════════════════════════════
+  SOLUTION
+═══════════════════════════════════════════════════════════════
+
+Used `useRef` to store the shuffled words array so it persists
+across re-renders and doesn't get re-shuffled.
+
+BEFORE:
+```typescript
+const words = useMemo(() => {
+  const shuffled = [...filteredWords].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, wordLimit);
+}, [difficulty, gameWords, isQuickPlay]);
+```
+
+AFTER:
+```typescript
+const wordsRef = useRef<Word[]>([]);
+
+const words = useMemo(() => {
+  // If we already have words in ref, return them
+  if (wordsRef.current.length > 0) {
+    return wordsRef.current;
+  }
+  
+  // Shuffle ONCE and store in ref
+  const shuffled = [...filteredWords].sort(() => Math.random() - 0.5);
+  const selectedWords = shuffled.slice(0, wordLimit);
+  wordsRef.current = selectedWords;
+  
+  return selectedWords;
+}, [difficulty, gameWords, isQuickPlay]);
+```
+
+KEY CHANGES:
+1. Added `wordsRef` to store shuffled words
+2. Check if words already exist in ref
+3. Only shuffle if ref is empty
+4. Store shuffled words in ref
+5. Reset ref on component unmount
+
+═══════════════════════════════════════════════════════════════
+  HOW IT WORKS NOW
+═══════════════════════════════════════════════════════════════
+
+GAME START:
+1. Component mounts
+2. wordsRef is empty
+3. Words get shuffled ONCE
+4. Stored in wordsRef.current
+5. Game starts with stable word order
+
+DURING GAME:
+1. Student clicks "Reveal Letter"
+2. revealedIndices state updates
+3. Component re-renders
+4. useMemo checks wordsRef
+5. wordsRef has words → returns them
+6. NO re-shuffling!
+7. Same word stays at currentIdx
+
+NEXT WORD:
+1. Student answers correctly
+2. handleNext() called
+3. currentIdx increments
+4. revealedIndices reset to []
+5. Words array stays same (from ref)
+6. Next word in sequence shown
+
+GAME END:
+1. Component unmounts
+2. Cleanup function runs
+3. wordsRef.current = []
+4. Ready for next game
+
+═══════════════════════════════════════════════════════════════
+  TESTING
+═══════════════════════════════════════════════════════════════
+
+TEST SCENARIO 1: Reveal Letters
+[ ] Start HARD mode game
+[ ] Note the first question/scenario
+[ ] Click "Reveal Letter" (Free)
+[ ] Verify question STAYS THE SAME
+[ ] Click "Reveal Letter" again (-5 sparkies)
+[ ] Verify question STILL THE SAME
+[ ] Continue revealing letters
+[ ] Verify question never changes
+
+TEST SCENARIO 2: Multiple Words
+[ ] Start HARD mode game
+[ ] Complete first word
+[ ] Note second word's question
+[ ] Reveal letters on second word
+[ ] Verify second word's question stays stable
+[ ] Complete all 10 words
+[ ] Verify each word had stable question
+
+TEST SCENARIO 3: Different Difficulties
+[ ] Test EASY mode - verify no issues
+[ ] Test MEDIUM mode - verify no issues
+[ ] Test HARD mode - verify fix works
+[ ] All modes should have stable questions
+
+═══════════════════════════════════════════════════════════════
+  BENEFITS
+═══════════════════════════════════════════════════════════════
+
+✅ Questions stay stable throughout game
+✅ Reveal letter works correctly
+✅ Students can focus on learning
+✅ No confusion from changing questions
+✅ Better user experience
+✅ Maintains game integrity
+
+═══════════════════════════════════════════════════════════════
+  FILES MODIFIED
+═══════════════════════════════════════════════════════════════
+
+✅ masteringword-main/App.tsx
+   - Added wordsRef to store shuffled words
+   - Modified words useMemo to check ref first
+   - Added ref reset in cleanup function
+
+═══════════════════════════════════════════════════════════════
+  TECHNICAL DETAILS
+═══════════════════════════════════════════════════════════════
+
+WHY useRef?
+- Persists across re-renders
+- Doesn't trigger re-renders when updated
+- Perfect for storing stable data
+- Mutable without state updates
+
+WHY NOT useState?
+- Would trigger re-renders
+- Unnecessary for this use case
+- useRef is more efficient
+
+WHY NOT useMemo alone?
+- useMemo can recalculate
+- Math.random() always changes
+- Need stable storage
+
+═══════════════════════════════════════════════════════════════
+  STATUS
+═══════════════════════════════════════════════════════════════
+
+✅ Bug identified and fixed
+✅ No TypeScript errors
+✅ Pushed to GitHub
+✅ Ready for Vercel deployment
+✅ Backward compatible
+
+═══════════════════════════════════════════════════════════════
+  COMMIT
+═══════════════════════════════════════════════════════════════
+
+Commit: Fix HARD mode word shuffling bug
+- Words no longer change when clicking Reveal Letter button
+- Used useRef to prevent re-shuffling on every render
+- Question stays stable throughout the game
+
+═══════════════════════════════════════════════════════════════

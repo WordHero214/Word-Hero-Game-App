@@ -1,0 +1,24 @@
+VERCEL ENVIRONMENT VARIABLES - QUICK SETUP
+===========================================
+
+Copy these 8 variables to Vercel Dashboard > Settings > Environment Variables:
+
+VITE_FIREBASE_API_KEY=AIzaSyChqt1VSOu7XIGqexvJm6ng2iI7vlut_6s
+VITE_FIREBASE_AUTH_DOMAIN=word-hero-8143e.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=word-hero-8143e
+VITE_FIREBASE_STORAGE_BUCKET=word-hero-8143e.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=1047515656125
+VITE_FIREBASE_APP_ID=1:1047515656125:web:3eefc5a475535f88836cd4
+VITE_FIREBASE_MEASUREMENT_ID=G-HWZBHG29MW
+VITE_GEMINI_API_KEY=AIzaSyAnsFIsCLvE5JSCdgZy4oUJ1JktTcOjiOA
+
+STEPS:
+1. Go to: https://vercel.com/dashboard
+2. Select project: word-hero-game-app
+3. Settings > Environment Variables
+4. Add each variable above
+5. Select: Production, Preview, Development
+6. Click Save
+7. Redeploy from Deployments tab
+
+Full guide: docs/VERCEL_DEPLOYMENT_GUIDE.md

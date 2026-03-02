@@ -1,0 +1,93 @@
+╔══════════════════════════════════════════════════════════════╗
+║         📚 UPLOAD 540 WORDS - QUICK START GUIDE             ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ WHAT'S READY:
+   • CSV file with 540 words (verified)
+   • Upload component created
+   • CSV copied to public folder
+   • All code ready to use
+
+🚀 QUICK UPLOAD (3 STEPS):
+
+   STEP 1: Add Import to AdminView.tsx
+   ────────────────────────────────────────
+   Add this line at the top with other imports:
+   
+   import Upload540WordsComponent from './Upload540WordsComponent';
+
+   STEP 2: Add State Variable
+   ────────────────────────────────────────
+   Add this line with other useState declarations:
+   
+   const [showUpload540, setShowUpload540] = useState(false);
+
+   STEP 3: Add Button and Component
+   ────────────────────────────────────────
+   Add this in the admin dashboard section:
+   
+   <button
+     onClick={() => setShowUpload540(true)}
+     className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 flex items-center gap-2"
+   >
+     <span className="text-xl">📚</span>
+     Upload 540 Words Database
+   </button>
+   
+   {showUpload540 && (
+     <Upload540WordsComponent onClose={() => setShowUpload540(false)} />
+   )}
+
+🎯 THEN RUN THE UPLOAD:
+   1. Login as Admin
+   2. Click "Upload 540 Words Database" button
+   3. Click "Start Upload"
+   4. Wait 2-3 minutes for completion
+   5. Done! 540 words uploaded
+
+📊 DATABASE STRUCTURE:
+   • 6 Grades (1-6)
+   • 3 Levels (Easy, Medium, Hard)
+   • 30 Words per grade per level
+   • Total: 540 words
+   • Bilingual hints (English + Filipino)
+
+✨ FEATURES:
+   ✓ Random word selection
+   ✓ Grade-level filtering
+   ✓ Offline support
+   ✓ Reset mechanism
+   ✓ Bilingual hints
+
+📁 FILES CREATED:
+   ✓ Upload540WordsComponent.tsx - Browser upload UI
+   ✓ upload540Words.ts - Node.js script (optional)
+   ✓ public/COMPLETE_WORD_DATABASE_PART1.csv - Word data
+   ✓ docs/540_WORDS_UPLOAD_GUIDE.md - Full documentation
+
+🔍 VERIFY UPLOAD:
+   • Firebase Console → Firestore → words collection
+   • Should see 540+ documents
+   • Each with grade, difficulty, hints
+
+⚠️ IMPORTANT:
+   • Make sure you're logged in as Admin
+   • Ensure Firebase credentials are set in .env.local
+   • Upload takes 2-3 minutes (don't close browser)
+   • Check console for any errors
+
+💡 ALTERNATIVE METHOD:
+   If you prefer command line:
+   
+   npx ts-node masteringword-main/upload540Words.ts
+
+🎉 AFTER UPLOAD:
+   Students can now:
+   • Practice with 540 unique words
+   • Get grade-appropriate words
+   • See bilingual hints
+   • Play offline with random selection
+
+═══════════════════════════════════════════════════════════════
+Need help? Check: docs/540_WORDS_UPLOAD_GUIDE.md
+═══════════════════════════════════════════════════════════════

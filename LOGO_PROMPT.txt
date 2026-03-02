@@ -1,0 +1,54 @@
+🎨 PERFECT LOGO PROMPT FOR MASTERING WORDS APP
+
+=== FOR AI IMAGE GENERATORS (DALL-E, Midjourney, Stable Diffusion) ===
+
+Create a modern, playful app icon logo for "Mastering Words", an educational spelling game for elementary school children. 
+
+Design Requirements:
+- Style: Flat design, modern, colorful, child-friendly
+- Main Element: A stylized letter "W" or open book with sparkles/stars
+- Color Palette: Vibrant teal (#00c2a0) as primary, with accents of orange (#f39c12), purple, and blue
+- Mood: Fun, educational, encouraging, magical
+- Background: Gradient from dark blue (#0b1221) to teal, or solid teal
+- Additional Elements: Small sparkles, stars, or confetti to represent achievement and gamification
+- Shape: Square with rounded corners (for app icon)
+- Text: Optional "MW" monogram or just the "W" symbol
+- Target Audience: Elementary students (ages 6-12)
+
+Technical Specs:
+- Size: 1024x1024px (will be scaled down)
+- Format: PNG with transparency
+- Style: Clean, recognizable at small sizes
+- No complex details that won't scale well
+
+Inspiration: Think Duolingo meets Khan Academy - educational but fun and game-like. The logo should make learning spelling feel like an exciting adventure.
+
+Additional Notes:
+- Should work well on both light and dark backgrounds
+- Must be instantly recognizable as an educational app
+- Should appeal to both children and teachers
+- Convey: learning, achievement, fun, words, spelling, magic
+
+=== SHORTER VERSION ===
+
+Design a colorful, playful app icon for an educational spelling game called "Mastering Words". Features: A stylized letter "W" with sparkles, teal (#00c2a0) and orange (#f39c12) colors, flat modern design, child-friendly, square format with rounded corners, 1024x1024px. Style: Fun, educational, game-like, similar to Duolingo.
+
+=== KEY ELEMENTS TO INCLUDE ===
+
+✨ Letter "W" or book symbol
+✨ Sparkles/stars (achievement/gamification)
+✨ Teal color (#00c2a0) - primary
+✨ Orange color (#f39c12) - accent
+✨ Rounded corners
+✨ Flat, modern design
+✨ Child-friendly aesthetic
+✨ Educational but fun vibe
+
+=== WHAT TO AVOID ===
+
+❌ Too much detail
+❌ Thin lines
+❌ Small text
+❌ Complex gradients
+❌ Generic stock images
+❌ Dark or scary elements

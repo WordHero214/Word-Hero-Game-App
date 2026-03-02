@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug - Mastering Words</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #0b1221;
+      color: #00c2a0;
+    }
+    .status { margin: 10px 0; padding: 10px; background: #162031; border-radius: 8px; }
+    .error { color: #ef4444; }
+    .success { color: #22c55e; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Debug Information</h1>
+  <div id="status"></div>
+  
+  <script type="module">
+    const statusDiv = document.getElementById('status');
+    
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `status ${type}`;
+      div.textContent = message;
+      statusDiv.appendChild(div);
+    }
+    
+    try {
+      log('✓ JavaScript is working', 'success');
+      
+      // Test React import
+      import('react').then(() => {
+        log('✓ React loaded successfully', 'success');
+      }).catch(err => {
+        log(`✗ React failed to load: ${err.message}`, 'error');
+      });
+      
+      // Test Firebase import
+      import('./firebase.ts').then((firebase) => {
+        log('✓ Firebase module loaded', 'success');
+        log(`✓ Firebase auth: ${firebase.auth ? 'initialized' : 'not initialized'}`, firebase.auth ? 'success' : 'error');
+        log(`✓ Firebase db: ${firebase.db ? 'initialized' : 'not initialized'}`, firebase.db ? 'success' : 'error');
+      }).catch(err => {
+        log(`✗ Firebase failed to load: ${err.message}`, 'error');
+        console.error('Firebase error:', err);
+      });
+      
+      // Test App import
+      import('./App.tsx').then(() => {
+        log('✓ App.tsx loaded successfully', 'success');
+      }).catch(err => {
+        log(`✗ App.tsx failed to load: ${err.message}`, 'error');
+        console.error('App error:', err);
+      });
+      
+    } catch (error) {
+      log(`✗ Critical error: ${error.message}`, 'error');
+      console.error('Critical error:', error);
+    }
+  </script>
+</body>
+</html>

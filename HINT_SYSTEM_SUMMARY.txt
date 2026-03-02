@@ -1,0 +1,191 @@
+╔══════════════════════════════════════════════════════════════╗
+║         ✨ PROGRESSIVE HINT SYSTEM - IMPLEMENTED            ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 FEATURE:
+
+   Progressive hint system where students can reveal letters
+   one at a time with increasing costs.
+
+💰 HINT COSTS:
+
+   1st Hint:  FREE     ← Always free to help students start
+   2nd Hint:  5 ✨     ← Costs 5 sparkies
+   3rd Hint:  10 ✨    ← Costs 10 sparkies
+   4th Hint:  15 ✨    ← Costs 15 sparkies
+   5th Hint:  20 ✨    ← Costs 20 sparkies
+   6th Hint:  25 ✨    ← Costs 25 sparkies
+   
+   Formula: Cost = 5 + (hintsUsed - 1) × 5
+   (First hint is always FREE)
+
+🎮 HOW IT WORKS:
+
+   Step 1: Student clicks "💡 Hint (Free!)" button
+   ─────────────────────────────────────────────────────
+   • One random unrevealed letter is revealed
+   • No sparkies deducted
+   • Success sound plays ✅
+   
+   Step 2: Student clicks "💡 Hint (-5 ✨)" button
+   ─────────────────────────────────────────────────────
+   • Another random letter is revealed
+   • 5 sparkies deducted
+   • Click sound plays
+   
+   Step 3: Student clicks "💡 Hint (-10 ✨)" button
+   ─────────────────────────────────────────────────────
+   • Another random letter is revealed
+   • 10 sparkies deducted
+   • Click sound plays
+   
+   And so on... cost increases by 5 each time!
+
+🚫 INSUFFICIENT SPARKIES:
+
+   If student doesn't have enough sparkies:
+   ┌─────────────────────────────────────┐
+   │ 💡 Hint (-10 ✨)  [GRAYED OUT]     │
+   │ Not enough sparkies! Need 10 ✨     │
+   └─────────────────────────────────────┘
+   
+   • Button becomes disabled
+   • Shows error message
+   • Wrong sound plays if clicked
+   • Must earn more sparkies to continue
+
+✅ BENEFITS:
+
+   For Students:
+   ✓ Free first hint helps them start
+   ✓ Can get help when stuck
+   ✓ Learn resource management
+   ✓ Strategic decision-making
+   
+   For Learning:
+   ✓ Encourages trying before using hints
+   ✓ Rewards better spellers
+   ✓ Teaches cost/benefit analysis
+   ✓ Reduces frustration
+
+📊 EXAMPLE SCENARIO:
+
+   Word: "BEAUTIFUL" (9 letters)
+   Student has: 50 sparkies
+   
+   Action                    Cost    Sparkies Left
+   ────────────────────────────────────────────────
+   1. Click hint → "B"       FREE    50 ✨
+   2. Click hint → "E"       5 ✨    45 ✨
+   3. Click hint → "A"       10 ✨   35 ✨
+   4. Click hint → "U"       15 ✨   20 ✨
+   5. Click hint → "T"       20 ✨   0 ✨
+   6. Click hint → DISABLED  ❌      0 ✨
+   
+   Result: 5 letters revealed (+ 1 free)
+   Student must spell: _ _ _ _ T I _ _ _
+
+🎯 STRATEGIC GAMEPLAY:
+
+   Smart Student (Saves Sparkies):
+   • Uses free hint
+   • Uses 1-2 paid hints
+   • Tries to spell with partial help
+   • Saves sparkies for harder words
+   
+   Struggling Student (Uses More Hints):
+   • Uses free hint
+   • Uses multiple paid hints
+   • Gets more help when needed
+   • Spends more sparkies but learns
+
+🔧 TECHNICAL DETAILS:
+
+   Files Modified:
+   • App.tsx - Enhanced useHint() function
+   • App.tsx - Added getNextHintCost() helper
+   • App.tsx - Updated hint button UI
+   • App.tsx - Added error message display
+   
+   Key Features:
+   • Progressive cost calculation
+   • Sparkies validation
+   • Button state management
+   • Visual feedback
+   • Sound effects
+   • Error messages
+
+🎨 BUTTON STATES:
+
+   Active (Can Use):
+   ┌─────────────────────────────────────┐
+   │ 💡 Hint (Free!)                     │ ← Orange text
+   │ 💡 Hint (-5 ✨)                     │ ← Hover effect
+   │ 💡 Hint (-10 ✨)                    │ ← Click animation
+   └─────────────────────────────────────┘
+   
+   Disabled (Not Enough):
+   ┌─────────────────────────────────────┐
+   │ 💡 Hint (-10 ✨)                    │ ← Gray text
+   │ Not enough sparkies! Need 10 ✨     │ ← Red error
+   └─────────────────────────────────────┘
+   
+   Disabled (All Revealed):
+   ┌─────────────────────────────────────┐
+   │ 💡 Hint (All revealed)              │ ← Gray text
+   └─────────────────────────────────────┘
+
+🎵 SOUND EFFECTS:
+
+   First Hint (Free):
+   • Success sound plays ✅
+   • Positive feedback
+   
+   Paid Hints:
+   • Click sound plays 🔊
+   • Confirms action
+   
+   Insufficient Sparkies:
+   • Wrong sound plays ❌
+   • Indicates error
+
+✨ IMPROVEMENTS OVER OLD SYSTEM:
+
+   Before:
+   ❌ Could only click hint once
+   ❌ Fixed cost of 5 sparkies
+   ❌ No progressive difficulty
+   ❌ Limited strategic options
+   
+   After:
+   ✅ Can click multiple times
+   ✅ Progressive cost (5, 10, 15, 20...)
+   ✅ First hint always free
+   ✅ Strategic resource management
+   ✅ Clear cost display
+   ✅ Disabled when insufficient sparkies
+   ✅ Error messages
+   ✅ Sound feedback
+
+📈 EXPECTED OUTCOMES:
+
+   • Students use hints more strategically
+   • Better engagement with gameplay
+   • Improved learning through scaffolding
+   • Reduced frustration (free first hint)
+   • More sparkies spent (economy balance)
+   • Higher completion rates
+
+🎓 EDUCATIONAL VALUE:
+
+   Skills Developed:
+   • Resource management
+   • Strategic thinking
+   • Cost/benefit analysis
+   • Risk assessment
+   • Problem-solving
+   • Persistence
+
+═══════════════════════════════════════════════════════════════
+Full documentation: docs/PROGRESSIVE_HINT_SYSTEM.md
+═══════════════════════════════════════════════════════════════

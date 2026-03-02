@@ -1,0 +1,74 @@
+========================================
+  COPY AND PASTE THESE COMMANDS
+========================================
+
+Repository: https://github.com/WordHero214/Word-Hero-Game-App.git
+
+========================================
+  STEP 1: Add Remote Repository
+========================================
+
+git remote add origin https://github.com/WordHero214/Word-Hero-Game-App.git
+
+(If you get "remote origin already exists", use this instead:)
+git remote set-url origin https://github.com/WordHero214/Word-Hero-Game-App.git
+
+========================================
+  STEP 2: Check Status
+========================================
+
+git status
+
+========================================
+  STEP 3: Add All Files
+========================================
+
+git add .
+
+========================================
+  STEP 4: Commit Changes
+========================================
+
+git commit -m "Volume control feature and documentation organization"
+
+========================================
+  STEP 5: Push to GitHub
+========================================
+
+git push -u origin main
+
+(If "main" doesn't work, try:)
+git push -u origin master
+
+========================================
+  AUTHENTICATION
+========================================
+
+When prompted:
+- Username: WordHero214
+- Password: Use Personal Access Token (NOT your GitHub password)
+
+Get token at: https://github.com/settings/tokens
+
+========================================
+  ALTERNATIVE: Use Batch Script
+========================================
+
+.\SETUP_AND_PUSH.bat
+
+========================================
+  VERIFY SETUP
+========================================
+
+git config user.name
+git config user.email
+git remote -v
+
+========================================
+  DONE!
+========================================
+
+After pushing, your code will be at:
+https://github.com/WordHero214/Word-Hero-Game-App
+
+========================================

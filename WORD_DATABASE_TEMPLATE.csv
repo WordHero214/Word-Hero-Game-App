@@ -1,0 +1,61 @@
+grade,level,word,englishHint,tagalogHint,category
+1,EASY,CAT,A small furry pet that says meow,Isang maliit na alaga na tumutunog ng meow,Animals
+1,EASY,DOG,A loyal pet that barks and wags its tail,Isang tapat na alaga na tumatahol,Animals
+1,EASY,SUN,The bright star that gives us light and warmth,Ang maliwanag na bituin na nagbibigay ng liwanag,Nature
+1,EASY,RUN,To move quickly with your legs,Tumakbo nang mabilis gamit ang iyong mga binti,Actions
+1,EASY,BALL,A round toy you can throw and catch,Isang bilog na laruan na maaaring ihagis,Toys
+1,EASY,TREE,A tall plant with leaves and branches,Isang matangkad na halaman na may dahon,Nature
+1,EASY,BOOK,Something with pages you read,Isang bagay na may mga pahina na binabasa,School
+1,EASY,FISH,An animal that lives and swims in water,Isang hayop na nabubuhay sa tubig,Animals
+1,EASY,BIRD,An animal with wings that can fly,Isang hayop na may pakpak na lumilipad,Animals
+1,EASY,STAR,Tiny lights that twinkle in the night sky,Maliliit na ilaw na kumikislap sa gabi,Space
+1,MEDIUM,APPLE,A crunchy red or green fruit,Isang malutong na pula o berdeng prutas,Fruits
+1,MEDIUM,HOUSE,A building where a family lives together,Isang gusali kung saan nakatira ang pamilya,Places
+1,MEDIUM,WATER,A clear liquid we drink when thirsty,Isang malinaw na likido na iniinom,Nature
+1,MEDIUM,CHAIR,Something you sit on with four legs,Isang bagay na inuupuan na may apat na binti,Furniture
+1,MEDIUM,TABLE,A flat surface where you eat or study,Isang patag na ibabaw kung saan kumakain,Furniture
+1,MEDIUM,HAPPY,The feeling when something good happens,Ang nararamdaman kapag may magandang nangyari,Emotions
+1,MEDIUM,SMILE,What you do with your mouth when happy,Ang ginagawa mo sa bibig kapag masaya,Actions
+1,MEDIUM,CLOUD,White fluffy things in the sky,Puting malambot na bagay sa langit,Nature
+1,MEDIUM,GRASS,Green plants that cover the ground,Berdeng halaman na sumasaklaw sa lupa,Nature
+1,MEDIUM,FLOWER,A colorful plant that smells nice,Isang makulay na halaman na mabango,Nature
+1,HARD,SCHOOL,A place where children go to learn,Isang lugar kung saan nag-aaral ang mga bata,Places
+1,HARD,FAMILY,A group of people like mom dad and siblings,Isang grupo ng mga tao tulad ng nanay tatay,Social
+1,HARD,FRIEND,Someone you like to play and share with,Isang tao na gusto mong maglaro,Social
+1,HARD,GARDEN,An outdoor area with flowers and plants,Isang lugar sa labas na may mga bulaklak,Nature
+1,HARD,ORANGE,A round citrus fruit same name as color,Isang bilog na prutas na pareho ang pangalan sa kulay,Fruits
+1,HARD,PENCIL,A tool you use to write that can be erased,Isang gamit sa pagsulat na maaaring burahin,School
+1,HARD,WINDOW,An opening in a wall that lets in light,Isang butas sa pader na pumapasok ang liwanag,Home
+1,HARD,KITCHEN,The room where food is cooked,Ang silid kung saan niluluto ang pagkain,Home
+1,HARD,RAINBOW,Colorful arc in the sky after rain,Makulay na arko sa langit pagkatapos ng ulan,Nature
+1,HARD,ELEPHANT,A huge gray animal with a long trunk,Isang napakalaking kulay-abong hayop na may mahabang nguso,Animals
+2,EASY,COMMUNITY,People living in the same area together,Mga taong nakatira sa parehong lugar,Social
+2,EASY,NEIGHBOR,Someone who lives near your house,Isang tao na nakatira malapit sa iyong bahay,Social
+2,EASY,HELPER,A person who assists others,Isang tao na tumutulong sa iba,Social
+2,EASY,MARKET,A place where people buy and sell goods,Isang lugar kung saan bumibili at nagbebenta,Places
+2,EASY,CHURCH,A place where people pray and worship,Isang lugar kung saan nanalangin ang mga tao,Places
+2,EASY,SAFETY,Being protected from danger or harm,Ang pagiging protektado mula sa panganib,Values
+2,EASY,CLEAN,Free from dirt or mess,Malinis at walang dumi,Actions
+2,EASY,HEALTHY,Being strong and free from sickness,Malakas at walang sakit,Health
+2,EASY,RESPECT,Treating others with kindness and honor,Pagtrato sa iba nang may kabaitan,Values
+2,EASY,SHARING,Giving some of what you have to others,Pagbibigay ng iyong mga bagay sa iba,Values
+2,MEDIUM,ENVIRONMENT,The natural world around us,Ang natural na mundo sa paligid natin,Nature
+2,MEDIUM,TRADITION,Customs passed down through generations,Mga kaugalian na ipinasa sa mga henerasyon,Culture
+2,MEDIUM,CULTURE,The way of life of a group of people,Ang pamumuhay ng isang grupo ng mga tao,Culture
+2,MEDIUM,FESTIVAL,A special celebration or event,Isang espesyal na pagdiriwang o kaganapan,Events
+2,MEDIUM,CELEBRATION,A happy gathering for a special occasion,Isang masayang pagtitipon para sa espesyal na okasyon,Events
+2,MEDIUM,COOPERATION,Working together to achieve a goal,Pagtutulungan upang makamit ang layunin,Values
+2,MEDIUM,DISCIPLINE,Following rules and behaving properly,Pagsunod sa mga patakaran at tamang pag-uugali,Values
+2,MEDIUM,OBEDIENCE,Doing what you are told by authority,Pagsunod sa sinasabi ng may kapangyarihan,Values
+2,MEDIUM,GRATITUDE,Being thankful for what you have,Pagpapasalamat sa mga mayroon ka,Values
+2,MEDIUM,GENEROSITY,Being willing to give and share freely,Pagkahandang magbigay at magbahagi,Values
+2,HARD,RESPONSIBILITY,Taking care of your duties and tasks,Pag-aalaga sa iyong mga tungkulin,Values
+2,HARD,CITIZENSHIP,Being a good member of your community,Pagiging mabuting miyembro ng iyong komunidad,Social
+2,HARD,NEIGHBORHOOD,The area where you live with neighbors,Ang lugar kung saan ka nakatira kasama ang kapitbahay,Places
+2,HARD,CONSERVATION,Protecting and saving natural resources,Pag-iingat at pag-save ng natural na yaman,Environment
+2,HARD,PARTICIPATION,Taking part in activities or events,Paglahok sa mga aktibidad o kaganapan,Social
+2,HARD,ORGANIZATION,Arranging things in an orderly way,Pag-aayos ng mga bagay sa maayos na paraan,Skills
+2,HARD,COMMUNICATION,Sharing ideas and feelings with others,Pagbabahagi ng mga ideya at damdamin sa iba,Skills
+2,HARD,DEVELOPMENT,The process of growing and improving,Ang proseso ng paglaki at pagpapabuti,Growth
+2,HARD,IMPROVEMENT,Making something better than before,Paggawa ng isang bagay na mas mahusay,Growth
+2,HARD,ACHIEVEMENT,Successfully reaching a goal,Matagumpay na pag-abot sa isang layunin,Success

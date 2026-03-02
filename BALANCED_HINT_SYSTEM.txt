@@ -1,0 +1,309 @@
+═══════════════════════════════════════════════════════════════
+  BALANCED HINT SYSTEM - COMBINATION APPROACH
+═══════════════════════════════════════════════════════════════
+
+🎯 PROBLEM SOLVED:
+
+Students were abusing the hint system by revealing all letters
+to pass questions without actually learning. The cost was too
+low (Free, 5, 10, 15, 20...) making it easy to cheat.
+
+═══════════════════════════════════════════════════════════════
+  SOLUTION: 3-PART COMBINATION APPROACH
+═══════════════════════════════════════════════════════════════
+
+1. STEEPER PROGRESSIVE COST
+   - Makes revealing many letters very expensive
+   - Old: Free, 5, 10, 15, 20, 25, 30...
+   - New: Free, 10, 25, 50
+
+2. LIMIT NUMBER OF REVEALS
+   - Maximum 3 hints per word
+   - Forces students to think and learn
+   - Can't just reveal entire word
+
+3. REDUCE SPARKIES REWARD
+   - If ANY hints used: -50% sparkies reward
+   - Encourages trying without hints first
+   - Penalizes over-reliance on hints
+
+═══════════════════════════════════════════════════════════════
+  HOW IT WORKS
+═══════════════════════════════════════════════════════════════
+
+COST STRUCTURE:
+┌─────────┬──────────┬────────────┐
+│ Hint #  │ Old Cost │ New Cost   │
+├─────────┼──────────┼────────────┤
+│ 1st     │ Free     │ Free       │
+│ 2nd     │ 5 ✨     │ 10 ✨      │
+│ 3rd     │ 10 ✨    │ 25 ✨      │
+│ 4th     │ 15 ✨    │ BLOCKED    │
+│ 5th+    │ 20+ ✨   │ BLOCKED    │
+└─────────┴──────────┴────────────┘
+
+REWARD REDUCTION:
+┌──────────────┬─────────────┬─────────────┐
+│ Hints Used   │ Old Reward  │ New Reward  │
+├──────────────┼─────────────┼─────────────┤
+│ 0 hints      │ 10 ✨       │ 10 ✨       │
+│ 1 hint       │ 10 ✨       │ 5 ✨ (-50%) │
+│ 2 hints      │ 10 ✨       │ 5 ✨ (-50%) │
+│ 3 hints      │ 10 ✨       │ 5 ✨ (-50%) │
+└──────────────┴─────────────┴─────────────┘
+
+EXAMPLE SCENARIO:
+
+Student plays EASY mode (10 sparkies per word):
+
+Word 1: No hints used
+  → Gets 10 sparkies ✅
+
+Word 2: Uses 1 hint (free)
+  → Gets 5 sparkies (50% penalty) ⚠️
+
+Word 3: Uses 2 hints (free + 10 sparkies)
+  → Spends 10 sparkies
+  → Gets 5 sparkies back
+  → Net: -5 sparkies ❌
+
+Word 4: Uses 3 hints (free + 10 + 25 sparkies)
+  → Spends 35 sparkies
+  → Gets 5 sparkies back
+  → Net: -30 sparkies ❌❌
+
+Word 5: Tries to use 4 hints
+  → Button disabled after 3rd hint
+  → Must spell it themselves 💪
+
+═══════════════════════════════════════════════════════════════
+  BENEFITS
+═══════════════════════════════════════════════════════════════
+
+FOR LEARNING:
+✅ Students must think and try first
+✅ Can't just reveal entire word
+✅ Encourages actual learning
+✅ Hints are for help, not cheating
+✅ Rewards genuine effort
+
+FOR GAME BALANCE:
+✅ Prevents hint abuse
+✅ Makes sparkies more valuable
+✅ Encourages strategic hint use
+✅ Maintains challenge level
+✅ Fair for all students
+
+FOR TEACHERS:
+✅ Students actually learn words
+✅ Better assessment of knowledge
+✅ Reduced cheating
+✅ More meaningful progress
+✅ Higher engagement
+
+═══════════════════════════════════════════════════════════════
+  UI IMPROVEMENTS
+═══════════════════════════════════════════════════════════════
+
+NEW FEATURES:
+
+1. Hints Counter
+   "Hints used: 2/3"
+   Shows how many hints used and remaining
+
+2. Reward Warning
+   "⚠️ Reward reduced by 50%"
+   Appears when any hint is used
+
+3. Max Limit Message
+   "Maximum hints reached! Try to spell it yourself 💪"
+   Shows when 3 hints used
+
+4. Button States
+   - Free: Green/Orange with "(Free!)"
+   - Cost: Shows "-10 ✨" or "-25 ✨"
+   - Max: Grayed out with "(Max 3 reached)"
+   - No sparkies: Grayed out with error message
+
+5. Full-width Layout
+   Better visibility and clearer messaging
+
+═══════════════════════════════════════════════════════════════
+  TECHNICAL IMPLEMENTATION
+═══════════════════════════════════════════════════════════════
+
+CONSTANTS:
+```typescript
+const MAX_HINTS_PER_WORD = 3;
+const hintCostTable = [0, 10, 25, 50];
+const REWARD_PENALTY = 0.5; // 50% reduction
+```
+
+HINT COST CALCULATION:
+```typescript
+const useHint = () => {
+  const hintsUsed = revealedIndices.length;
+  
+  // Check max limit
+  if (hintsUsed >= MAX_HINTS_PER_WORD) {
+    playSound('wrong');
+    return;
+  }
+  
+  // Get cost from table
+  const hintCost = hintCostTable[hintsUsed] || 50;
+  
+  // Check sparkies
+  if (!isFree && sparkies < hintCost) {
+    playSound('wrong');
+    return;
+  }
+  
+  // Reveal letter and deduct cost
+  // ...
+};
+```
+
+REWARD REDUCTION:
+```typescript
+const checkAnswer = () => {
+  if (isCorrect) {
+    let baseReward = DIFFICULTY_CONFIG[difficulty].reward;
+    const hintsUsed = revealedIndices.length;
+    
+    // Apply 50% penalty if hints used
+    if (hintsUsed > 0) {
+      baseReward = Math.floor(baseReward * 0.5);
+    }
+    
+    // Award reduced reward
+    // ...
+  }
+};
+```
+
+═══════════════════════════════════════════════════════════════
+  APPLIES TO ALL DIFFICULTIES
+═══════════════════════════════════════════════════════════════
+
+EASY MODE:
+- Hint button reveals letters in word structure
+- Max 3 hints per word
+- Cost: Free, 10, 25
+- Reward: 10 → 5 if hints used
+
+MEDIUM MODE:
+- No hints (audio only)
+- Not affected by this change
+
+HARD MODE:
+- Reveal Letter button shows letters in word
+- Max 3 hints per word
+- Cost: Free, 10, 25
+- Reward: 15 → 7.5 if hints used
+
+═══════════════════════════════════════════════════════════════
+  TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+TEST COST PROGRESSION:
+[ ] Click hint 1st time - verify FREE
+[ ] Click hint 2nd time - verify costs 10 sparkies
+[ ] Click hint 3rd time - verify costs 25 sparkies
+[ ] Try 4th hint - verify button disabled
+
+TEST MAX LIMIT:
+[ ] Use 3 hints on a word
+[ ] Verify button shows "(Max 3 reached)"
+[ ] Verify button is disabled
+[ ] Verify message "Maximum hints reached!"
+
+TEST REWARD REDUCTION:
+[ ] Complete word with 0 hints - verify full reward
+[ ] Complete word with 1 hint - verify 50% reward
+[ ] Complete word with 2 hints - verify 50% reward
+[ ] Complete word with 3 hints - verify 50% reward
+
+TEST UI MESSAGES:
+[ ] Verify "Hints used: X/3" counter appears
+[ ] Verify "⚠️ Reward reduced by 50%" warning shows
+[ ] Verify max limit message appears
+[ ] Verify insufficient sparkies message works
+
+TEST BOTH MODES:
+[ ] Test EASY mode hint system
+[ ] Test HARD mode reveal letter system
+[ ] Verify both use same limits and costs
+
+═══════════════════════════════════════════════════════════════
+  COST COMPARISON
+═══════════════════════════════════════════════════════════════
+
+REVEALING ALL LETTERS (10-letter word):
+
+OLD SYSTEM:
+- Hint 1: Free
+- Hint 2: 5 ✨
+- Hint 3: 10 ✨
+- Hint 4: 15 ✨
+- Hint 5: 20 ✨
+- Hint 6: 25 ✨
+- Hint 7: 30 ✨
+- Hint 8: 35 ✨
+- Hint 9: 40 ✨
+- Hint 10: 45 ✨
+TOTAL: 225 sparkies to reveal all
+REWARD: 10 sparkies
+NET: -215 sparkies (but possible!)
+
+NEW SYSTEM:
+- Hint 1: Free
+- Hint 2: 10 ✨
+- Hint 3: 25 ✨
+- Hint 4+: BLOCKED ❌
+TOTAL: 35 sparkies max
+REWARD: 5 sparkies (50% penalty)
+NET: -30 sparkies
+RESULT: Can only reveal 3 letters, must spell rest!
+
+═══════════════════════════════════════════════════════════════
+  EDUCATIONAL IMPACT
+═══════════════════════════════════════════════════════════════
+
+BEFORE:
+❌ Students reveal all letters
+❌ No actual learning happens
+❌ Just copying revealed word
+❌ Sparkies become meaningless
+❌ No challenge or growth
+
+AFTER:
+✅ Students must think critically
+✅ Hints provide help, not answers
+✅ Encourages vocabulary learning
+✅ Sparkies have real value
+✅ Balanced challenge and support
+
+═══════════════════════════════════════════════════════════════
+  FILES MODIFIED
+═══════════════════════════════════════════════════════════════
+
+✅ masteringword-main/App.tsx
+   - Updated useHint() with max limit and steeper costs
+   - Updated getNextHintCost() with new cost table
+   - Updated checkAnswer() with reward reduction
+   - Enhanced EASY mode hint button UI
+   - Enhanced HARD mode reveal letter button UI
+   - Added hints counter and warning messages
+
+═══════════════════════════════════════════════════════════════
+  STATUS
+═══════════════════════════════════════════════════════════════
+
+✅ All 3 improvements implemented
+✅ No TypeScript errors
+✅ UI enhanced with clear messaging
+✅ Works in EASY and HARD modes
+✅ Ready for testing and deployment
+
+═══════════════════════════════════════════════════════════════

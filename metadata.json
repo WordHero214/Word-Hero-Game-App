@@ -1,0 +1,7 @@
+{
+  "name": "Mastering Words: Gamified Spelling System",
+  "description": "A comprehensive gamified spelling learning platform for elementary students featuring adaptive difficulty, phonics-based lessons, and a reward system.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

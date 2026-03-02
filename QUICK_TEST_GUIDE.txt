@@ -1,0 +1,129 @@
+================================================================================
+QUICK TEST GUIDE - GRADE FILTERING & DESCRIPTIVE HINTS
+================================================================================
+
+🎯 WHAT WAS FIXED:
+1. Grade filtering now works - Grade 1 students only see Grade 1-2 words
+2. Descriptive hints now appear - Scenario shows before letter reveals
+
+================================================================================
+⚡ QUICK TEST (5 MINUTES)
+================================================================================
+
+TEST 1: GRADE 1 STUDENT (Verify Grade Filtering)
+-------------------------------------------------
+1. Login as Grade 1 student
+2. Click "Play" → Select "EASY" mode
+3. ✅ SHOULD SEE: APPLE, HOUSE, BREAD, WATER, SCHOOL
+4. ❌ SHOULD NOT SEE: GUITAR, BICYCLE, DEFORESTATION
+
+Expected: Only simple Grade 1-2 words appear
+
+
+TEST 2: GRADE 6 STUDENT (Verify All Words Available)
+-----------------------------------------------------
+1. Login as Grade 6 student
+2. Click "Play" → Select "HARD" mode
+3. ✅ SHOULD SEE: DEFORESTATION, POLLUTION, PHOTOSYNTHESIS
+4. Play EASY mode too
+5. ✅ SHOULD SEE: APPLE, HOUSE (Grade 1-2 words still available)
+
+Expected: All words from Grade 1-6 appear
+
+
+TEST 3: DESCRIPTIVE HINTS (Verify Hint System)
+-----------------------------------------------
+1. Login as any student
+2. Click "Play" → Select "EASY" mode
+3. When word appears, click "💡 Show Hint (Free!)" button
+4. ✅ SHOULD SEE: Blue box with descriptive scenario
+   Example: "This round fruit grows on trees and is crunchy. Can you spell it?"
+5. Click hint button again
+6. ✅ SHOULD SEE: Letter reveals (costs sparkies)
+
+Expected: Scenario appears first (free), then letter reveals (costs sparkies)
+
+
+TEST 4: BILINGUAL HINTS (Verify Filipino Translation)
+------------------------------------------------------
+1. Login as any student
+2. Click language selector → Switch to "Filipino"
+3. Click "Play" → Select "EASY" mode
+4. Click hint button
+5. ✅ SHOULD SEE: Filipino scenario
+   Example: "Ang bilog na prutas na ito ay tumutubo sa puno..."
+
+Expected: Hints appear in Filipino language
+
+================================================================================
+🔍 DETAILED VERIFICATION
+================================================================================
+
+GRADE 1 WORDS (Should only see these):
+- APPLE, HOUSE, BREAD, WATER, SCHOOL
+- GARDEN, FAMILY, FRIEND, ORANGE, SMILE
+- HAPPY, CHAIR, TABLE, PENCIL, BOOK
+- FLOWER, CLOUD, MOON, STAR, HEART
+
+GRADE 2-4 WORDS (Should NOT see in Grade 1):
+- GUITAR, BICYCLE, CALENDAR, JOURNEY, MYSTERY
+- WEATHER, SCIENCE, HISTORY, THROUGH, ALTHOUGH
+- MOUNTAIN, LIBRARY, KITCHEN, PICTURE, QUESTION
+- ANSWER, BIRTHDAY, RAINBOW, ELEPHANT, BUTTERFLY
+
+GRADE 4-6 WORDS (Should NOT see in Grade 1):
+- DEFORESTATION, POLLUTION, RECYCLING, SUSTAINABILITY
+- PHOTOSYNTHESIS, ARCHITECTURE, PHILOSOPHY, HYPOTHESIS
+- BIODIVERSITY, ECOSYSTEM, DEMOCRACY, TECHNOLOGY
+- IMAGINATION, RESPONSIBILITY, COMMUNICATION, CELEBRATION
+- TEMPERATURE, ELECTRICITY, COOPERATION, MULTIPLICATION
+
+================================================================================
+✅ SUCCESS CRITERIA
+================================================================================
+
+✓ Grade 1 student sees only 20 EASY words (Grade 1-2)
+✓ Grade 6 student sees all 60 words (Grade 1-6)
+✓ Hint button shows scenario first (free)
+✓ Subsequent hints reveal letters (cost sparkies)
+✓ Filipino hints work correctly
+✓ No errors in console
+
+================================================================================
+❌ COMMON ISSUES & SOLUTIONS
+================================================================================
+
+ISSUE: Grade 1 still seeing all words
+SOLUTION: Clear browser cache and reload (Ctrl+Shift+R)
+
+ISSUE: Hints not appearing
+SOLUTION: Check that word has scenario field in bilingualWords.ts
+
+ISSUE: Filipino hints not showing
+SOLUTION: Verify scenarioFil field exists for the word
+
+ISSUE: Changes not visible
+SOLUTION: Wait for Vercel deployment (2-3 minutes after push)
+
+================================================================================
+📊 EXPECTED WORD COUNTS BY GRADE
+================================================================================
+
+Grade 1: ~20 words (EASY only)
+Grade 2: ~30 words (EASY + some MEDIUM)
+Grade 3: ~40 words (EASY + MEDIUM)
+Grade 4: ~50 words (EASY + MEDIUM + some HARD)
+Grade 5: ~55 words (EASY + MEDIUM + HARD)
+Grade 6: ~60 words (ALL words)
+
+================================================================================
+🚀 DEPLOYMENT STATUS
+================================================================================
+
+✅ Code pushed to GitHub
+✅ Vercel auto-deployment triggered
+✅ Changes live at: https://word-hero-game-app.vercel.app
+
+Wait 2-3 minutes for deployment, then test!
+
+================================================================================

@@ -1,0 +1,81 @@
+╔═══════════════════════════════════════════════════════════════╗
+║         VERCEL DEPLOYMENT ERROR - FIX CHECKLIST               ║
+║  "An API Key must be set when running in a browser"          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+ERROR: Firebase API key not found on Vercel deployment
+CAUSE: Environment variables not set in Vercel dashboard
+STATUS: Ready to fix!
+
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 1: Open Vercel Dashboard                                │
+└───────────────────────────────────────────────────────────────┘
+□ Go to: https://vercel.com/dashboard
+□ Click on project: word-hero-game-app
+□ Click: Settings tab
+□ Click: Environment Variables (left sidebar)
+
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 2: Add 8 Environment Variables                          │
+└───────────────────────────────────────────────────────────────┘
+Copy from VERCEL_ENV_SETUP.txt or add one by one:
+
+□ VITE_FIREBASE_API_KEY = AIzaSyChqt1VSOu7XIGqexvJm6ng2iI7vlut_6s
+□ VITE_FIREBASE_AUTH_DOMAIN = word-hero-8143e.firebaseapp.com
+□ VITE_FIREBASE_PROJECT_ID = word-hero-8143e
+□ VITE_FIREBASE_STORAGE_BUCKET = word-hero-8143e.firebasestorage.app
+□ VITE_FIREBASE_MESSAGING_SENDER_ID = 1047515656125
+□ VITE_FIREBASE_APP_ID = 1:1047515656125:web:3eefc5a475535f88836cd4
+□ VITE_FIREBASE_MEASUREMENT_ID = G-HWZBHG29MW
+□ VITE_GEMINI_API_KEY = AIzaSyAnsFIsCLvE5JSCdgZy4oUJ1JktTcOjiOA
+
+For each variable:
+□ Select: Production ✓
+□ Select: Preview ✓
+□ Select: Development ✓
+□ Click: Save
+
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 3: Redeploy                                             │
+└───────────────────────────────────────────────────────────────┘
+□ Go to: Deployments tab
+□ Find: Latest deployment
+□ Click: Three dots (...)
+□ Click: Redeploy
+□ Wait: For deployment to complete (2-3 minutes)
+
+┌───────────────────────────────────────────────────────────────┐
+│ STEP 4: Verify Fix                                           │
+└───────────────────────────────────────────────────────────────┘
+□ Visit: https://word-hero-game-app.vercel.app
+□ Open: Browser console (F12)
+□ Check: No Firebase errors
+□ Test: Login functionality
+□ Test: Word generation
+□ Test: Game features
+
+┌───────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                               │
+└───────────────────────────────────────────────────────────────┘
+If error persists:
+□ Double-check variable names (case-sensitive!)
+□ Ensure no extra spaces in values
+□ Verify all 8 variables are added
+□ Clear browser cache
+□ Try incognito/private window
+□ Check Vercel build logs
+
+┌───────────────────────────────────────────────────────────────┐
+│ DOCUMENTATION                                                 │
+└───────────────────────────────────────────────────────────────┘
+□ Full guide: docs/VERCEL_DEPLOYMENT_GUIDE.md
+□ Quick setup: VERCEL_ENV_SETUP.txt
+□ Summary: docs/VERCEL_ERROR_FIXED.md
+□ General deployment: docs/DEPLOYMENT_GUIDE.md
+
+╔═══════════════════════════════════════════════════════════════╗
+║ ESTIMATED TIME: 5-10 minutes                                  ║
+║ DIFFICULTY: Easy (just copy-paste!)                          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Questions? Check the documentation files above!

@@ -1,0 +1,153 @@
+🔧 CRITICAL FIXES STATUS
+========================
+
+## Issues Identified by User:
+
+1. ✅ Background music persists after turning off - FIXED
+2. ✅ Ranking should be by grade level and section - FIXED
+3. ⏳ Add Intro.js guided tour for new users - PLANNED
+4. ✅ Questions should be grade-specific (not same for all grades) - FIXED
+5. ✅ Add descriptive hint (not just letter reveal) - FIXED
+
+## Fix 1: Background Music Persistence ✅ COMPLETE
+
+### Status: ✅ DEPLOYED AND TESTED
+
+Music preferences now persist across sessions using localStorage.
+- Music enabled/disabled state saved
+- Volume level saved
+- Defaults to OFF for new users
+- Music stops completely when turned off
+
+---
+
+## Fix 2: Grade/Section-Specific Ranking ✅ COMPLETE
+
+### Status: ✅ DEPLOYED
+
+Leaderboard now has three filter options:
+1. **My Class** (Grade + Section) - DEFAULT
+2. **My Grade** (All sections in grade)
+3. **All Students** (Global ranking)
+
+Students now compete fairly within their class!
+
+---
+
+## Fix 3: Intro.js Guided Tour ⏳ PLANNED FOR NEXT SESSION
+
+### Status: ⏳ DEFERRED
+
+Due to time constraints and need to install external library.
+Will implement in next session with:
+- Student onboarding tour
+- Teacher onboarding tour
+- Show only on first login
+
+---
+
+## Fix 4: Grade-Specific Questions ✅ COMPLETE
+
+### Status: ✅ DEPLOYED
+
+**CRITICAL FIX IMPLEMENTED:**
+- Cumulative learning approach
+- Grade 1 gets only Grade 1 words
+- Grade 2 gets Grade 1-2 words
+- Grade 6 gets Grade 1-6 words
+- No more Grade 6 words for Grade 1 students!
+
+**Changes Made:**
+1. Updated `firebaseService.ts` getWords() function
+2. Updated App.tsx local word filtering
+3. Updated App.tsx Firestore word filtering
+4. All use cumulative grade filtering
+
+---
+
+## Fix 5: Descriptive Hints ✅ COMPLETE
+
+### Status: ✅ DEPLOYED
+
+**NEW HINT SYSTEM:**
+1. First hint: Shows scenario/description (FREE)
+2. Subsequent hints: Reveal letters (costs sparkies)
+3. Bilingual support (English/Filipino)
+4. Educational and engaging
+
+**How it works:**
+- Click "Show Hint" → See description
+- Click again → Reveal letter (free first time)
+- Click again → Reveal more letters (costs sparkies)
+- Maximum 3 letter reveals per word
+
+---
+
+## Summary of Fixes:
+
+### ✅ COMPLETED (4 of 5):
+1. ✅ Background music persistence
+2. ✅ Grade/section-specific ranking  
+3. ✅ Grade-specific questions (CRITICAL)
+4. ✅ Descriptive hints
+
+### ⏳ DEFERRED (1 of 5):
+5. ⏳ Intro.js guided tour (requires npm install)
+
+---
+
+## Testing Checklist:
+
+### Music Fix:
+- [x] Turn music off, refresh page → stays off
+- [x] Turn music on, refresh page → stays on
+- [x] Volume persists across sessions
+
+### Ranking Fix:
+- [x] "My Class" shows only same grade+section
+- [x] "My Grade" shows all sections in grade
+- [x] "All Students" shows global ranking
+- [x] Default filter is "My Class"
+
+### Grade Questions Fix:
+- [x] Grade 1 student gets appropriate words
+- [x] Grade 6 student gets more words
+- [x] Cumulative learning works
+- [x] No Grade 6 words for Grade 1
+
+### Descriptive Hints Fix:
+- [x] First hint shows scenario/description
+- [x] Subsequent hints reveal letters
+- [x] Bilingual hints work
+- [x] Free first hint, costs sparkies after
+
+---
+
+## Git Commits:
+
+1. `21e04a7` - Fix background music persistence
+2. `c64841e` - Fix grade-specific questions and ranking
+3. (App.tsx changes auto-committed)
+
+---
+
+## Impact:
+
+### Before Fixes:
+- ❌ Music annoyed users
+- ❌ Grade 1 competed with Grade 6 (unfair)
+- ❌ Grade 1 got Grade 6 words (too hard)
+- ❌ Only letter hints (not educational)
+
+### After Fixes:
+- ✅ Music respects user preference
+- ✅ Fair competition within class
+- ✅ Appropriate difficulty for each grade
+- ✅ Educational descriptive hints
+
+---
+
+**Last Updated**: February 15, 2026
+**Status**: 4 of 5 fixes complete (80%)
+**Ready for Production**: YES
+**Intro.js Tour**: Deferred to next session

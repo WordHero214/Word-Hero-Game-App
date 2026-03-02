@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════
+  INTRO TOUR & SKIP BUTTON FIXES
+═══════════════════════════════════════════════════════════════
+
+🐛 ISSUES REPORTED:
+  1. Intro tour not showing for new users
+  2. "Skip to Next" button disappears too fast
+
+✅ FIXES APPLIED:
+
+📋 FIX #1: INTRO TOUR NOT SHOWING
+  Problem: hasSeenTour field was not being set to false for new users
+  
+  Solution: Added hasSeenTour: false to user creation in 3 places:
+  
+  1. App.tsx - Auth state handler (line ~1680)
+     - Added hasSeenTour: false for students
+     - Added hasSeenTour: false for teachers/admins
+  
+  2. firebaseService.ts - signUpUser function (line ~55)
+     - Added hasSeenTour: false for students
+     - Added hasSeenTour: false for teachers/admins
+  
+  3. firebaseService.ts - signInUser function (line ~195)
+     - Added hasSeenTour: false for students
+     - Added hasSeenTour: false for teachers/admins
+  
+  Result: New users will now see the intro tour automatically!
+
+📋 FIX #2: SKIP BUTTON DISAPPEARS TOO FAST
+  Problem: Wrong feedback cleared after 1 second, hiding "Skip to Next" button
+  
+  Solution: Changed feedback behavior in App.tsx:
+  
+  1. REMOVED auto-clear timeout (line ~740)
+     - Old: setTimeout(() => setIsFeedback(null), 1000)
+     - New: Feedback stays until user takes action
+  
+  2. ADDED feedback clear on input change (line ~1350)
+     - When user starts typing again, wrong feedback clears
+     - Allows user to try again without clicking skip
+  
+  Result: "Skip to Next" button stays visible until user decides!
+
+🎯 HOW IT WORKS NOW:
+
+INTRO TOUR:
+  ✓ New users get hasSeenTour: false automatically
+  ✓ Tour triggers 1 second after login
+  ✓ Tour shows for both students and teachers
+  ✓ Tour completion saves to Firestore
+  ✓ Tour never shows again after completion
+
+SKIP BUTTON:
+  ✓ Wrong answer shows "TRY AGAIN!" feedback
+  ✓ "Skip to Next" button appears immediately
+  ✓ Button stays visible indefinitely
+  ✓ User can either:
+    - Click "Skip to Next" to move on
+    - Start typing to try again (clears feedback)
+  ✓ No more rushing to click the button!
+
+🧪 TESTING:
+  1. Register new student account
+  2. Wait 1 second after login
+  3. Intro tour should start automatically
+  4. Complete or skip tour
+  5. Start a game and answer wrong
+  6. "Skip to Next" button should stay visible
+  7. Try typing - feedback should clear
+  8. Click skip - should move to next word
+
+📝 FILES MODIFIED:
+  • App.tsx - 3 changes
+    - Added hasSeenTour to new user creation
+    - Removed auto-clear timeout for wrong feedback
+    - Added feedback clear on input change
+  
+  • firebaseService.ts - 2 changes
+    - Added hasSeenTour to signUpUser
+    - Added hasSeenTour to signInUser
+
+🚀 STATUS: ✅ FIXED AND READY TO TEST
+
+═══════════════════════════════════════════════════════════════

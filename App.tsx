@@ -1,0 +1,2325 @@
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { User, UserRole, Difficulty, Word, GameSession, LevelProgress, Certificate } from './types';
+import { COLORS, BADGES, ACHIEVEMENTS, DIFFICULTY_CONFIG } from './constants';
+import AuthView from './AuthView';
+import SplashScreen from './SplashScreen';
+import TeacherView from './TeacherView';
+import AdminView from './AdminView';
+import { speakWord } from './geminiService';
+import ProfileView from './ProfileView';
+import { auth, db } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, onSnapshot, query, doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { getCurrentUser, updateUserProgress, getWords, signOutUser } from './firebaseService';
+import { updateCompletionTime } from './firebaseService';
+import { FirebaseStatus } from './FirebaseStatus';
+import LeaderboardView from './LeaderboardView';
+import ProgressDashboard from './ProgressDashboard';
+import ReviewWrongWords from './ReviewWrongWords';
+import MilestoneCelebration from './MilestoneCelebration';
+import { cacheWordsForOffline, markWordsAsUsed, getFreshWords } from './offlineSync';
+import FeedbackAnimation from './FeedbackAnimation';
+import GameProgressBar from './GameProgressBar';
+import EnhancedButton from './EnhancedButton';
+import LoadingSkeleton from './LoadingSkeleton';
+import FunLoadingAnimation from './FunLoadingAnimation';
+import { BILINGUAL_WORDS } from './bilingualWords';
+import { t, tr, Language } from './translations';
+import LanguageSelector from './LanguageSelector';
+import RankDisplay from './RankDisplay';
+import PostGameEngagement from './PostGameEngagement';
+
+// --- INITIAL DEFAULT WORDS (Practice Mode) ---
+const INITIAL_MOCK_WORDS: Word[] = BILINGUAL_WORDS;
+
+// --- UTILS ---
+const playSound = (type: 'correct' | 'wrong' | 'complete' | 'streak' | 'click') => {
+  const sounds = {
+    correct: 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3',
+    wrong: 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3',
+    complete: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3',
+    streak: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3',
+    click: '/music/button_sound.wav' // Local button click sound
+  };
+  const audio = new Audio(sounds[type]);
+  audio.volume = type === 'click' ? 0.3 : 0.5;
+  // Silently fail for click sounds to avoid console spam
+  audio.play().catch((e) => {
+    if (type !== 'click') {
+      console.warn("Audio playback failed:", e);
+    }
+  });
+};
+
+// Global button click sound handler
+const playClickSound = () => {
+  playSound('click');
+};
+
+// --- COMPONENTS ---
+
+const BottomNav: React.FC<{ activeTab: string; setTab: (t: string) => void; role: UserRole; onStatsClick?: () => void; onReviewClick?: () => void }> = ({ activeTab, setTab, role, onStatsClick, onReviewClick }) => {
+  const tabs = role === UserRole.STUDENT ? [
+    { id: 'home', label: 'Home', icon: '🏠', gradient: 'from-blue-500 to-cyan-500', color: '#3b82f6' },
+    { id: 'play', label: 'Play', icon: '🎮', gradient: 'from-purple-500 to-pink-500', color: '#a855f7' },
+    { id: 'rank', label: 'Rank', icon: '🏆', gradient: 'from-yellow-500 to-orange-500', color: '#f59e0b' },
+    { id: 'stats', label: 'Stats', icon: '📊', gradient: 'from-green-500 to-emerald-500', color: '#22c55e' },
+    { id: 'profile', label: 'Profile', icon: '👤', gradient: 'from-teal-500 to-cyan-500', color: '#14b8a6' }
+  ].map(tab => ({ ...tab, action: tab.id === 'stats' ? onStatsClick : tab.id === 'review' ? onReviewClick : () => setTab(tab.id) })) : [
+    { id: 'home', label: 'Dashboard', icon: '📈', gradient: 'from-blue-500 to-cyan-500', color: '#3b82f6', action: () => setTab('home') },
+    { id: 'rank', label: 'Leaderboard', icon: '🏆', gradient: 'from-yellow-500 to-orange-500', color: '#f59e0b', action: () => setTab('rank') },
+    { id: 'profile', label: 'Profile', icon: '👤', gradient: 'from-teal-500 to-cyan-500', color: '#14b8a6', action: () => setTab('profile') }
+  ];
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#0b1221] via-[#162031] to-[#162031] border-t border-white/10 px-3 py-4 flex justify-around items-center z-50 shadow-2xl">
+      {tabs.map((tab, index) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            onClick={tab.action}
+            className={`relative flex flex-col items-center gap-2 transition-all duration-300 transform ${
+              isActive ? 'scale-110 -translate-y-2' : 'scale-100 hover:scale-105 active:scale-95'
+            }`}
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            {/* Glow effect for active tab */}
+            {isActive && (
+              <div 
+                className="absolute inset-0 rounded-2xl blur-xl opacity-50 animate-pulse"
+                style={{ backgroundColor: tab.color }}
+              />
+            )}
+            
+            {/* Icon container with gradient */}
+            <div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+              isActive 
+                ? `bg-gradient-to-br ${tab.gradient} shadow-lg` 
+                : 'bg-[#0b1221] border border-white/10'
+            }`}>
+              {/* Shine effect */}
+              {isActive && (
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/20 to-transparent" />
+              )}
+              
+              {/* Icon */}
+              <span className={`text-2xl relative z-10 ${isActive ? 'animate-bounce' : ''}`}>
+                {tab.icon}
+              </span>
+              
+              {/* Active indicator dot */}
+              {isActive && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full animate-ping" />
+              )}
+            </div>
+            
+            {/* Label */}
+            <span className={`text-[10px] font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${
+              isActive ? 'text-white' : 'text-gray-500'
+            }`}>
+              {tab.label}
+            </span>
+            
+            {/* Active underline */}
+            {isActive && (
+              <div 
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full animate-pulse"
+                style={{ backgroundColor: tab.color }}
+              />
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+const DashboardView: React.FC<{ user: User; onStart: () => void }> = ({ user, onStart }) => {
+  // Calculate streak status
+  const today = new Date().toISOString().split('T')[0];
+  const lastPlayed = user.lastPlayedDate || '';
+  const isPlayedToday = lastPlayed === today;
+  const currentStreak = user.currentStreak || 0;
+  const streakBonus = currentStreak >= 3 ? '2x Sparkies!' : '';
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Student Rank Display - HIGHLIGHTED AT TOP */}
+      <RankDisplay userId={user.id} sparkies={user.sparkies || 0} />
+      
+      {/* Daily Streak Banner */}
+      {currentStreak > 0 && (
+        <div className={`rounded-[2rem] p-6 relative overflow-hidden ${
+          isPlayedToday ? 'bg-gradient-to-r from-[#00c2a0] to-[#00d8b3]' : 'bg-gradient-to-r from-orange-500 to-red-500'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-3xl">🔥</span>
+                <h3 className="text-2xl font-bold text-white">{currentStreak} Day Streak!</h3>
+              </div>
+              <p className="text-white/80 text-sm">
+                {isPlayedToday 
+                  ? `Great job! Come back tomorrow to keep it going!` 
+                  : `Play today to continue your streak!`}
+              </p>
+              {streakBonus && (
+                <p className="text-yellow-300 text-xs font-bold mt-1">⚡ {streakBonus}</p>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="text-white/60 text-xs uppercase font-bold">Longest</p>
+              <p className="text-white text-2xl font-bold">{user.longestStreak || 0}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-[#00c2a0] rounded-[2.5rem] p-8 relative overflow-hidden text-white shadow-xl transform transition-all hover:scale-105 hover:shadow-2xl">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00d8b3]/20 to-transparent animate-pulse" />
+        
+        <div className="absolute top-6 right-6 bg-[#0c1322]/20 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 border border-white/10 animate-bounce">
+          <span className="text-[#f39c12] text-xl">✨</span>
+          <span className="font-bold text-lg">{user.sparkies || 0}</span>
+        </div>
+        
+        <div className="relative z-10">
+          <p className="text-white/80 font-medium mb-1">Welcome back,</p>
+          <h2 className="text-4xl font-bold mb-2">{user.name}</h2>
+          <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-8">
+            {user.gradeLevel ? `Grade ${user.gradeLevel}` : ''} {user.section ? `• Section ${user.section}` : ''}
+          </p>
+          
+          <div className="flex justify-between items-center px-2">
+            <div className="text-center transform transition-transform hover:scale-110">
+              <p className="text-2xl font-bold">{user.totalGames || 0}</p>
+              <p className="text-[10px] uppercase font-bold text-white/60">Games</p>
+            </div>
+            <div className="w-px h-8 bg-white/20" />
+            <div className="text-center transform transition-transform hover:scale-110">
+              <p className="text-2xl font-bold">{user.wordsLearned || 0}</p>
+              <p className="text-[10px] uppercase font-bold text-white/60">Words</p>
+            </div>
+            <div className="w-px h-8 bg-white/20" />
+            <div className="text-center transform transition-transform hover:scale-110">
+              <p className="text-2xl font-bold">100%</p>
+              <p className="text-[10px] uppercase font-bold text-white/60">Mastery</p>
+            </div>
+            <div className="w-px h-8 bg-white/20" />
+            <div className="text-center transform transition-transform hover:scale-110">
+              <p className="text-2xl font-bold">{user.badges?.length || 0}</p>
+              <p className="text-[10px] uppercase font-bold text-white/60">Badges</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Grade-Appropriate Words Indicator */}
+      {user.gradeLevel && (
+        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-2 border-blue-500/20 rounded-2xl p-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-2xl">
+              📚
+            </div>
+            <div className="flex-1">
+              <h4 className="text-white font-bold text-lg mb-1">
+                Grade {user.gradeLevel} Words
+              </h4>
+              <p className="text-gray-400 text-sm">
+                You're getting words specially selected for Grade {user.gradeLevel} students. 
+                Each difficulty level is designed to match your learning level!
+              </p>
+            </div>
+            <div className="text-center px-4 py-2 bg-blue-500/20 rounded-xl">
+              <p className="text-blue-400 text-xs font-bold uppercase">Your Level</p>
+              <p className="text-white text-2xl font-bold">{user.gradeLevel}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <EnhancedButton
+        onClick={onStart}
+        variant="warning"
+        size="large"
+        icon="▶"
+        fullWidth
+        className="animate-pulse"
+      >
+        Start Playing
+      </EnhancedButton>
+
+      <section className="animate-in slide-in-from-bottom-4 duration-700">
+        <h3 className="text-2xl font-bold mb-4 text-white">Mastery Progress</h3>
+        <div className="bg-[#162031] rounded-[2rem] p-8 space-y-6 shadow-md transform transition-all hover:shadow-xl">
+          {user.levelProgress && (Object.values(user.levelProgress) as LevelProgress[]).map((p, index) => (
+            <div key={p.difficulty} className="flex items-center gap-4 animate-in slide-in-from-left duration-500" style={{ animationDelay: `${index * 100}ms` }}>
+              <span className="w-20 text-sm font-bold text-gray-400 capitalize">{p.difficulty.toLowerCase()}</span>
+              <div className="flex-1 h-2 bg-[#0b1221] rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ${p.mastery > 0 ? 'bg-gradient-to-r from-[#22c55e] to-[#16a34a] animate-pulse' : 'bg-[#1e293b]'}`}
+                  style={{ width: `${p.mastery}%` }}
+                />
+              </div>
+              <span className={`w-12 text-right text-sm font-bold ${p.mastery > 0 ? 'text-[#22c55e]' : 'text-gray-600'}`}>
+                {p.mastery}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const PlayView: React.FC<{ 
+  user: User; 
+  onLevelSelect: (d: Difficulty, isPractice?: boolean) => void; 
+  onQuickPlay: () => void; 
+  isPracticeMode?: boolean 
+}> = ({ user, onLevelSelect, onQuickPlay, isPracticeMode = false }) => (
+  <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+    <div className="mb-8">
+      <h2 className="text-3xl font-bold text-white mb-1">Choose Level</h2>
+      <p className="text-gray-500">Master each level to unlock the next</p>
+    </div>
+
+    {/* Practice Mode Indicator */}
+    {isPracticeMode && (
+      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-2 border-blue-500/30 rounded-2xl p-4 animate-in slide-in-from-top duration-500">
+        <div className="flex items-start gap-3">
+          <div className="text-2xl">📚</div>
+          <div className="flex-1">
+            <h4 className="text-white font-bold mb-1">Practice Mode</h4>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              You're using default practice words. Your teacher can add custom words for your grade level in the Word Bank.
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Quick Play Button */}
+    <button
+      onClick={onQuickPlay}
+      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-[2rem] p-6 shadow-xl transition-all active:scale-95 flex items-center justify-between transform hover:scale-105 animate-in slide-in-from-top duration-500"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl animate-bounce">⚡</div>
+        <div className="text-left">
+          <h3 className="text-xl font-bold text-white">Quick Play</h3>
+          <p className="text-white/70 text-sm">5 random words • Fast practice</p>
+        </div>
+      </div>
+      <div className="text-white text-2xl animate-pulse">→</div>
+    </button>
+
+    {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map(difficulty => {
+      const config = DIFFICULTY_CONFIG[difficulty];
+      const progress = user.levelProgress?.[difficulty];
+      
+      // Determine if level is locked
+      let isLocked = false;
+      let lockMessage = '';
+      
+      if (difficulty === Difficulty.MEDIUM) {
+        const easyMastery = user.levelProgress?.[Difficulty.EASY]?.mastery || 0;
+        isLocked = easyMastery < 85;
+        lockMessage = 'Score 85%+ in Easy Mode to unlock';
+      } else if (difficulty === Difficulty.HARD) {
+        const mediumMastery = user.levelProgress?.[Difficulty.MEDIUM]?.mastery || 0;
+        isLocked = mediumMastery < 85;
+        lockMessage = 'Score 85%+ in Medium Mode to unlock';
+      }
+
+      return (
+        <div 
+          key={difficulty}
+          className={`relative overflow-hidden rounded-[2.5rem] p-8 shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
+            isLocked ? 'bg-[#121c29] opacity-40' : 'animate-in slide-in-from-bottom-4'
+          }`}
+          style={{ 
+            backgroundColor: isLocked ? '#121c29' : config.color,
+            animationDelay: `${Object.keys(DIFFICULTY_CONFIG).indexOf(difficulty) * 100}ms`
+          }}
+        >
+          {/* Animated shine effect */}
+          {!isLocked && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shimmer" 
+                 style={{ animation: 'shimmer 3s infinite' }} />
+          )}
+          
+          <div className="flex items-start justify-between mb-6 relative z-10">
+            <div className="flex gap-6 items-center">
+              <div className="w-16 h-16 bg-white/20 rounded-3xl flex items-center justify-center text-3xl transform transition-transform hover:rotate-12 hover:scale-110">
+                {isLocked ? '🔒' : config.icon}
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">{config.label}</h3>
+                <p className="text-white/70 text-sm max-w-[200px] leading-tight">{config.sub}</p>
+              </div>
+            </div>
+            {!isLocked && (
+              <div className="bg-black/20 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 border border-white/10 animate-pulse">
+                <span className="text-[#f39c12]">✨</span>
+                <span className="text-white font-bold">+{config.reward}</span>
+              </div>
+            )}
+          </div>
+
+          {isLocked ? (
+            <div className="flex items-center gap-2 text-xs text-white/40 italic">
+              <span>ℹ️ {lockMessage}</span>
+            </div>
+          ) : progress ? (
+            <div>
+              <div className="w-full h-2 bg-black/20 rounded-full mb-3 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-white via-white/80 to-white rounded-full transition-all duration-1000 animate-pulse" 
+                  style={{ width: `${progress.mastery}%` }} 
+                />
+              </div>
+              <div className="flex justify-between items-center text-[11px] font-bold text-white uppercase tracking-wider mb-4">
+                <span>{progress.gamesPlayed} games played</span>
+                <span>{progress.mastery}%</span>
+              </div>
+              
+              {/* Action buttons - Practice only enabled if completed (mastery > 0) */}
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLevelSelect(difficulty, false);
+                  }}
+                  className="flex-1 bg-white/20 hover:bg-white/30 py-3 rounded-xl text-white font-bold text-sm transition-all active:scale-95 hover:shadow-lg"
+                >
+                  Play Again
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (progress.mastery > 0) {
+                      onLevelSelect(difficulty, true);
+                    }
+                  }}
+                  disabled={progress.mastery === 0}
+                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all border border-white/20 ${
+                    progress.mastery > 0 
+                      ? 'bg-black/20 hover:bg-black/30 text-white active:scale-95 hover:shadow-lg' 
+                      : 'bg-black/10 text-white/30 cursor-not-allowed opacity-50'
+                  }`}
+                  title={progress.mastery === 0 ? 'Complete this level first to unlock practice mode' : 'Practice without earning sparkies'}
+                >
+                  🎯 Practice
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-xs text-white/60 mb-4">
+              <span>Ready to play!</span>
+            </div>
+          )}
+          
+          {/* Play button for new levels */}
+          {!isLocked && !progress && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onLevelSelect(difficulty, false);
+              }}
+              className="w-full bg-white/20 hover:bg-white/30 py-3 rounded-xl text-white font-bold text-sm transition-all active:scale-95 hover:shadow-lg"
+            >
+              Start Level
+            </button>
+          )}
+        </div>
+      );
+    })}
+  </div>
+);
+
+// --- MAIN GAME SCREEN OVERLAY ---
+const GameOverlay: React.FC<{ 
+  difficulty: Difficulty; 
+  onClose: () => void;
+  onComplete: (s: GameSession) => void;
+  sparkies: number;
+  onUpdateSparkies: (n: number) => void;
+  gameWords: Word[];
+  isQuickPlay?: boolean; // NEW: Flag to indicate Quick Play mode
+  isPracticeMode?: boolean; // NEW: Flag to indicate Practice Mode (no sparkies)
+  usedWordIds?: Record<Difficulty, string[]>; // NEW: Track used words
+  userLanguage?: Language; // NEW: User's language preference
+}> = ({ difficulty, onClose, onComplete, sparkies, onUpdateSparkies, gameWords, isQuickPlay = false, isPracticeMode = false, usedWordIds, userLanguage = 'en' as Language }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [input, setInput] = useState('');
+  const [streak, setStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
+  const [sessionSparkies, setSessionSparkies] = useState(0);
+  const [revealedIndices, setRevealedIndices] = useState<number[]>([]);
+  const [isFeedback, setIsFeedback] = useState<null | 'correct' | 'wrong'>(null);
+  const [sessionResults, setSessionResults] = useState<{wordId: string, isCorrect: boolean, attempts: number}[]>([]);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_CONFIG[difficulty].timePerWord);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false); // NEW: Exit confirmation modal
+  const [showCloseHint, setShowCloseHint] = useState(false); // NEW: Show close hint in HARD mode
+  
+  // NEW: Feedback animation state
+  const [showFeedbackAnimation, setShowFeedbackAnimation] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'correct' | 'wrong' | 'streak' | 'complete'>('correct');
+  
+  // NEW: Time tracking
+  const [gameStartTime] = useState(Date.now());
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
+
+  // NEW: Volume control state
+  const [musicVolume, setMusicVolume] = useState(0.15); // Lower default volume (was 0.25)
+  const [showVolumeControl, setShowVolumeControl] = useState(false);
+
+  // Use refs to track current values for the completion callback
+  const sessionSparkiesRef = useRef(0);
+  const sessionResultsRef = useRef<{wordId: string, isCorrect: boolean, attempts: number}[]>([]);
+  const maxStreakRef = useRef(0);
+
+  const bgMusicRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // NEW: Use ref to store shuffled words so they don't re-shuffle on every render
+  const wordsRef = useRef<Word[]>([]);
+  const wordsInitialized = useRef(false);
+
+  // Initialize words only ONCE when component mounts - ignore prop changes during game
+  if (!wordsInitialized.current) {
+    // Note: Fresh word selection is now handled in the parent component
+    // This component receives pre-selected words via gameWords prop
+    let filteredWords;
+    
+    // In Quick Play mode, use all provided words without filtering
+    if (isQuickPlay) {
+      filteredWords = gameWords;
+    } else {
+      // In regular mode, filter by difficulty
+      filteredWords = gameWords.filter(w => w.difficulty === difficulty);
+    }
+    
+    // Randomize words ONCE
+    const shuffled = [...filteredWords].sort(() => Math.random() - 0.5);
+    
+    // Quick Play: 5 words, Regular Game: 10 words
+    const wordLimit = isQuickPlay ? 5 : 10;
+    const selectedWords = shuffled.slice(0, wordLimit);
+    
+    console.log(`🎮 Game starting with ${selectedWords.length} words (${difficulty})`);
+    
+    // Store in ref to prevent re-shuffling
+    wordsRef.current = selectedWords;
+    wordsInitialized.current = true;
+  }
+  
+  const words = wordsRef.current;
+  const currentWord = words[currentIdx];
+
+  useEffect(() => {
+    // Energetic, upbeat music during gameplay to keep students motivated
+    // Using local music file for reliable playback
+    bgMusicRef.current = new Audio('/music/background_music.mp3');
+    bgMusicRef.current.loop = true;
+    bgMusicRef.current.volume = musicVolume; // Use state volume
+    bgMusicRef.current.play().catch(() => {});
+
+    return () => {
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current = null;
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      // Reset words ref when component unmounts
+      wordsRef.current = [];
+      wordsInitialized.current = false;
+    };
+  }, []);
+
+  // Update music volume when slider changes
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      bgMusicRef.current.volume = musicVolume;
+    }
+  }, [musicVolume]);
+
+  // Timer countdown
+  useEffect(() => {
+    if (isTimeUp || isFeedback) return; // Pause timer during feedback
+    
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          setIsTimeUp(true);
+          handleTimeUp();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [currentIdx, isTimeUp, isFeedback]);
+
+  const handleTimeUp = () => {
+    console.log('⏰ Time is up!');
+    playSound('wrong');
+    
+    // Mark current word as wrong (time expired)
+    const newResult = { wordId: currentWord.id, isCorrect: false, attempts: 1 };
+    setSessionResults(prev => [...prev, newResult]);
+    sessionResultsRef.current = [...sessionResultsRef.current, newResult];
+    
+    // Show time-up message - user must click exit button to continue
+    // Removed automatic timeout - user controls when to exit
+  };
+
+  const handleGameEnd = () => {
+    const finalResults = sessionResultsRef.current;
+    const finalSparkies = sessionSparkiesRef.current;
+    const finalStreak = maxStreakRef.current;
+    
+    console.log('🏁 Game ending due to time up');
+    console.log('   Results:', finalResults.length);
+    console.log('   Sparkies:', finalSparkies);
+    
+    const timeSpentSeconds = Math.floor((Date.now() - gameStartTime) / 1000);
+    
+    onComplete({
+      difficulty,
+      words,
+      results: finalResults,
+      totalSparkiesEarned: finalSparkies,
+      streak: finalStreak,
+      timeSpent: timeSpentSeconds
+    });
+  };
+
+  const handleNext = () => {
+    // Clear feedback animation immediately
+    setShowFeedbackAnimation(false);
+    
+    if (currentIdx < words.length - 1) {
+      setCurrentIdx(i => i + 1);
+      setInput('');
+      setIsFeedback(null);
+      setRevealedIndices([]);
+      setShowCloseHint(false); // Reset close hint for next word
+      setTimeLeft(DIFFICULTY_CONFIG[difficulty].timePerWord); // Reset timer
+      setIsTimeUp(false);
+    } else {
+      playSound('complete');
+      
+      // Use ref values to get the most current state
+      const finalResults = sessionResultsRef.current;
+      const finalSparkies = sessionSparkiesRef.current;
+      const finalStreak = maxStreakRef.current;
+      
+      // Log completion details
+      console.log('📝 Game completing...');
+      console.log('   Total words:', words.length);
+      console.log('   Results recorded:', finalResults.length);
+      console.log('   Session sparkies:', finalSparkies);
+      console.log('   Max streak:', finalStreak);
+      
+      // Warn if no results (student didn't answer)
+      if (finalResults.length === 0) {
+        console.warn('⚠️ WARNING: Game completing with no results!');
+        console.warn('   Student may have closed game without answering');
+      }
+      
+      const timeSpentSeconds = Math.floor((Date.now() - gameStartTime) / 1000);
+      
+      onComplete({
+        difficulty,
+        words,
+        results: finalResults,
+        totalSparkiesEarned: finalSparkies,
+        streak: finalStreak,
+        timeSpent: timeSpentSeconds
+      });
+    }
+  };
+
+  const checkAnswer = () => {
+    if (!currentWord) return;
+    
+    console.log('🔍 checkAnswer called');
+    console.log('   Input:', input);
+    console.log('   Current word:', currentWord.term);
+    console.log('   Current results:', sessionResults.length);
+    console.log('   Is Practice Mode?', isPracticeMode || isQuickPlay);
+    
+    const isCorrect = input.trim().toUpperCase() === currentWord.term.toUpperCase();
+    
+    console.log('   Is correct?', isCorrect);
+    
+    if (isCorrect) {
+      playSound('correct');
+      setIsFeedback('correct');
+      const newStreak = streak + 1;
+      const bonus = newStreak % 2 === 0 ? 5 : 0;
+      
+      if (bonus > 0) playSound('streak');
+
+      // Show feedback animation
+      if (newStreak >= 3) {
+        setFeedbackType('streak');
+      } else {
+        setFeedbackType('correct');
+      }
+      setShowFeedbackAnimation(true);
+
+      // COMBINATION APPROACH: Reduce reward if hints were used
+      let baseReward = DIFFICULTY_CONFIG[difficulty].reward + bonus;
+      const hintsUsed = revealedIndices.length;
+      
+      // Apply 50% penalty if any hints were used
+      if (hintsUsed > 0) {
+        baseReward = Math.floor(baseReward * 0.5);
+        console.log(`   ⚠️ Hints used (${hintsUsed}): Reward reduced by 50%`);
+      }
+      
+      // Only award sparkies if NOT in practice/quick play mode
+      const reward = (isPracticeMode || isQuickPlay) ? 0 : baseReward;
+      const newSparkies = sessionSparkies + reward;
+      const newResult = { wordId: currentWord.id, isCorrect: true, attempts: 1 };
+      
+      if (isPracticeMode || isQuickPlay) {
+        console.log('   ✅ Correct! (Practice Mode - No sparkies awarded)');
+      } else {
+        console.log('   ✅ Correct! Adding', reward, 'sparkies');
+        console.log('   New total sparkies:', newSparkies);
+      }
+      
+      // Update state
+      setSessionSparkies(newSparkies);
+      setStreak(newStreak);
+      setMaxStreak(m => Math.max(m, newStreak));
+      setSessionResults(prev => [...prev, newResult]);
+      
+      // Update refs immediately for handleNext
+      sessionSparkiesRef.current = newSparkies;
+      sessionResultsRef.current = [...sessionResultsRef.current, newResult];
+      maxStreakRef.current = Math.max(maxStreakRef.current, newStreak);
+      
+      console.log('   Waiting 1.2s before next word...');
+      setTimeout(handleNext, 1200);
+    } else {
+      playSound('wrong');
+      setIsFeedback('wrong');
+      setStreak(0);
+      
+      // Show wrong feedback animation
+      setFeedbackType('wrong');
+      setShowFeedbackAnimation(true);
+      
+      const newResult = { wordId: currentWord.id, isCorrect: false, attempts: 1 };
+      setSessionResults(prev => [...prev, newResult]);
+      
+      // Update ref immediately
+      sessionResultsRef.current = [...sessionResultsRef.current, newResult];
+      
+      console.log('   ❌ Wrong! No sparkies. Try again or move on.');
+      setTimeout(() => setIsFeedback(null), 1000);
+    }
+  };
+
+  const useHint = () => {
+    if (!currentWord) return;
+    
+    // COMBINATION APPROACH LIMITS
+    const MAX_HINTS_PER_WORD = 3; // Limit to 3 reveals per word
+    const hintsUsed = revealedIndices.length;
+    
+    // Check if max hints reached
+    if (hintsUsed >= MAX_HINTS_PER_WORD) {
+      playSound('wrong');
+      return;
+    }
+    
+    const isFree = hintsUsed === 0;
+    
+    // STEEPER PROGRESSIVE COST: Free, 10, 25, 50
+    const hintCostTable = [0, 10, 25, 50];
+    const hintCost = hintCostTable[hintsUsed] || 50;
+    
+    // Check if user has enough sparkies
+    if (!isFree && sparkies < hintCost) {
+      // Show feedback that they don't have enough sparkies
+      playSound('wrong');
+      return;
+    }
+    
+    // Get available letters to reveal
+    const available = [...currentWord.term].map((_, i) => i).filter(i => !revealedIndices.includes(i));
+    if (available.length === 0) return;
+    
+    // Reveal a random unrevealed letter
+    setRevealedIndices(prev => [...prev, available[Math.floor(Math.random() * available.length)]]);
+    
+    // Deduct sparkies if not free
+    if (!isFree) {
+      onUpdateSparkies(-hintCost);
+      playSound('click');
+    } else {
+      playSound('correct');
+    }
+  };
+  
+  // Calculate next hint cost for display
+  const getNextHintCost = () => {
+    const MAX_HINTS_PER_WORD = 3;
+    const hintsUsed = revealedIndices.length;
+    
+    if (hintsUsed >= MAX_HINTS_PER_WORD) return 0; // Max reached
+    if (hintsUsed === 0) return 0; // First hint is free
+    
+    // STEEPER PROGRESSIVE COST: Free, 10, 25, 50
+    const hintCostTable = [0, 10, 25, 50];
+    return hintCostTable[hintsUsed] || 50;
+  };
+
+  const handleClose = () => {
+    // Warn if trying to close without completing
+    if (sessionResults.length < words.length) {
+      setShowExitModal(true); // Show modal instead of window.confirm
+    } else {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (difficulty === Difficulty.MEDIUM && currentWord) speakWord(currentWord.term);
+  }, [currentIdx, difficulty, currentWord]);
+
+  if (!currentWord) return null;
+
+  // Calculate timer color based on time left
+  const timerPercentage = (timeLeft / DIFFICULTY_CONFIG[difficulty].timePerWord) * 100;
+  const timerColor = timerPercentage > 50 ? '#22c55e' : timerPercentage > 25 ? '#f39c12' : '#ef4444';
+
+  // Show time-up overlay
+  if (isTimeUp) {
+    return (
+      <div className="fixed inset-0 bg-[#0b1221] z-[100] p-8 flex items-center justify-center animate-in fade-in duration-300">
+        <div className="text-center space-y-6 animate-in zoom-in duration-500 max-w-md">
+          <div className="text-8xl mb-4">⏰</div>
+          <h2 className="text-4xl font-bold text-white mb-4">Time's Up!</h2>
+          <p className="text-xl text-gray-400 mb-2">Better luck next time!</p>
+          <p className="text-lg text-gray-500">Study more to get higher scores and sparkies ✨</p>
+          <div className="mt-8 text-gray-600">
+            <p>You earned: <span className="text-[#f39c12] font-bold">{sessionSparkiesRef.current} sparkies</span></p>
+            <p>Words completed: <span className="text-white font-bold">{sessionResultsRef.current.length}/{words.length}</span></p>
+          </div>
+          
+          {/* Exit Button */}
+          <button
+            onClick={() => {
+              // Stop background music
+              if (bgMusicRef.current) {
+                bgMusicRef.current.pause();
+                bgMusicRef.current = null;
+              }
+              handleGameEnd();
+            }}
+            className="mt-8 bg-[#00c2a0] hover:bg-[#00d8b3] text-white font-bold py-4 px-8 rounded-2xl transition-all active:scale-95 shadow-lg"
+          >
+            Exit Game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-[#0b1221] z-[100] flex flex-col overflow-hidden animate-in fade-in duration-300">
+      {/* Feedback Animation */}
+      <FeedbackAnimation
+        type={feedbackType}
+        show={showFeedbackAnimation}
+        onComplete={() => setShowFeedbackAnimation(false)}
+        streakCount={streak}
+      />
+      
+      {/* Floating Progress Bar - Now independent */}
+      <GameProgressBar
+        currentQuestion={currentIdx + 1}
+        totalQuestions={words.length}
+        correctCount={sessionResults.filter(r => r.isCorrect).length}
+        streak={streak}
+      />
+      
+      {/* Top Bar with Close and Timer - Compact */}
+      <div className="flex justify-between items-center p-4 pt-20">
+        <button onClick={handleClose} className="text-white bg-[#162031] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg active:scale-90 btn-hover text-xl">✕</button>
+        
+        {/* Volume Control Button */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowVolumeControl(!showVolumeControl);
+            }}
+            className="text-white bg-[#162031] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg active:scale-90 btn-hover text-lg"
+            title="Music Volume"
+          >
+            {musicVolume === 0 ? '🔇' : musicVolume < 0.3 ? '🔉' : '🔊'}
+          </button>
+          
+          {/* Volume Slider Popup */}
+          {showVolumeControl && (
+            <div 
+              className="absolute top-12 left-1/2 -translate-x-1/2 bg-[#162031] rounded-2xl p-4 shadow-2xl border border-white/10 z-[200] animate-in slide-in-from-top-2 duration-200 min-w-[200px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-white text-xs font-bold uppercase tracking-wider">Music Volume</span>
+                  <span className="text-[#00c2a0] text-xs font-bold">{Math.round(musicVolume * 100)}%</span>
+                </div>
+                
+                {/* Volume Slider */}
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={musicVolume * 100}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setMusicVolume(Number(e.target.value) / 100);
+                  }}
+                  className="w-full h-2 bg-[#0b1221] rounded-full appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, #00c2a0 0%, #00c2a0 ${musicVolume * 100}%, #0b1221 ${musicVolume * 100}%, #0b1221 100%)`
+                  }}
+                />
+                
+                {/* Quick Presets */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMusicVolume(0);
+                    }}
+                    className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                  >
+                    🔇 Off
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMusicVolume(0.15);
+                    }}
+                    className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                  >
+                    🔉 Low
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMusicVolume(0.5);
+                    }}
+                    className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                  >
+                    🔊 High
+                  </button>
+                </div>
+                
+                <p className="text-gray-500 text-[10px] text-center leading-tight">
+                  💡 Lower volume helps hear word audio better
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Timer Display - Compact */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#162031] border-2 relative overflow-hidden">
+              <svg className="absolute inset-0 w-full h-full -rotate-90">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#0b1221" strokeWidth="3" />
+                <circle
+                  cx="24" cy="24" r="20" fill="none" stroke={timerColor} strokeWidth="3"
+                  strokeDasharray={`${2 * Math.PI * 20}`}
+                  strokeDashoffset={`${2 * Math.PI * 20 * (1 - timerPercentage / 100)}`}
+                  className="transition-all duration-1000"
+                />
+              </svg>
+              <span className="text-white font-bold text-sm z-10">{timeLeft}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area - Compact layout for mobile */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-4 min-h-0 overflow-y-auto">
+        {/* Practice Mode Banner - Compact */}
+        {(isPracticeMode || isQuickPlay) && (
+          <div className="mb-2 bg-blue-500/20 border border-blue-500/50 rounded-xl p-2 text-center w-full max-w-lg">
+            <p className="text-blue-300 font-bold text-xs">🎯 Practice Mode</p>
+          </div>
+        )}
+
+        {/* Content based on difficulty - Compact spacing */}
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl space-y-3">
+          {difficulty === Difficulty.EASY && (
+            <>
+              <div className="bg-[#162031] p-3 rounded-2xl border border-[#00c2a0]/20 shadow-xl w-full">
+                <span className="text-[#00c2a0] text-[9px] font-black uppercase tracking-wider block mb-1">
+                  {t('wordClue', userLanguage)}
+                </span>
+                <p className="text-sm text-white font-medium leading-snug italic">
+                  "{userLanguage === 'fil' && currentWord.hintFil 
+                    ? currentWord.hintFil 
+                    : (currentWord.hint || currentWord.scenario || 'Can you spell this word?')}"
+                </p>
+              </div>
+              
+              <h2 className="text-2xl font-bold tracking-wider text-white">
+                {isFeedback === 'correct' 
+                  ? currentWord.term.split('').join(' ')
+                  : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
+                }
+              </h2>
+              
+              {/* Hint Button with Limit */}
+              <div className="w-full space-y-2">
+                <button 
+                  onClick={useHint} 
+                  disabled={(revealedIndices.length > 0 && sparkies < getNextHintCost()) || revealedIndices.length >= 3}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    revealedIndices.length >= 3
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : (revealedIndices.length > 0 && sparkies < getNextHintCost())
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : 'bg-white/5 text-[#f39c12] border-white/5 hover:bg-white/10 active:scale-95'
+                  }`}
+                >
+                  💡 {t('hint', userLanguage)} {
+                    revealedIndices.length >= 3
+                      ? '(Max 3 reached)'
+                      : revealedIndices.length === 0 
+                      ? '(Free!)' 
+                      : `(-${getNextHintCost()} ✨)`
+                  }
+                </button>
+                
+                {/* Hints remaining counter */}
+                {(revealedIndices.length > 0 || revealedIndices.length >= 3) && (
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-500">
+                      Hints used: {revealedIndices.length}/3
+                    </span>
+                    {revealedIndices.length > 0 && revealedIndices.length < 3 && (
+                      <span className="text-yellow-500 animate-pulse">
+                        ⚠️ Reward reduced by 50%
+                      </span>
+                    )}
+                  </div>
+                )}
+                
+                {/* Error messages */}
+                {revealedIndices.length >= 3 && (
+                  <p className="text-xs text-orange-400 text-center animate-pulse">
+                    Maximum hints reached! Try to spell it yourself 💪
+                  </p>
+                )}
+                {revealedIndices.length > 0 && revealedIndices.length < 3 && sparkies < getNextHintCost() && (
+                  <p className="text-xs text-red-400 text-center animate-pulse">
+                    Not enough sparkies! Need {getNextHintCost()} ✨
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+
+          {difficulty === Difficulty.MEDIUM && (
+            <>
+              <button onClick={() => speakWord(currentWord.term)} className="w-16 h-16 bg-[#00c2a0] rounded-full flex items-center justify-center text-2xl shadow-xl active:scale-90">🔊</button>
+              <p className="text-[#00c2a0] font-bold uppercase tracking-widest text-xs">{t('listenAndType', userLanguage)}</p>
+            </>
+          )}
+
+
+          {difficulty === Difficulty.HARD && (
+            <>
+              <div className="bg-[#162031] p-4 rounded-2xl border border-orange-500/20 shadow-inner w-full">
+                <p className="text-gray-500 uppercase text-[9px] font-bold mb-1 tracking-widest">{t('scenario', userLanguage)}</p>
+                <p className="text-sm text-white italic leading-relaxed">
+                  "{userLanguage === 'fil' && currentWord.scenarioFil 
+                    ? currentWord.scenarioFil 
+                    : (currentWord.scenario || (() => {
+                        // Comprehensive word-specific fallbacks with clear descriptions
+                        const term = currentWord.term.toLowerCase();
+                        
+                        // Common words with specific descriptions
+                        const wordDescriptions: {[key: string]: string} = {
+                          // Clothing & Accessories
+                          'sandal': 'You wear this on your feet when going outside to protect them.',
+                          'shoes': 'You wear these on your feet to walk comfortably.',
+                          'shirt': 'You wear this on the upper part of your body.',
+                          'pants': 'You wear these on your legs to cover them.',
+                          'dress': 'Girls and women wear this clothing that covers the body.',
+                          'hat': 'You wear this on your head to protect from sun or cold.',
+                          'socks': 'You wear these inside your shoes to keep feet warm.',
+                          'jacket': 'You wear this over your clothes when it\'s cold.',
+                          
+                          // Animals
+                          'animal': 'A living creature that moves, eats, and breathes.',
+                          'dog': 'A friendly pet that barks and wags its tail.',
+                          'cat': 'A furry pet that meows and likes to sleep.',
+                          'bird': 'A creature with wings and feathers that can fly.',
+                          'fish': 'A creature that lives and swims in water.',
+                          'lion': 'A big wild cat known as the king of the jungle.',
+                          'tiger': 'A large striped wild cat that lives in Asia.',
+                          'elephant': 'The largest land animal with a long trunk.',
+                          'monkey': 'A playful animal that swings from trees.',
+                          'rabbit': 'A small furry animal with long ears that hops.',
+                          'horse': 'A large animal that people can ride.',
+                          'cow': 'A farm animal that gives us milk.',
+                          'pig': 'A farm animal that says oink.',
+                          'chicken': 'A farm bird that lays eggs.',
+                          'duck': 'A water bird that quacks.',
+                          'butterfly': 'A beautiful insect with colorful wings.',
+                          'bee': 'An insect that makes honey and can sting.',
+                          'ant': 'A tiny insect that works in colonies.',
+                          'spider': 'A small creature with eight legs that makes webs.',
+                          
+                          // Nature & Plants
+                          'tree': 'A tall plant with a trunk, branches, and leaves.',
+                          'flower': 'The colorful part of a plant that blooms.',
+                          'grass': 'Short green plants that cover the ground.',
+                          'leaf': 'The flat green part that grows on plants.',
+                          'seed': 'A tiny thing you plant to grow a new plant.',
+                          'root': 'The part of a plant that grows underground.',
+                          'fruit': 'The sweet part of a plant that you can eat.',
+                          'vegetable': 'A plant or part of a plant that we eat.',
+                          
+                          // Weather & Sky
+                          'sun': 'The bright star that gives us light and warmth.',
+                          'moon': 'The bright object you see in the night sky.',
+                          'star': 'A tiny point of light you see at night.',
+                          'cloud': 'The white fluffy thing floating in the sky.',
+                          'rain': 'Water drops that fall from the sky.',
+                          'snow': 'White frozen water that falls in winter.',
+                          'wind': 'Moving air that you can feel but not see.',
+                          'storm': 'Bad weather with strong wind and rain.',
+                          'rainbow': 'Colorful arc in the sky after rain.',
+                          
+                          // Body Parts
+                          'hand': 'The part at the end of your arm with fingers.',
+                          'foot': 'The part at the end of your leg that you stand on.',
+                          'head': 'The top part of your body where your brain is.',
+                          'eye': 'The part of your face that you see with.',
+                          'ear': 'The part of your head that you hear with.',
+                          'nose': 'The part of your face that you smell with.',
+                          'mouth': 'The part of your face that you eat and talk with.',
+                          'tooth': 'The hard white thing in your mouth for chewing.',
+                          'hair': 'The strands that grow on your head.',
+                          'finger': 'One of the five parts at the end of your hand.',
+                          'toe': 'One of the five parts at the end of your foot.',
+                          
+                          // Food & Drinks
+                          'water': 'The clear liquid you drink to stay alive.',
+                          'milk': 'The white drink that comes from cows.',
+                          'juice': 'A sweet drink made from fruits.',
+                          'bread': 'A soft food made from flour that you eat.',
+                          'rice': 'Small white grains that you cook and eat.',
+                          'apple': 'A round red or green fruit that is crunchy.',
+                          'banana': 'A long yellow fruit that monkeys love.',
+                          'orange': 'A round citrus fruit that is orange colored.',
+                          'egg': 'An oval thing from chickens that you can cook.',
+                          'meat': 'Food that comes from animals.',
+                          'seafood': 'Food from the sea that you can cook and eat.',
+                          
+                          // Places
+                          'house': 'A building where people live.',
+                          'school': 'A place where children go to learn.',
+                          'park': 'An outdoor place with grass and trees to play.',
+                          'store': 'A place where you buy things.',
+                          'hospital': 'A place where sick people go to get better.',
+                          'church': 'A place where people go to pray.',
+                          'beach': 'A sandy place by the ocean.',
+                          'farm': 'A place where crops and animals are raised.',
+                          'forest': 'A large area with many trees.',
+                          'mountain': 'A very tall natural hill.',
+                          'river': 'A long flowing body of water.',
+                          'ocean': 'A very large body of salt water.',
+                          
+                          // Objects & Things
+                          'book': 'Something with pages that you read.',
+                          'pen': 'A tool you use to write with ink.',
+                          'pencil': 'A tool you use to write that can be erased.',
+                          'paper': 'A thin sheet you write or draw on.',
+                          'table': 'A flat surface with legs that you eat or work on.',
+                          'chair': 'Something with legs that you sit on.',
+                          'bed': 'A soft place where you sleep.',
+                          'door': 'Something you open to enter or leave a room.',
+                          'window': 'An opening in a wall that lets in light.',
+                          'car': 'A vehicle with four wheels that people drive.',
+                          'bike': 'A vehicle with two wheels that you pedal.',
+                          'ball': 'A round object you play with.',
+                          'toy': 'Something children play with for fun.',
+                          'phone': 'A device you use to talk to people far away.',
+                          'computer': 'A machine you use to work or play games.',
+                          'television': 'A screen that shows programs and movies.',
+                          
+                          // Actions & Concepts
+                          'love': 'A strong feeling of caring deeply for someone.',
+                          'happy': 'Feeling good and joyful inside.',
+                          'sad': 'Feeling unhappy or down.',
+                          'angry': 'Feeling mad or upset about something.',
+                          'friend': 'Someone you like and enjoy spending time with.',
+                          'family': 'The people you live with and are related to.',
+                          'help': 'When you do something good for someone.',
+                          'play': 'Having fun with games or toys.',
+                          'work': 'Doing tasks or jobs to earn money.',
+                          'learn': 'Getting new knowledge or skills.',
+                          'teach': 'Helping someone else learn something.',
+                          'read': 'Looking at words and understanding them.',
+                          'write': 'Making words with a pen or pencil.',
+                          'draw': 'Making pictures with pencils or crayons.',
+                          'sing': 'Making music with your voice.',
+                          'dance': 'Moving your body to music.',
+                          'run': 'Moving very fast on your feet.',
+                          'walk': 'Moving by putting one foot in front of the other.',
+                          'jump': 'Pushing yourself up into the air.',
+                          'swim': 'Moving through water using your arms and legs.',
+                          'eat': 'Putting food in your mouth and swallowing it.',
+                          'drink': 'Swallowing liquid into your body.',
+                          'sleep': 'Resting with your eyes closed at night.',
+                          'wake': 'Opening your eyes and getting up.',
+                          
+                          // Colors
+                          'red': 'The color of apples and fire trucks.',
+                          'blue': 'The color of the sky and ocean.',
+                          'green': 'The color of grass and leaves.',
+                          'yellow': 'The color of the sun and bananas.',
+                          'orangecolor': 'The color between red and yellow.',
+                          'purple': 'The color you get when you mix red and blue.',
+                          'pink': 'A light red color.',
+                          'brown': 'The color of chocolate and tree trunks.',
+                          'black': 'The darkest color, like the night sky.',
+                          'white': 'The lightest color, like snow.',
+                          
+                          // Numbers & Math
+                          'number': 'A symbol used for counting.',
+                          'count': 'Saying numbers in order.',
+                          'add': 'Putting numbers together to get more.',
+                          'subtract': 'Taking away to get less.',
+                          'multiply': 'Adding the same number many times.',
+                          'divide': 'Splitting into equal parts.',
+                        };
+                        
+                        // Check if we have a specific description for this word
+                        if (wordDescriptions[term]) {
+                          return wordDescriptions[term] + ' Can you spell it?';
+                        }
+                        
+                        // Category-based descriptive fallbacks for words not in the list
+                        const category = currentWord.category?.toLowerCase() || '';
+                        if (category.includes('science')) return 'Scientists study this important concept. Can you spell it?';
+                        if (category.includes('nature')) return 'You can find this in forests, oceans, or gardens. Can you spell it?';
+                        if (category.includes('environment')) return 'This affects the health of our planet. Can you spell it?';
+                        if (category.includes('math')) return 'You use this in mathematics to solve problems. Can you spell it?';
+                        if (category.includes('social')) return 'People use this when interacting with each other. Can you spell it?';
+                        if (category.includes('government')) return 'Countries use this system to organize their people. Can you spell it?';
+                        if (category.includes('character')) return 'This personal trait helps you become better. Can you spell it?';
+                        if (category.includes('mind')) return 'Your brain uses this special ability. Can you spell it?';
+                        if (category.includes('arts')) return 'Artists use this in their creative work. Can you spell it?';
+                        if (category.includes('events')) return 'People celebrate this special moment. Can you spell it?';
+                        
+                        // Final fallback
+                        return `This is a ${currentWord.term.length}-letter word. Use "Show Hint" for help!`;
+                      })())}"
+                </p>
+              </div>
+              
+              {/* Close Hint Button */}
+              <button
+                onClick={() => setShowCloseHint(!showCloseHint)}
+                className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 px-4 py-2 rounded-xl text-blue-300 text-xs font-bold transition-all active:scale-95"
+              >
+                💡 {showCloseHint ? 'Hide Hint' : 'Show Hint'} (Close Hint)
+              </button>
+              
+              {/* Close Hint Display */}
+              {showCloseHint && currentWord.hint && (
+                <div className="bg-blue-500/10 border border-blue-500/30 p-3 rounded-xl animate-in slide-in-from-top-2 duration-300">
+                  <p className="text-blue-300 text-xs font-bold uppercase tracking-wider mb-1">💡 Hint:</p>
+                  <p className="text-white text-sm">
+                    {userLanguage === 'fil' && currentWord.hintFil 
+                      ? currentWord.hintFil 
+                      : currentWord.hint}
+                  </p>
+                </div>
+              )}
+              
+              {/* Show word structure with revealed letters */}
+              <div className="text-center space-y-2">
+                <p className="text-[#f39c12] text-xs uppercase tracking-wider font-bold">Spell this word:</p>
+                <h2 className="text-2xl font-bold tracking-[0.5em] text-white">
+                  {isFeedback === 'correct' 
+                    ? currentWord.term.split('').join(' ')
+                    : currentWord.term.split('').map((char, i) => revealedIndices.includes(i) ? char : '_').join(' ')
+                  }
+                </h2>
+                <p className="text-gray-500 text-xs">
+                  ({currentWord.term.length} {currentWord.term.length === 1 ? 'letter' : 'letters'})
+                </p>
+              </div>
+              
+              {/* Reveal Letter Button (Progressive Cost with Limit) */}
+              <div className="w-full space-y-2">
+                <button 
+                  onClick={useHint} 
+                  disabled={(revealedIndices.length > 0 && sparkies < getNextHintCost()) || revealedIndices.length >= 3}
+                  className={`w-full px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    revealedIndices.length >= 3
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : (revealedIndices.length > 0 && sparkies < getNextHintCost())
+                      ? 'bg-gray-700/50 text-gray-500 border-gray-600 cursor-not-allowed'
+                      : 'bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border-orange-500/50 active:scale-95'
+                  }`}
+                >
+                  🔓 Reveal Letter {
+                    revealedIndices.length >= 3
+                      ? '(Max 3 reached)'
+                      : revealedIndices.length === 0 
+                      ? '(Free!)' 
+                      : `(-${getNextHintCost()} ✨)`
+                  }
+                </button>
+                
+                {/* Hints remaining counter */}
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-500">
+                    Hints used: {revealedIndices.length}/3
+                  </span>
+                  {revealedIndices.length > 0 && (
+                    <span className="text-yellow-500 animate-pulse">
+                      ⚠️ Reward reduced by 50%
+                    </span>
+                  )}
+                </div>
+                
+                {/* Error messages */}
+                {revealedIndices.length >= 3 && (
+                  <p className="text-xs text-orange-400 text-center animate-pulse">
+                    Maximum hints reached! Try to spell it yourself 💪
+                  </p>
+                )}
+                {revealedIndices.length > 0 && revealedIndices.length < 3 && sparkies < getNextHintCost() && (
+                  <p className="text-xs text-red-400 text-center animate-pulse">
+                    Not enough sparkies! Need {getNextHintCost()} ✨
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Input Field - Compact */}
+          <div className="w-full relative">
+            {/* Instruction for Filipino users */}
+            {userLanguage === 'fil' && (
+              <p className="text-center text-[#00c2a0] text-xs font-bold uppercase tracking-wider mb-2 animate-pulse">
+                ⌨️ {t('spellInEnglish', userLanguage)}
+              </p>
+            )}
+            <input 
+              type="text" 
+              value={input} 
+              onChange={e => setInput(e.target.value)}
+              className="w-full bg-[#162031] rounded-2xl py-3 text-xl text-center text-white font-bold uppercase tracking-widest outline-none border-2 border-transparent focus:border-[#00c2a0] transition-all shadow-inner"
+              placeholder="..."
+              autoFocus
+              onKeyDown={e => e.key === 'Enter' && checkAnswer()}
+            />
+            {isFeedback && (
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-in zoom-in duration-300">
+                <div className={`font-bold px-4 py-1.5 rounded-full shadow-xl text-xs ${isFeedback === 'correct' ? 'bg-[#22c55e] text-white' : 'bg-red-500 text-white'}`}>
+                  {isFeedback === 'correct' ? 'EXCELLENT! 🌟' : 'TRY AGAIN! 🧩'}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button - Right below input */}
+          <div className="w-full space-y-2 pt-2">
+            <button 
+              onClick={checkAnswer} 
+              disabled={isFeedback === 'correct'}
+              className="w-full bg-[#00c2a0] py-3.5 rounded-2xl text-white font-bold text-base shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Submit Word
+            </button>
+            
+            {isFeedback === 'wrong' && (
+              <button 
+                onClick={handleNext} 
+                className="w-full bg-orange-500 hover:bg-orange-600 py-3.5 rounded-2xl text-white font-bold text-base shadow-xl active:scale-95 animate-in slide-in-from-bottom-4 duration-300"
+              >
+                {currentIdx < words.length - 1 ? 'Skip to Next →' : 'Finish →'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Exit Confirmation Modal */}
+      {showExitModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-8 animate-in fade-in duration-300">
+          <div className="bg-[#162031] rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl border border-white/10 animate-in zoom-in duration-300">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-5xl">⚠️</span>
+              </div>
+              
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-3">Wait! Are you sure?</h3>
+                <p className="text-gray-400 text-lg leading-relaxed">
+                  You have <span className="text-white font-bold">{words.length - sessionResults.length}</span> unanswered word(s).
+                </p>
+                <p className="text-gray-500 text-sm mt-2">
+                  {isPracticeMode || isQuickPlay 
+                    ? "You're in practice mode, so no progress will be lost." 
+                    : "You won't earn any sparkies if you quit now."}
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowExitModal(false)}
+                  className="flex-1 bg-[#00c2a0] hover:bg-[#00d8b3] py-4 rounded-2xl text-white font-bold text-lg transition-all active:scale-95"
+                >
+                  Keep Playing
+                </button>
+                <button
+                  onClick={() => {
+                    setShowExitModal(false);
+                    onClose();
+                  }}
+                  className="flex-1 bg-red-500/20 hover:bg-red-500/30 border-2 border-red-500/50 py-4 rounded-2xl text-red-400 font-bold text-lg transition-all active:scale-95"
+                >
+                  Quit Game
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- APP ---
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('home');
+  const [user, setUser] = useState<User | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [activeGame, setActiveGame] = useState<Difficulty | null>(null);
+  const [wordList, setWordList] = useState<Word[]>(INITIAL_MOCK_WORDS);
+  const [isPracticeMode, setIsPracticeMode] = useState(false); // Track if using default practice words
+  const [loading, setLoading] = useState(true);
+  const [showProgressDashboard, setShowProgressDashboard] = useState(false);
+  const [showReviewWords, setShowReviewWords] = useState(false);
+  const [isQuickPlay, setIsQuickPlay] = useState(false);
+  const [quickPlayWords, setQuickPlayWords] = useState<Word[]>([]);
+  const [milestone, setMilestone] = useState<any>(null);
+  const [previousBadges, setPreviousBadges] = useState<string[]>([]);
+  const [previousCerts, setPreviousCerts] = useState<number>(0);
+  const [teacherTab, setTeacherTab] = useState<'dashboard' | 'students' | 'words' | 'analytics'>('dashboard');
+  const [showPostGameEngagement, setShowPostGameEngagement] = useState(false);
+  const [lastCompletedDifficulty, setLastCompletedDifficulty] = useState<Difficulty | null>(null);
+  
+  // Background music
+  const bgMusicRef = useRef<HTMLAudioElement | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(0.35); // Default volume
+  const [showVolumeControl, setShowVolumeControl] = useState(false);
+
+  // Global button click sound effect
+  useEffect(() => {
+    const handleButtonClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        playClickSound();
+      }
+    };
+    
+    document.addEventListener('click', handleButtonClick);
+    return () => document.removeEventListener('click', handleButtonClick);
+  }, []);
+
+  // Initialize background music ONLY after successful login
+  useEffect(() => {
+    // Only initialize music if user is logged in
+    if (!user) {
+      // Clean up music if user logs out
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current = null;
+      }
+      setIsMusicPlaying(false);
+      return;
+    }
+
+    // User is logged in, initialize background music
+    if (!bgMusicRef.current) {
+      bgMusicRef.current = new Audio('/music/background_music.mp3');
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.volume = musicVolume; // Use state volume
+      
+      // Auto-play on user interaction - more aggressive approach
+      const playMusic = () => {
+        if (bgMusicRef.current && !isMusicPlaying) {
+          bgMusicRef.current.play().then(() => {
+            setIsMusicPlaying(true);
+          }).catch(() => {
+            // Browser blocked autoplay, will try again on next interaction
+          });
+        }
+      };
+      
+      // Try to play immediately (might fail due to autoplay policy)
+      playMusic();
+      
+      // Also try on any user interaction
+      const events = ['click', 'touchstart', 'keydown', 'scroll'];
+      events.forEach(event => {
+        document.addEventListener(event, playMusic, { once: true });
+      });
+      
+      return () => {
+        events.forEach(event => {
+          document.removeEventListener(event, playMusic);
+        });
+      };
+    }
+  }, [user, isMusicPlaying, musicVolume]);
+  
+  // Update music volume when it changes
+  useEffect(() => {
+    if (bgMusicRef.current) {
+      bgMusicRef.current.volume = musicVolume;
+      
+      // Pause music if volume is 0, resume if volume > 0
+      if (musicVolume === 0) {
+        bgMusicRef.current.pause();
+      } else if (bgMusicRef.current.paused) {
+        bgMusicRef.current.play().catch(() => {});
+      }
+    }
+  }, [musicVolume]);
+  
+  // Close volume control when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showVolumeControl) {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.volume-control-container')) {
+          setShowVolumeControl(false);
+        }
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showVolumeControl]);
+  
+  const toggleMusic = () => {
+    if (bgMusicRef.current) {
+      if (isMusicPlaying) {
+        bgMusicRef.current.pause();
+        setIsMusicPlaying(false);
+      } else {
+        bgMusicRef.current.play().then(() => {
+          setIsMusicPlaying(true);
+        }).catch(console.error);
+      }
+    }
+  };
+
+  // Listen to Firebase auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          console.log('🔐 Auth state changed - user authenticated:', firebaseUser.uid);
+          
+          // Try to get user document with retry logic
+          let userData = await getCurrentUser(firebaseUser);
+          
+          if (!userData) {
+            console.warn("⚠️ User document not found, attempting to create...");
+            
+            // Determine role based on email (temporary logic)
+            let role = UserRole.STUDENT;
+            if (firebaseUser.email?.includes('admin')) {
+              role = UserRole.ADMIN;
+            } else if (firebaseUser.email?.includes('teacher')) {
+              role = UserRole.TEACHER;
+            }
+            
+            const newUserData: any = {
+              id: firebaseUser.uid,
+              name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+              email: firebaseUser.email || '',
+              username: firebaseUser.email?.split('@')[0] || 'user',
+              role: role
+            };
+            
+            // Add student-specific fields if student
+            if (role === UserRole.STUDENT) {
+              newUserData.sparkies = 0;
+              newUserData.totalGames = 0;
+              newUserData.wordsLearned = 0;
+              newUserData.bestStreak = 0;
+              newUserData.badges = [];
+              newUserData.certificates = [];
+              newUserData.achievements = [];
+              newUserData.levelProgress = {
+                [Difficulty.EASY]: { difficulty: Difficulty.EASY, mastery: 0, gamesPlayed: 0 },
+                [Difficulty.MEDIUM]: { difficulty: Difficulty.MEDIUM, mastery: 0, gamesPlayed: 0 },
+                [Difficulty.HARD]: { difficulty: Difficulty.HARD, mastery: 0, gamesPlayed: 0 }
+              };
+              newUserData.currentStreak = 0;
+              newUserData.longestStreak = 0;
+              newUserData.lastPlayedDate = new Date().toISOString().split('T')[0];
+              newUserData.wrongWords = [];
+              newUserData.progressHistory = [];
+            }
+            
+            // Remove undefined values
+            const cleanedUserData = Object.fromEntries(
+              Object.entries(newUserData).filter(([_, v]) => v !== undefined)
+            );
+            
+            // Create the document with retry
+            let retries = 3;
+            let documentCreated = false;
+            
+            while (retries > 0 && !documentCreated) {
+              try {
+                await setDoc(doc(db, "users", firebaseUser.uid), {
+                  ...cleanedUserData,
+                  createdAt: Timestamp.now()
+                });
+                
+                console.log('✅ Firestore document created successfully');
+                
+                // Verify the document was created
+                const verifyDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+                if (verifyDoc.exists()) {
+                  console.log('✅ Document verified in Firestore');
+                  userData = verifyDoc.data() as User;
+                  documentCreated = true;
+                } else {
+                  throw new Error('Document verification failed');
+                }
+              } catch (error) {
+                retries--;
+                console.warn(`⚠️ Failed to create document, retries left: ${retries}`, error);
+                if (retries > 0) {
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+              }
+            }
+            
+            if (!documentCreated) {
+              console.error('❌ Failed to create user document after all retries');
+              await signOutUser().catch(() => {});
+              setUser(null);
+              setLoading(false);
+              return;
+            }
+          }
+          
+          if (userData) {
+            console.log('✅ User data loaded successfully');
+            setUser(userData);
+            // Track badges and certs for milestone detection
+            setPreviousBadges(userData.badges || []);
+            setPreviousCerts(userData.certificates?.length || 0);
+            // Reset game state when user changes
+            setActiveGame(null);
+            setActiveTab('home');
+          }
+        } catch (error) {
+          console.error("❌ Error in auth state handler:", error);
+          // If Firebase isn't set up, sign out the user
+          await signOutUser().catch(() => {});
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+        // Clear game state when user logs out
+        setActiveGame(null);
+        setActiveTab('home');
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Load words from Firebase with real-time sync (HYBRID APPROACH)
+  useEffect(() => {
+    if (!user) return;
+    
+    console.log('🔄 Setting up hybrid word loading (offline-first)...');
+    
+    // STEP 1: Immediately load local bilingual words (works offline)
+    const gradeLevel = user?.role === UserRole.STUDENT ? user.gradeLevel : undefined;
+    const section = user?.role === UserRole.STUDENT ? user.section : undefined;
+    
+    let localWords = BILINGUAL_WORDS;
+    
+    // Apply filtering for students
+    if (gradeLevel || section) {
+      localWords = BILINGUAL_WORDS.filter(word => {
+        // CUMULATIVE GRADE FILTERING: Grade 2 sees Grade 1-2 words
+        // Check if ANY of the word's grade levels <= student's grade
+        const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 || 
+                         (gradeLevel && word.gradeLevels.some(wordGrade => {
+                           const studentGradeNum = parseInt(gradeLevel);
+                           const wordGradeNum = parseInt(wordGrade);
+                           return !isNaN(studentGradeNum) && !isNaN(wordGradeNum) && wordGradeNum <= studentGradeNum;
+                         }));
+        const sectionMatch = !word.sections || word.sections.length === 0 || 
+                           (section && word.sections.includes(section));
+        return gradeMatch && sectionMatch;
+      });
+      
+      console.log(`📚 Local Words Loaded (Offline-Ready):`);
+      console.log(`   Student Grade: ${gradeLevel || 'Not set'}`);
+      console.log(`   Student Section: ${section || 'Not set'}`);
+      console.log(`   Total local words: ${BILINGUAL_WORDS.length}`);
+      console.log(`   Words available for this student: ${localWords.length}`);
+      
+      // Log breakdown by difficulty
+      const easyCount = localWords.filter(w => w.difficulty === Difficulty.EASY).length;
+      const mediumCount = localWords.filter(w => w.difficulty === Difficulty.MEDIUM).length;
+      const hardCount = localWords.filter(w => w.difficulty === Difficulty.HARD).length;
+      console.log(`   Breakdown: ${easyCount} Easy, ${mediumCount} Medium, ${hardCount} Hard`);
+    }
+    
+    // Set local words immediately (works offline)
+    setWordList(localWords);
+    setIsPracticeMode(false);
+    console.log('✅ Local words loaded successfully (offline-ready)');
+    
+    // STEP 2: Try to sync with Firestore (online only)
+    // This will merge Firestore words with local words when online
+    const wordsQuery = query(collection(db, 'words'));
+    
+    const unsubscribe = onSnapshot(wordsQuery, async (snapshot) => {
+      try {
+        const firestoreWords = snapshot.docs.map(doc => ({ 
+          id: doc.id, 
+          ...doc.data() 
+        } as Word));
+        
+        if (firestoreWords.length > 0) {
+          console.log('📡 Real-time update: Received', firestoreWords.length, 'words from Firestore');
+          
+          // Use Firestore words as the source of truth (don't merge with local)
+          // This ensures deleted words are removed
+          const allWords = firestoreWords;
+          
+          // Apply filtering for students
+          let filteredWords = allWords;
+          if (gradeLevel || section) {
+            filteredWords = allWords.filter(word => {
+              // CUMULATIVE GRADE FILTERING: Grade 2 sees Grade 1-2 words
+              // Check if ANY of the word's grade levels <= student's grade
+              const gradeMatch = !word.gradeLevels || word.gradeLevels.length === 0 ||
+                               (gradeLevel && word.gradeLevels.some(wordGrade => {
+                                 const studentGradeNum = parseInt(gradeLevel);
+                                 const wordGradeNum = parseInt(wordGrade);
+                                 return !isNaN(studentGradeNum) && !isNaN(wordGradeNum) && wordGradeNum <= studentGradeNum;
+                               }));
+              const sectionMatch = !word.sections || word.sections.length === 0 || 
+                                 (section && word.sections.includes(section));
+              return gradeMatch && sectionMatch;
+            });
+          }
+          
+          console.log('✅ Loaded words from Firestore:', filteredWords.length, 'total');
+          
+          // SMART MERGE: Use whichever source has MORE words
+          // This ensures students always have words to practice with
+          let finalWords = filteredWords;
+          
+          if (localWords.length > filteredWords.length) {
+            console.log(`📚 Using local words (${localWords.length}) instead of Firestore (${filteredWords.length}) - more words available locally`);
+            finalWords = localWords;
+          } else if (filteredWords.length > 0) {
+            console.log(`📡 Using Firestore words (${filteredWords.length}) - more words than local (${localWords.length})`);
+            // Cache words for offline use (this will replace old cache)
+            await cacheWordsForOffline(filteredWords, true); // Force update cache
+          }
+          
+          setWordList(finalWords);
+          setIsPracticeMode(false);
+        } else {
+          // No words in Firestore, use local words
+          console.log('⚠️ No words in Firestore, using local words');
+          setWordList(localWords);
+        }
+      } catch (error) {
+        console.warn('⚠️ Firestore sync failed (offline mode):', error);
+        console.log('✅ Continuing with local words (offline-ready)');
+        // Keep using local words - already set above
+      }
+    }, (error) => {
+      console.warn('⚠️ Firestore listener error (offline mode):', error);
+      console.log('✅ Continuing with local words (offline-ready)');
+      // Keep using local words - already set above
+    });
+    
+    return () => unsubscribe();
+  }, [user]);
+
+  // Fallback: If no words loaded after 2 seconds, ensure local words are used
+  useEffect(() => {
+    if (!user) return;
+    
+    const fallbackTimer = setTimeout(() => {
+      if (wordList.length === 0) {
+        console.warn('⚠️ Fallback: Ensuring local words are loaded');
+        setWordList(BILINGUAL_WORDS);
+        setIsPracticeMode(false);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(fallbackTimer);
+  }, [user, wordList.length]);
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = async () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
+    try {
+      // Stop background music
+      if (bgMusicRef.current) {
+        bgMusicRef.current.pause();
+        bgMusicRef.current = null;
+      }
+      setIsMusicPlaying(false);
+      
+      await signOutUser();
+      setUser(null);
+      setActiveTab('home');
+      setActiveGame(null);
+      setShowLogoutModal(false);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const handleUpdateSparkies = (n: number) => {
+    if (user && user.sparkies !== undefined) {
+      setUser({ ...user, sparkies: Math.max(0, (user.sparkies || 0) + n) });
+    }
+  };
+
+  const handleGameComplete = async (session: GameSession) => {
+    if (!user) return;
+    
+    console.log('🎮 Game Complete!');
+    console.log('   Session data:', session);
+    console.log('   Difficulty:', session.difficulty);
+    console.log('   Total words:', session.words.length);
+    console.log('   Results:', session.results);
+    console.log('   Sparkies earned:', session.totalSparkiesEarned);
+    console.log('   Streak:', session.streak);
+    console.log('   Time spent:', session.timeSpent, 'seconds');
+    console.log('   Is Practice/Quick Play?', isQuickPlay || isPracticeMode);
+    
+    // If in practice/quick play mode, don't save progress but show engagement screen
+    if (isQuickPlay || isPracticeMode) {
+      console.log('🎯 Practice Mode - Progress not saved');
+      setActiveGame(null);
+      setIsQuickPlay(false);
+      setIsPracticeMode(false);
+      // Show post-game engagement even for practice mode
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
+      return;
+    }
+    
+    try {
+      // Mark words as used in offline storage (prevents repetition)
+      if (!isQuickPlay && !isPracticeMode && session.words.length > 0) {
+        const wordIds = session.words.map(w => w.id);
+        await markWordsAsUsed(user.id, wordIds);
+        console.log(`✅ Marked ${wordIds.length} words as used for offline tracking`);
+      }
+      
+      // Update completion time if time was tracked
+      if (session.timeSpent && session.timeSpent > 0) {
+        await updateCompletionTime(user.id, session.timeSpent);
+        console.log('⏱️ Updated completion time:', session.timeSpent, 'seconds');
+      }
+      
+      // Update progress in Firebase
+      console.log('📤 Updating user progress in Firebase...');
+      const updates = await updateUserProgress(user.id, session);
+      console.log('✅ Progress updated successfully!');
+      console.log('   New sparkies:', updates.sparkies);
+      console.log('   New total games:', updates.totalGames);
+      console.log('   New words learned:', updates.wordsLearned);
+      console.log('   Updates:', updates);
+      
+      // Check for new milestones
+      const newBadges = (updates.badges || []).filter(b => !previousBadges.includes(b));
+      const newCerts = (updates.certificates?.length || 0) - previousCerts;
+      const newStreak = updates.currentStreak || 0;
+      const oldStreak = user.currentStreak || 0;
+      
+      // Update local state
+      setUser(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          ...updates
+        };
+      });
+      
+      // Update tracking
+      setPreviousBadges(updates.badges || []);
+      setPreviousCerts(updates.certificates?.length || 0);
+      
+      setActiveGame(null);
+      setIsQuickPlay(false);
+      setIsPracticeMode(false);
+      
+      // Check if word pool was reset (all words completed)
+      const oldUsedIds = user.usedWordIds?.[session.difficulty] || [];
+      const newUsedIds = updates.usedWordIds?.[session.difficulty] || [];
+      const wasReset = oldUsedIds.length > newUsedIds.length && oldUsedIds.length > 0;
+      
+      // Show milestone celebration first, then post-game engagement
+      if (wasReset) {
+        // Word pool reset - student completed all words!
+        setMilestone({
+          type: 'achievement',
+          title: 'All Words Mastered!',
+          description: `You've completed all ${session.difficulty} words! Starting fresh with new questions.`,
+          icon: '🎓',
+          color: '#8b5cf6'
+        });
+      } else if (newCerts > 0) {
+        const cert = updates.certificates![updates.certificates!.length - 1];
+        setMilestone({
+          type: 'certificate',
+          title: 'Certificate Earned!',
+          description: `You mastered ${cert.difficulty} mode with a perfect score!`,
+          icon: '🏆',
+          color: '#f39c12'
+        });
+      } else if (newBadges.length > 0) {
+        const badge = BADGES.find(b => b.id === newBadges[0]);
+        if (badge) {
+          setMilestone({
+            type: 'badge',
+            title: 'Badge Unlocked!',
+            description: badge.name,
+            icon: badge.icon,
+            color: '#00c2a0'
+          });
+        }
+      } else if (newStreak > oldStreak && newStreak >= 3 && newStreak % 3 === 0) {
+        setMilestone({
+          type: 'streak',
+          title: `${newStreak} Day Streak!`,
+          description: 'You\'re on fire! Keep playing daily to maintain your streak.',
+          icon: '🔥',
+          color: '#ef4444'
+        });
+      }
+      
+      // Show post-game engagement screen after milestone (if any)
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
+      
+    } catch (error) {
+      console.error("❌ Error updating progress:", error);
+      alert("Failed to save progress. Please try again.");
+      // Still show engagement screen even if save failed
+      setLastCompletedDifficulty(session.difficulty);
+      setShowPostGameEngagement(true);
+    }
+  };
+
+  const handleQuickPlay = () => {
+    // Select 5 random words from all difficulties
+    const shuffled = [...wordList].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+    setQuickPlayWords(selected);
+    setIsQuickPlay(true);
+    setIsPracticeMode(false); // Quick play is always practice mode (no progress saved)
+    setActiveGame(Difficulty.EASY); // Use EASY as placeholder
+  };
+
+  const handleReviewPractice = (words: Word[]) => {
+    setQuickPlayWords(words);
+    setIsQuickPlay(true);
+    setShowReviewWords(false);
+    setActiveGame(Difficulty.EASY); // Use EASY as placeholder
+  };
+
+  // NEW: Start game with fresh words (prevents repetition)
+  const handleStartGame = async (difficulty: Difficulty, isPractice = false) => {
+    if (!user) return;
+    
+    setIsPracticeMode(isPractice);
+    
+    // If practice mode or quick play, use regular word selection
+    if (isPractice) {
+      setActiveGame(difficulty);
+      return;
+    }
+    
+    // For regular games, get fresh words that haven't been used recently
+    try {
+      const freshWords = await getFreshWords(user.id, wordList, 10, difficulty);
+      console.log(`🎮 Starting ${difficulty} game with ${freshWords.length} fresh words`);
+      
+      // Store fresh words temporarily (they'll be used by GameView)
+      // GameView will filter by difficulty, so we pass all words
+      setActiveGame(difficulty);
+    } catch (error) {
+      console.error('❌ Error getting fresh words:', error);
+      // Fallback to regular game start
+      setActiveGame(difficulty);
+    }
+  };
+
+  const handleTeacherNavigate = (tab: string) => {
+    // Map the tab names from ProfileView to TeacherView tabs
+    const tabMap: { [key: string]: 'dashboard' | 'students' | 'words' | 'analytics' } = {
+      'students': 'students',
+      'words': 'words',
+      'analytics': 'analytics',
+      'dashboard': 'dashboard'
+    };
+    
+    const mappedTab = tabMap[tab] || 'dashboard';
+    setTeacherTab(mappedTab);
+    setActiveTab('home'); // Switch to home tab to show TeacherView
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b1221] text-white font-['Quicksand'] flex items-center justify-center">
+        <FunLoadingAnimation type="words" message="Loading your adventure..." />
+      </div>
+    );
+  }
+
+  // Show splash screen on first load
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#0b1221] text-white font-['Quicksand'] selection:bg-[#00c2a0]/30 overflow-x-hidden">
+        <AuthView />
+        <FirebaseStatus />
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    if (activeTab === 'rank') return <LeaderboardView currentUser={user} />;
+    if (activeTab === 'profile') {
+      // Pass navigation handler for teachers
+      const onNavigate = user.role === UserRole.TEACHER ? handleTeacherNavigate : undefined;
+      return <ProfileView user={user} onLogout={handleLogout} onNavigate={onNavigate} />;
+    }
+
+    if (user.role === UserRole.STUDENT) {
+      if (activeTab === 'play') return <PlayView 
+        user={user} 
+        onLevelSelect={(difficulty, isPractice = false) => {
+          handleStartGame(difficulty, isPractice);
+        }} 
+        onQuickPlay={handleQuickPlay} 
+        isPracticeMode={isPracticeMode} 
+      />;
+      return <DashboardView user={user} onStart={() => setActiveTab('play')} />;
+    } else if (user.role === UserRole.TEACHER) {
+      return <TeacherView initialTab={teacherTab} />;
+    } else if (user.role === UserRole.ADMIN) {
+      return <AdminView />;
+    }
+    return <DashboardView user={user} onStart={() => setActiveTab('play')} />;
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0b1221] text-white font-['Quicksand'] pb-32 pt-8 px-6 selection:bg-[#00c2a0]/30 overflow-x-hidden">
+      <div className="flex justify-between items-center mb-10 gap-4">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="w-10 h-10 bg-[#00c2a0] rounded-xl flex items-center justify-center font-bold text-2xl shadow-lg">W</div>
+          <h1 className="text-xl font-bold tracking-tight whitespace-nowrap">Mastering Words</h1>
+        </div>
+        <div className="flex gap-2 items-center flex-shrink-0">
+          {/* Language Selector - Only for students */}
+          {user.role === UserRole.STUDENT && (
+            <LanguageSelector
+              currentLanguage={(user.language as Language) || 'en'}
+              userId={user.id}
+              onLanguageChange={(newLang) => {
+                setUser(prev => prev ? { ...prev, language: newLang } : null);
+              }}
+            />
+          )}
+          
+          {/* Music Volume Control Button */}
+          <div className="relative flex-shrink-0 volume-control-container">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowVolumeControl(!showVolumeControl);
+              }}
+              className="w-9 h-9 bg-[#162031] hover:bg-[#1a2638] rounded-lg flex items-center justify-center transition-all active:scale-95 border border-white/10"
+              title="Music Volume"
+            >
+              <span className="text-base">{musicVolume === 0 ? '🔇' : musicVolume < 0.3 ? '🔉' : '🔊'}</span>
+            </button>
+            
+            {/* Volume Control Panel */}
+            {showVolumeControl && (
+              <div 
+                className="absolute top-12 right-0 bg-[#162031] rounded-2xl p-4 shadow-2xl border border-white/10 z-[200] animate-in slide-in-from-top-2 duration-200 min-w-[200px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white text-xs font-bold uppercase tracking-wider">Music Volume</span>
+                    <span className="text-[#00c2a0] text-xs font-bold">{Math.round(musicVolume * 100)}%</span>
+                  </div>
+                  
+                  {/* Volume Slider */}
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={musicVolume * 100}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      const newVolume = Number(e.target.value) / 100;
+                      setMusicVolume(newVolume);
+                      if (bgMusicRef.current) {
+                        bgMusicRef.current.volume = newVolume;
+                      }
+                    }}
+                    className="w-full h-2 bg-[#0b1221] rounded-full appearance-none cursor-pointer slider"
+                    style={{
+                      background: `linear-gradient(to right, #00c2a0 0%, #00c2a0 ${musicVolume * 100}%, #0b1221 ${musicVolume * 100}%, #0b1221 100%)`
+                    }}
+                  />
+                  
+                  {/* Quick Presets */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMusicVolume(0);
+                        if (bgMusicRef.current) {
+                          bgMusicRef.current.volume = 0;
+                        }
+                      }}
+                      className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                    >
+                      🔇 Off
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMusicVolume(0.15);
+                        if (bgMusicRef.current) {
+                          bgMusicRef.current.volume = 0.15;
+                        }
+                      }}
+                      className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                    >
+                      🔉 Low
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMusicVolume(0.5);
+                        if (bgMusicRef.current) {
+                          bgMusicRef.current.volume = 0.5;
+                        }
+                      }}
+                      className="flex-1 bg-[#0b1221] hover:bg-[#0b1221]/70 text-white text-xs py-2 rounded-lg transition-all active:scale-95"
+                    >
+                      🔊 High
+                    </button>
+                  </div>
+                  
+                  <p className="text-gray-500 text-[10px] text-center leading-tight">
+                    💡 Adjust music volume to your preference
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className={`px-2 py-1 rounded-lg text-[8px] sm:text-[9px] font-black uppercase tracking-wider border border-white/10 flex items-center gap-1 flex-shrink-0 max-w-[80px] sm:max-w-none ${user.role === UserRole.ADMIN ? 'bg-purple-500 text-white' : user.role === UserRole.TEACHER ? 'bg-teal-500 text-white' : 'bg-blue-500 text-white'}`}>
+             <div className="w-1 h-1 bg-white rounded-full animate-pulse flex-shrink-0" />
+             <span className="whitespace-nowrap truncate">{user.role}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="animate-in fade-in duration-500">
+        {renderContent()}
+      </div>
+
+      <BottomNav 
+        activeTab={activeTab} 
+        setTab={setActiveTab} 
+        role={user.role}
+        onStatsClick={() => setShowProgressDashboard(true)}
+        onReviewClick={() => setShowReviewWords(true)}
+      />
+
+      {activeGame && (
+        <GameOverlay 
+          difficulty={activeGame} 
+          onClose={() => {
+            setActiveGame(null);
+            setIsQuickPlay(false);
+            setIsPracticeMode(false);
+          }}
+          onComplete={handleGameComplete}
+          sparkies={user.sparkies}
+          onUpdateSparkies={handleUpdateSparkies}
+          gameWords={isQuickPlay ? quickPlayWords : wordList}
+          isQuickPlay={isQuickPlay}
+          isPracticeMode={isPracticeMode}
+          usedWordIds={user.usedWordIds}
+          userLanguage={(user.language as Language) || 'en'}
+          user={user}
+        />
+      )}
+
+      {showProgressDashboard && (
+        <ProgressDashboard 
+          user={user}
+          onClose={() => setShowProgressDashboard(false)}
+        />
+      )}
+
+      {showReviewWords && (
+        <ReviewWrongWords
+          wrongWordIds={user.wrongWords || []}
+          allWords={wordList}
+          onClose={() => setShowReviewWords(false)}
+          onStartPractice={handleReviewPractice}
+        />
+      )}
+
+      {milestone && (
+        <MilestoneCelebration
+          milestone={milestone}
+          onClose={() => setMilestone(null)}
+        />
+      )}
+
+      {/* Post-Game Engagement Screen */}
+      {showPostGameEngagement && user && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300 overflow-y-auto">
+          <div className="bg-gradient-to-br from-[#162031] to-[#0b1221] rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+            <PostGameEngagement
+              user={user}
+              language={user.language || 'en'}
+              onPlayAgain={(difficulty) => {
+                setShowPostGameEngagement(false);
+                handleStartGame(difficulty, false);
+              }}
+              onReviewWrongWords={() => {
+                setShowPostGameEngagement(false);
+                setShowReviewWords(true);
+              }}
+              onViewLeaderboard={() => {
+                setShowPostGameEngagement(false);
+                setActiveTab('rank');
+              }}
+              onViewStats={() => {
+                setShowPostGameEngagement(false);
+                setShowProgressDashboard(true);
+              }}
+            />
+            
+            {/* Close button */}
+            <button
+              onClick={() => {
+                setShowPostGameEngagement(false);
+                setActiveTab('home');
+              }}
+              className="mt-6 w-full bg-[#0b1221] hover:bg-[#162031] text-gray-400 hover:text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 border border-white/10"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-200">
+          <div className="bg-gradient-to-br from-[#162031] to-[#0b1221] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <span className="text-3xl">👋</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Sign Out?</h3>
+              <p className="text-gray-400 text-sm">Are you sure you want to sign out?</p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 bg-[#0b1221] hover:bg-[#162031] text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 border border-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 shadow-lg"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
