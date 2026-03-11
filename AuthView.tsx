@@ -10,6 +10,7 @@ const AuthView: React.FC = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [identifier, setIdentifier] = useState(''); // Email for Firebase
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // NEW: Password visibility toggle
   const [name, setName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
   const [section, setSection] = useState('');
@@ -172,7 +173,7 @@ const AuthView: React.FC = () => {
           
           {/* App name with gradient */}
           <h2 className="text-4xl font-black mb-2 bg-gradient-to-r from-[#00c2a0] via-[#00d8b3] to-[#00c2a0] bg-clip-text text-transparent">
-            Word Hero
+            Mastering Mind
           </h2>
           <p className="text-gray-500">
             {showForgotPassword ? 'Reset Your Password' : (isRegistering ? 'New Student Registration' : 'Welcome back, explorer!')}
@@ -338,16 +339,26 @@ const AuthView: React.FC = () => {
 
           <div>
             <label htmlFor="password" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Password</label>
-            <input 
-              id="password"
-              name="password"
-              type="password" 
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all placeholder:text-gray-700"
-              placeholder="••••••••"
-              required
-            />
+            <div className="relative">
+              <input 
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 pr-14 text-white outline-none transition-all placeholder:text-gray-700"
+                placeholder="••••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#00c2a0] transition-colors text-xl"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
 
           <button 

@@ -2083,7 +2083,7 @@ export default function App() {
       <div className="flex justify-between items-center mb-10 gap-4">
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-10 h-10 bg-[#00c2a0] rounded-xl flex items-center justify-center font-bold text-2xl shadow-lg">W</div>
-          <h1 className="text-xl font-bold tracking-tight whitespace-nowrap">Mastering Words</h1>
+          <h1 className="text-xl font-bold tracking-tight whitespace-nowrap">Mastering Mind</h1>
         </div>
         <div className="flex gap-2 items-center flex-shrink-0">
           {/* Language Selector - Only for students */}

@@ -1,8 +1,8 @@
-# 🎓 Mastering Words - Gamified Spelling Learning System
+# 🎓 Mastering Mind - Gamified Spelling Learning System
 
 <div align="center">
 
-![Mastering Words](https://img.shields.io/badge/Version-1.0.0-00c2a0?style=for-the-badge)
+![Mastering Mind](https://img.shields.io/badge/Version-1.0.0-00c2a0?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)
 ![Firebase](https://img.shields.io/badge/Firebase-10.0-FFCA28?style=for-the-badge&logo=firebase)
