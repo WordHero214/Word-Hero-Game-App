@@ -73,7 +73,7 @@ const BottomNav: React.FC<{ activeTab: string; setTab: (t: string) => void; role
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#0b1221] via-[#162031] to-[#162031] border-t border-white/10 px-3 py-4 flex justify-around items-center z-50 shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-4 flex justify-around items-center z-50 shadow-lg">
       {tabs.map((tab, index) => {
         const isActive = activeTab === tab.id;
         return (
@@ -97,7 +97,7 @@ const BottomNav: React.FC<{ activeTab: string; setTab: (t: string) => void; role
             <div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
               isActive 
                 ? `bg-gradient-to-br ${tab.gradient} shadow-lg` 
-                : 'bg-[#0b1221] border border-white/10'
+                : 'bg-gray-100 border border-gray-200'
             }`}>
               {/* Shine effect */}
               {isActive && (
@@ -117,7 +117,7 @@ const BottomNav: React.FC<{ activeTab: string; setTab: (t: string) => void; role
             
             {/* Label */}
             <span className={`text-[10px] font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${
-              isActive ? 'text-white' : 'text-gray-500'
+              isActive ? 'text-gray-900' : 'text-gray-400'
             }`}>
               {tab.label}
             </span>
@@ -2079,7 +2079,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-white font-['Quicksand'] pb-32 pt-8 px-6 selection:bg-[#00c2a0]/30 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-gray-900 font-['Quicksand'] pb-32 pt-8 px-6 selection:bg-[#00c2a0]/30 overflow-x-hidden">
       <div className="flex justify-between items-center mb-10 gap-4">
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-10 h-10 bg-[#00c2a0] rounded-xl flex items-center justify-center font-bold text-2xl shadow-lg">W</div>

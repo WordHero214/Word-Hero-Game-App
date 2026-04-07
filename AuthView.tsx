@@ -151,8 +151,8 @@ const AuthView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 animate-in fade-in duration-700">
-      <div className="w-full max-w-md bg-[#162031] rounded-[3rem] p-10 shadow-2xl border border-white/5">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 animate-in fade-in duration-700 bg-slate-50">
+      <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-xl border border-gray-100">
         <div className="text-center mb-10">
           {/* Enhanced Animated Logo */}
           <div className="relative w-24 h-24 mx-auto mb-6">
@@ -195,14 +195,14 @@ const AuthView: React.FC = () => {
             )}
             
             <div>
-              <label htmlFor="resetEmail" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Email Address</label>
+              <label htmlFor="resetEmail" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">Email Address</label>
               <input 
                 id="resetEmail"
                 name="resetEmail"
                 type="email" 
                 value={identifier}
                 onChange={e => setIdentifier(e.target.value)}
-                className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all placeholder:text-gray-700"
+                className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all placeholder:text-gray-400"
                 placeholder="Enter your email"
                 required
               />
@@ -239,14 +239,14 @@ const AuthView: React.FC = () => {
           
           {isRegistering && (
             <div>
-              <label htmlFor="fullName" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Full Name</label>
+              <label htmlFor="fullName" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">Full Name</label>
               <input 
                 id="fullName"
                 name="fullName"
                 type="text" 
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all placeholder:text-gray-700"
+                className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all placeholder:text-gray-400"
                 placeholder="Ex: Juan Dela Cruz"
                 required={isRegistering}
               />
@@ -254,7 +254,7 @@ const AuthView: React.FC = () => {
           )}
           
           <div>
-            <label htmlFor="email" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">
+            <label htmlFor="email" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">
               {isRegistering ? 'Email Address' : 'Email'}
             </label>
             <input 
@@ -263,7 +263,7 @@ const AuthView: React.FC = () => {
               type="email" 
               value={identifier}
               onChange={e => setIdentifier(e.target.value)}
-              className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all placeholder:text-gray-700"
+              className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all placeholder:text-gray-400"
               placeholder={isRegistering ? "student@school.edu" : "Enter email"}
               required
             />
@@ -272,13 +272,13 @@ const AuthView: React.FC = () => {
           {isRegistering && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="gradeLevel" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Grade Level</label>
+                <label htmlFor="gradeLevel" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">Grade Level</label>
                 <select 
                   id="gradeLevel"
                   name="gradeLevel"
                   value={gradeLevel}
                   onChange={e => setGradeLevel(e.target.value)}
-                  className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all appearance-none"
+                  className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all appearance-none"
                   required={isRegistering}
                 >
                   <option value="">Select Grade</option>
@@ -286,13 +286,13 @@ const AuthView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="section" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Section</label>
+                <label htmlFor="section" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">Section</label>
                 <select 
                   id="section"
                   name="section"
                   value={section}
                   onChange={e => setSection(e.target.value)}
-                  className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all appearance-none"
+                  className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all appearance-none"
                 >
                   <option value="">Select Section</option>
                   {['A', 'B', 'C', 'D', 'E', 'F'].map(s => <option key={s} value={s}>Section {s}</option>)}
@@ -303,15 +303,15 @@ const AuthView: React.FC = () => {
 
           {isRegistering && (
             <div>
-              <label htmlFor="teacherSelect" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">
+              <label htmlFor="teacherSelect" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">
                 Select Your Teacher
               </label>
               {loadingTeachers ? (
-                <div className="w-full bg-[#0b1221] border-2 border-transparent rounded-2xl py-4 px-6 text-gray-500 text-center">
+                <div className="w-full bg-gray-100 border-2 border-transparent rounded-2xl py-4 px-6 text-gray-500 text-center">
                   Loading teachers...
                 </div>
               ) : teachers.length === 0 ? (
-                <div className="w-full bg-[#0b1221] border-2 border-red-500/20 rounded-2xl py-4 px-6 text-red-400 text-sm">
+                <div className="w-full bg-red-50 border-2 border-red-200 rounded-2xl py-4 px-6 text-red-500 text-sm">
                   No teachers available. Please contact admin.
                 </div>
               ) : (
@@ -320,7 +320,7 @@ const AuthView: React.FC = () => {
                   name="teacherSelect"
                   value={teacherId}
                   onChange={handleTeacherChange}
-                  className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-white outline-none transition-all appearance-none"
+                  className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 text-gray-900 outline-none transition-all appearance-none"
                   required={isRegistering}
                 >
                   <option value="">Choose your teacher</option>
@@ -338,7 +338,7 @@ const AuthView: React.FC = () => {
           )}
 
           <div>
-            <label htmlFor="password" className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-4 mb-2 block">Password</label>
+            <label htmlFor="password" className="text-xs font-bold text-gray-600 uppercase tracking-widest ml-4 mb-2 block">Password</label>
             <div className="relative">
               <input 
                 id="password"
@@ -346,7 +346,7 @@ const AuthView: React.FC = () => {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-[#0b1221] border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 pr-14 text-white outline-none transition-all placeholder:text-gray-700"
+                className="w-full bg-gray-100 border-2 border-transparent focus:border-[#00c2a0] rounded-2xl py-4 px-6 pr-14 text-gray-900 outline-none transition-all placeholder:text-gray-400"
                 placeholder="••••••••"
                 required
               />
@@ -388,7 +388,7 @@ const AuthView: React.FC = () => {
                 >
                   Forgot password?
                 </button>
-                <p className="text-[10px] text-gray-600 text-center mt-6 uppercase tracking-widest font-bold">
+                <p className="text-[10px] text-gray-400 text-center mt-6 uppercase tracking-widest font-bold">
                   Teachers & Admins must use assigned credentials
                 </p>
               </>
