@@ -230,17 +230,17 @@ const AdminView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20">
               <div className="text-purple-400 text-sm font-bold mb-2">Total Users</div>
-              <div className="text-white text-3xl font-bold">{users.length}</div>
+              <div className="text-gray-900 text-3xl font-bold">{users.length}</div>
             </div>
             <div className="bg-gradient-to-br from-teal-500/10 to-teal-500/5 rounded-2xl p-6 border border-teal-500/20">
               <div className="text-teal-400 text-sm font-bold mb-2">Teachers</div>
-              <div className="text-white text-3xl font-bold">
+              <div className="text-gray-900 text-3xl font-bold">
                 {users.filter(u => u.role === UserRole.TEACHER).length}
               </div>
             </div>
             <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20">
               <div className="text-blue-400 text-sm font-bold mb-2">Students</div>
-              <div className="text-white text-3xl font-bold">
+              <div className="text-gray-900 text-3xl font-bold">
                 {users.filter(u => u.role === UserRole.STUDENT).length}
               </div>
             </div>
@@ -317,7 +317,7 @@ const AdminView: React.FC = () => {
                 <div className="text-blue-400 text-sm font-bold">Total Users</div>
                 <div className="text-3xl">👥</div>
               </div>
-              <div className="text-white text-4xl font-bold">{analytics.totalUsers}</div>
+              <div className="text-gray-900 text-4xl font-bold">{analytics.totalUsers}</div>
               <div className="text-xs text-gray-500 mt-2">
                 {analytics.totalStudents} students, {analytics.totalTeachers} teachers
               </div>
@@ -328,7 +328,7 @@ const AdminView: React.FC = () => {
                 <div className="text-green-400 text-sm font-bold">Games Played</div>
                 <div className="text-3xl">🎮</div>
               </div>
-              <div className="text-white text-4xl font-bold">{analytics.totalGamesPlayed}</div>
+              <div className="text-gray-900 text-4xl font-bold">{analytics.totalGamesPlayed}</div>
               <div className="text-xs text-gray-500 mt-2">
                 Avg: {analytics.totalStudents > 0 ? Math.round(analytics.totalGamesPlayed / analytics.totalStudents) : 0} per student
               </div>
@@ -339,7 +339,7 @@ const AdminView: React.FC = () => {
                 <div className="text-yellow-400 text-sm font-bold">Total Sparkies</div>
                 <div className="text-3xl">✨</div>
               </div>
-              <div className="text-white text-4xl font-bold">{analytics.totalSparkies}</div>
+              <div className="text-gray-900 text-4xl font-bold">{analytics.totalSparkies}</div>
               <div className="text-xs text-gray-500 mt-2">
                 Avg: {analytics.totalStudents > 0 ? Math.round(analytics.totalSparkies / analytics.totalStudents) : 0} per student
               </div>
@@ -350,7 +350,7 @@ const AdminView: React.FC = () => {
                 <div className="text-purple-400 text-sm font-bold">Certificates</div>
                 <div className="text-3xl">🏆</div>
               </div>
-              <div className="text-white text-4xl font-bold">{analytics.certificatesIssued}</div>
+              <div className="text-gray-900 text-4xl font-bold">{analytics.certificatesIssued}</div>
               <div className="text-xs text-gray-500 mt-2">
                 {analytics.totalStudents > 0 ? Math.round((analytics.certificatesIssued / analytics.totalStudents) * 100) : 0}% of students
               </div>
@@ -365,7 +365,7 @@ const AdminView: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-400 text-sm">Average Mastery</span>
-                    <span className="text-white font-bold">{analytics.averageMastery}%</span>
+                    <span className="text-gray-900 font-bold">{analytics.averageMastery}%</span>
                   </div>
                   <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
                     <div 
@@ -378,7 +378,7 @@ const AdminView: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-400 text-sm">Active Today</span>
-                    <span className="text-white font-bold">{analytics.activeToday} students</span>
+                    <span className="text-gray-900 font-bold">{analytics.activeToday} students</span>
                   </div>
                   <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
                     <div 
@@ -391,7 +391,7 @@ const AdminView: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-400 text-sm">Word Bank Size</span>
-                    <span className="text-white font-bold">{analytics.totalWords} words</span>
+                    <span className="text-gray-900 font-bold">{analytics.totalWords} words</span>
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
                     Avg: {analytics.totalStudents > 0 ? Math.round(analytics.totalWords / analytics.totalStudents) : 0} words per student
@@ -407,7 +407,7 @@ const AdminView: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-400 text-sm">Students</span>
-                      <span className="text-white font-bold">{analytics.totalStudents}</span>
+                      <span className="text-gray-900 font-bold">{analytics.totalStudents}</span>
                     </div>
                     <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
                       <div 
@@ -423,7 +423,7 @@ const AdminView: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-400 text-sm">Teachers</span>
-                      <span className="text-white font-bold">{analytics.totalTeachers}</span>
+                      <span className="text-gray-900 font-bold">{analytics.totalTeachers}</span>
                     </div>
                     <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
                       <div 
@@ -437,7 +437,7 @@ const AdminView: React.FC = () => {
 
                 <div className="mt-6 p-4 bg-[#0b1221] rounded-xl">
                   <div className="text-sm text-gray-400 mb-2">Student-Teacher Ratio</div>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-gray-900">
                     {analytics.totalTeachers > 0 ? Math.round(analytics.totalStudents / analytics.totalTeachers) : 0}:1
                   </div>
                 </div>
@@ -548,7 +548,7 @@ const AdminView: React.FC = () => {
                 📚
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-white">Database Management</h3>
+                <h3 className="text-3xl font-bold text-gray-900">Database Management</h3>
                 <p className="text-gray-400">Manage word database for offline gameplay</p>
               </div>
             </div>
@@ -558,12 +558,12 @@ const AdminView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
               <div className="text-purple-400 text-sm font-bold mb-2">Total Words</div>
-              <div className="text-white text-3xl font-bold">540</div>
+              <div className="text-gray-900 text-3xl font-bold">540</div>
               <div className="text-gray-500 text-xs mt-1">Across all grades</div>
             </div>
             <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
               <div className="text-blue-400 text-sm font-bold mb-2">Grade Levels</div>
-              <div className="text-white text-3xl font-bold">6</div>
+              <div className="text-gray-900 text-3xl font-bold">6</div>
               <div className="text-gray-500 text-xs mt-1">Grades 1-6</div>
             </div>
             <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
@@ -801,3 +801,4 @@ const AdminView: React.FC = () => {
 };
 
 export default AdminView;
+

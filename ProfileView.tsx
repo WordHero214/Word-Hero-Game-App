@@ -314,17 +314,17 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout, onNavigate })
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       {/* Profile Header */}
-      <div className="bg-gradient-to-br from-[#162031] to-[#1a2942] rounded-[2.5rem] p-10 text-center shadow-2xl border border-white/10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#00c2a0] to-[#00d8b3] rounded-[2.5rem] p-10 text-center shadow-xl border border-teal-200 relative overflow-hidden">
         {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 w-40 h-40 bg-[#00c2a0]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#f39c12]/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
         
         <div className="relative z-10">
           <div className="relative inline-block mb-6">
-            <div className="w-28 h-28 bg-gradient-to-br from-[#00c2a0] to-[#00d8b3] rounded-full flex items-center justify-center text-white text-5xl font-bold ring-8 ring-[#0c1322] shadow-2xl">
+            <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center text-white text-5xl font-bold ring-8 ring-white/30 shadow-2xl">
               {user.name[0].toUpperCase()}
             </div>
-            <div className="absolute bottom-0 right-0 bg-gradient-to-br from-[#f39c12] to-[#e67e22] w-10 h-10 rounded-full border-4 border-[#162031] flex items-center justify-center text-lg shadow-lg">
+            <div className="absolute bottom-0 right-0 bg-gradient-to-br from-[#f39c12] to-[#e67e22] w-10 h-10 rounded-full border-4 border-white flex items-center justify-center text-lg shadow-lg">
               {user.role === UserRole.TEACHER ? '👨‍🏫' : user.role === UserRole.ADMIN ? '👑' : '✏️'}
             </div>
           </div>
@@ -332,47 +332,44 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout, onNavigate })
           <h2 className="text-4xl font-bold text-white mb-2">
             {user.name}
           </h2>
-          <p className="text-gray-400 mb-1 text-lg">{user.username ? `@${user.username}` : user.email}</p>
+          <p className="text-white/80 mb-1 text-lg">{user.username ? `@${user.username}` : user.email}</p>
           
           {user.role === UserRole.STUDENT && user.gradeLevel && user.section && (
-            <div className="inline-flex items-center gap-2 bg-[#00c2a0]/10 border border-[#00c2a0]/30 px-4 py-2 rounded-full mt-2 mb-6">
-              <span className="text-[#00c2a0] font-bold text-sm">
+            <div className="inline-flex items-center gap-2 bg-white/20 border border-white/30 px-4 py-2 rounded-full mt-2 mb-6">
+              <span className="text-white font-bold text-sm">
                 📚 Grade {user.gradeLevel} • Section {user.section}
               </span>
             </div>
           )}
           
           {user.subject && (
-            <p className="text-[#00c2a0] text-sm font-bold mb-8">📚 {user.subject}</p>
+            <p className="text-white/90 text-sm font-bold mb-8">📚 {user.subject}</p>
           )}
 
           {/* Stats for Students */}
           {user.role === UserRole.STUDENT && (
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10 mb-8">
+            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20 mb-8">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#f39c12]/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-[#0c1322]/50 backdrop-blur-sm rounded-2xl p-4 border border-white/5">
-                  <span className="text-[#f39c12] text-3xl block mb-2">✨</span>
+                <div className="relative bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <span className="text-yellow-300 text-3xl block mb-2">✨</span>
                   <p className="text-3xl font-bold text-white mb-1">{user.sparkies || 0}</p>
-                  <p className="text-xs uppercase font-bold text-gray-400 tracking-wider">Sparkies</p>
+                  <p className="text-xs uppercase font-bold text-white/70 tracking-wider">Sparkies</p>
                 </div>
               </div>
               
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-[#0c1322]/50 backdrop-blur-sm rounded-2xl p-4 border border-white/5">
-                  <span className="text-blue-500 text-3xl block mb-2">🎓</span>
+                <div className="relative bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <span className="text-blue-200 text-3xl block mb-2">🎓</span>
                   <p className="text-3xl font-bold text-white mb-1">{user.wordsLearned || 0}</p>
-                  <p className="text-xs uppercase font-bold text-gray-400 tracking-wider">Words</p>
+                  <p className="text-xs uppercase font-bold text-white/70 tracking-wider">Words</p>
                 </div>
               </div>
               
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-[#0c1322]/50 backdrop-blur-sm rounded-2xl p-4 border border-white/5">
-                  <span className="text-red-500 text-3xl block mb-2">🔥</span>
+                <div className="relative bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                  <span className="text-red-200 text-3xl block mb-2">🔥</span>
                   <p className="text-3xl font-bold text-white mb-1">{user.longestStreak || 0}</p>
-                  <p className="text-xs uppercase font-bold text-gray-400 tracking-wider">Best Streak</p>
+                  <p className="text-xs uppercase font-bold text-white/70 tracking-wider">Best Streak</p>
                 </div>
               </div>
             </div>
