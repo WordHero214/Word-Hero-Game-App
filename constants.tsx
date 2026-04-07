@@ -10,7 +10,7 @@ export const COLORS = {
   muted: '#64748b',
   easy: '#22c55e',
   medium: '#3b82f6',
-  hard: '#1e293b'
+  hard: '#f97316'
 };
 
 export const BADGES = [
@@ -61,7 +61,7 @@ export const DIFFICULTY_CONFIG = {
     label: 'Hard Mode', 
     sub: 'Real-world scenarios and vocabulary', 
     reward: 25, 
-    color: '#1e293b', 
+    color: '#f97316', 
     icon: '🔒',
     timePerWord: 90, // 90 seconds per word (harder words need more time)
     minWordsForCertificate: 10

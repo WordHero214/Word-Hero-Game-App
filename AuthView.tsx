@@ -172,7 +172,7 @@ const AuthView: React.FC = () => {
           </div>
           
           {/* App name with gradient */}
-          <h2 className="text-4xl font-black mb-2 bg-gradient-to-r from-[#00c2a0] via-[#00d8b3] to-[#00c2a0] bg-clip-text text-transparent">
+          <h2 className="text-4xl font-black mb-2 text-[#00a88a]">
             Mastering Mind
           </h2>
           <p className="text-gray-500">

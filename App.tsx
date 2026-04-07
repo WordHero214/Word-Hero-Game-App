@@ -339,10 +339,10 @@ const PlayView: React.FC<{
         <div 
           key={difficulty}
           className={`relative overflow-hidden rounded-[2.5rem] p-8 shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
-            isLocked ? 'bg-[#121c29] opacity-40' : 'animate-in slide-in-from-bottom-4'
+            isLocked ? 'bg-gray-200 opacity-60' : 'animate-in slide-in-from-bottom-4'
           }`}
           style={{ 
-            backgroundColor: isLocked ? '#121c29' : config.color,
+            backgroundColor: isLocked ? '#e2e8f0' : config.color,
             animationDelay: `${Object.keys(DIFFICULTY_CONFIG).indexOf(difficulty) * 100}ms`
           }}
         >

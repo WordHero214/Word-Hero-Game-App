@@ -26,7 +26,7 @@ h1, h2, h3, h4, .font-display {
 
 /* Specific overrides */
 .bg-\[#0b1221\] { background-color: #f1f5f9 !important; }
-.bg-\[#162031\] { background-color: #ffffff !important; }
+.bg-\[#162031\] { background-color: #ffffff !important; border: 1px solid #e2e8f0; }
 .bg-\[#121c29\] { background-color: #f8fafc !important; }
 .bg-\[#0c1322\] { background-color: #f1f5f9 !important; }
 .bg-\[#1a2942\] { background-color: #f8fafc !important; }
