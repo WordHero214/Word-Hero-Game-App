@@ -386,10 +386,10 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ currentUser }) => {
           )}
 
           {/* Motivational Message */}
-          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-[2rem] p-6 text-center">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-[2rem] p-6 text-center shadow-lg shadow-purple-200">
             <div className="text-4xl mb-3 animate-bounce">🌟</div>
             <p className="text-white font-bold text-lg mb-2">Keep Learning, Keep Growing!</p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-white/80 text-sm">
               Every word you learn brings you closer to the top! 🚀
             </p>
           </div>
