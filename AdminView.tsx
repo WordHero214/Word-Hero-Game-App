@@ -542,42 +542,42 @@ const AdminView: React.FC = () => {
       {activeTab === 'database' && (
         <div className="space-y-6">
           {/* Header */}
-          <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-3xl p-8 border border-purple-500/20">
+          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl p-8 shadow-lg shadow-purple-200">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center text-3xl">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">
                 📚
               </div>
               <div>
-                <h3 className="text-3xl font-bold text-gray-900">Database Management</h3>
-                <p className="text-gray-400">Manage word database for offline gameplay</p>
+                <h3 className="text-3xl font-bold text-white">Database Management</h3>
+                <p className="text-purple-100">Manage word database for offline gameplay</p>
               </div>
             </div>
           </div>
 
           {/* Database Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
-              <div className="text-purple-400 text-sm font-bold mb-2">Total Words</div>
-              <div className="text-gray-900 text-3xl font-bold">540</div>
-              <div className="text-gray-500 text-xs mt-1">Across all grades</div>
+            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 shadow-lg shadow-purple-200">
+              <div className="text-purple-100 text-sm font-bold mb-2">Total Words</div>
+              <div className="text-white text-3xl font-bold">540</div>
+              <div className="text-purple-100 text-xs mt-1">Across all grades</div>
             </div>
-            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
-              <div className="text-blue-400 text-sm font-bold mb-2">Grade Levels</div>
-              <div className="text-gray-900 text-3xl font-bold">6</div>
-              <div className="text-gray-500 text-xs mt-1">Grades 1-6</div>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-lg shadow-blue-200">
+              <div className="text-blue-100 text-sm font-bold mb-2">Grade Levels</div>
+              <div className="text-white text-3xl font-bold">6</div>
+              <div className="text-blue-100 text-xs mt-1">Grades 1-6</div>
             </div>
-            <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
-              <div className="text-green-400 text-sm font-bold mb-2">Difficulty Levels</div>
+            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 shadow-lg shadow-green-200">
+              <div className="text-green-100 text-sm font-bold mb-2">Difficulty Levels</div>
               <div className="text-white text-3xl font-bold">3</div>
-              <div className="text-gray-500 text-xs mt-1">Easy, Medium, Hard</div>
+              <div className="text-green-100 text-xs mt-1">Easy, Medium, Hard</div>
             </div>
           </div>
 
           {/* Upload 540 Words Section */}
-          <div className="bg-[#162031] rounded-3xl p-8 border border-white/5">
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
             <div className="flex items-start gap-6">
               <div className="flex-1">
-                <h4 className="text-2xl font-bold text-white mb-3">📤 Upload Complete Database</h4>
+                <h4 className="text-2xl font-bold text-gray-900 mb-3">📤 Upload Complete Database</h4>
                 <p className="text-gray-400 mb-4">
                   Upload the complete 540-word database for offline use. This includes:
                 </p>
