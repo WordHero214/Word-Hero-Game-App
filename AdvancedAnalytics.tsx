@@ -632,83 +632,72 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ students, totalWo
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 shadow-lg shadow-purple-200">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">👥</span>
-            <span className="text-xs font-bold text-purple-400 uppercase">Students</span>
+            <span className="text-xs font-bold text-purple-100 uppercase">Students</span>
           </div>
           <p className="text-3xl font-bold text-white mb-1">{analytics.totalStudents}</p>
-          <p className="text-xs text-gray-500">{analytics.activeStudents} active ({analytics.engagementRate}%)</p>
+          <p className="text-xs text-purple-100">{analytics.activeStudents} active ({analytics.engagementRate}%)</p>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl p-6 shadow-lg shadow-orange-200">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">✨</span>
-            <span className="text-xs font-bold text-orange-400 uppercase">Total Sparkies</span>
+            <span className="text-xs font-bold text-orange-100 uppercase">Total Sparkies</span>
           </div>
           <p className="text-3xl font-bold text-white mb-1">{analytics.totalSparkies}</p>
-          <p className="text-xs text-gray-500">Avg: {analytics.avgSparkies} per student</p>
+          <p className="text-xs text-orange-100">Avg: {analytics.avgSparkies} per student</p>
         </div>
 
-        <div className="bg-gradient-to-br from-teal-500/10 to-teal-500/5 border border-teal-500/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl p-6 shadow-lg shadow-teal-200">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">🎮</span>
-            <span className="text-xs font-bold text-teal-400 uppercase">Games Played</span>
+            <span className="text-xs font-bold text-teal-100 uppercase">Games Played</span>
           </div>
           <p className="text-3xl font-bold text-white mb-1">{analytics.totalGames}</p>
-          <p className="text-xs text-gray-500">Avg: {analytics.avgGames} per student</p>
+          <p className="text-xs text-teal-100">Avg: {analytics.avgGames} per student</p>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-lg shadow-blue-200">
           <div className="flex items-center justify-between mb-4">
             <span className="text-3xl">📚</span>
-            <span className="text-xs font-bold text-blue-400 uppercase">Words Learned</span>
+            <span className="text-xs font-bold text-blue-100 uppercase">Words Learned</span>
           </div>
           <p className="text-3xl font-bold text-white mb-1">{analytics.totalWordsLearned}</p>
-          <p className="text-xs text-gray-500">Avg: {analytics.avgWordsLearned} per student</p>
+          <p className="text-xs text-blue-100">Avg: {analytics.avgWordsLearned} per student</p>
         </div>
       </div>
 
       {/* Difficulty Mastery */}
-      <div className="bg-[#162031] rounded-2xl p-8 border border-white/5">
-        <h3 className="text-xl font-bold text-white mb-6">Difficulty Level Mastery</h3>
+      <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <h3 className="text-xl font-bold text-gray-900 mb-6">Difficulty Level Mastery</h3>
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-green-400">Easy Level</span>
-              <span className="text-sm font-bold text-white">{analytics.easyMastery}%</span>
+              <span className="text-sm font-bold text-green-600">Easy Level</span>
+              <span className="text-sm font-bold text-gray-900">{analytics.easyMastery}%</span>
             </div>
-            <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-1000"
-                style={{ width: `${analytics.easyMastery}%` }}
-              />
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-1000" style={{ width: `${analytics.easyMastery}%` }} />
             </div>
           </div>
-
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-yellow-400">Medium Level</span>
-              <span className="text-sm font-bold text-white">{analytics.mediumMastery}%</span>
+              <span className="text-sm font-bold text-yellow-600">Medium Level</span>
+              <span className="text-sm font-bold text-gray-900">{analytics.mediumMastery}%</span>
             </div>
-            <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 transition-all duration-1000"
-                style={{ width: `${analytics.mediumMastery}%` }}
-              />
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 transition-all duration-1000" style={{ width: `${analytics.mediumMastery}%` }} />
             </div>
           </div>
-
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-red-400">Hard Level</span>
-              <span className="text-sm font-bold text-white">{analytics.hardMastery}%</span>
+              <span className="text-sm font-bold text-red-600">Hard Level</span>
+              <span className="text-sm font-bold text-gray-900">{analytics.hardMastery}%</span>
             </div>
-            <div className="w-full h-3 bg-[#0b1221] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all duration-1000"
-                style={{ width: `${analytics.hardMastery}%` }}
-              />
+            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all duration-1000" style={{ width: `${analytics.hardMastery}%` }} />
             </div>
           </div>
         </div>
@@ -716,52 +705,52 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ students, totalWo
 
       {/* Engagement & Streaks */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#162031] rounded-2xl p-8 border border-white/5">
-          <h3 className="text-xl font-bold text-white mb-6">Engagement Metrics</h3>
+        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Engagement Metrics</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Engagement Rate</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Engagement Rate</span>
               <span className="text-2xl font-bold text-[#00c2a0]">{analytics.engagementRate}%</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Active Students</span>
-              <span className="text-2xl font-bold text-white">{analytics.activeStudents}/{analytics.totalStudents}</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Active Students</span>
+              <span className="text-2xl font-bold text-gray-900">{analytics.activeStudents}/{analytics.totalStudents}</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Avg Games/Student</span>
-              <span className="text-2xl font-bold text-blue-400">{analytics.avgGames}</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Avg Games/Student</span>
+              <span className="text-2xl font-bold text-blue-600">{analytics.avgGames}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-[#162031] rounded-2xl p-8 border border-white/5">
-          <h3 className="text-xl font-bold text-white mb-6">Streak Analysis</h3>
+        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Streak Analysis</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Students with Streak</span>
-              <span className="text-2xl font-bold text-orange-400">{analytics.studentsWithStreak}</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Students with Streak</span>
+              <span className="text-2xl font-bold text-orange-500">{analytics.studentsWithStreak}</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Average Streak</span>
-              <span className="text-2xl font-bold text-white">{analytics.avgStreak} days</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Average Streak</span>
+              <span className="text-2xl font-bold text-gray-900">{analytics.avgStreak} days</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-[#0b1221] rounded-xl">
-              <span className="text-gray-400">Longest Streak</span>
-              <span className="text-2xl font-bold text-red-400">🔥 {analytics.longestStreak} days</span>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <span className="text-gray-600">Longest Streak</span>
+              <span className="text-2xl font-bold text-red-500">🔥 {analytics.longestStreak} days</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Grade Distribution */}
-      <div className="bg-[#162031] rounded-2xl p-8 border border-white/5">
-        <h3 className="text-xl font-bold text-white mb-6">Grade Distribution</h3>
+      <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <h3 className="text-xl font-bold text-gray-900 mb-6">Grade Distribution</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {Object.entries(analytics.gradeDistribution).map(([grade, count]) => (
-            <div key={grade} className="bg-[#0b1221] rounded-xl p-4 text-center">
-              <p className="text-gray-400 text-xs mb-2">Grade {grade}</p>
+            <div key={grade} className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-center shadow-md">
+              <p className="text-indigo-100 text-xs mb-2">Grade {grade}</p>
               <p className="text-3xl font-bold text-white">{count}</p>
-              <p className="text-gray-500 text-xs mt-1">
+              <p className="text-indigo-100 text-xs mt-1">
                 {Math.round((count / analytics.totalStudents) * 100)}%
               </p>
             </div>

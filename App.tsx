@@ -2322,7 +2322,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <div className="text-center text-xs text-gray-400 py-4 pb-36">
+      <div className="text-center text-sm text-gray-500 font-semibold py-4 pb-36">
         © 2026 Solanoy & Gabay - Mastering Minds
       </div>
     </div>
