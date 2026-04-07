@@ -106,7 +106,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
-              activeTab === 'dashboard' ? 'bg-purple-500 text-white' : 'bg-[#162031] text-gray-400'
+              activeTab === 'dashboard' ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-600'
             }`}
           >
             📊 Dashboard
@@ -114,7 +114,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
           <button
             onClick={() => setActiveTab('students')}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
-              activeTab === 'students' ? 'bg-[#00c2a0] text-white' : 'bg-[#162031] text-gray-400'
+              activeTab === 'students' ? 'bg-[#00c2a0] text-white' : 'bg-gray-100 text-gray-600'
             }`}
           >
             👥 Students
@@ -122,7 +122,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
           <button
             onClick={() => setActiveTab('words')}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
-              activeTab === 'words' ? 'bg-[#f39c12] text-white' : 'bg-[#162031] text-gray-400'
+              activeTab === 'words' ? 'bg-[#f39c12] text-white' : 'bg-gray-100 text-gray-600'
             }`}
           >
             📚 Word Bank
@@ -130,7 +130,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
           <button
             onClick={() => setActiveTab('analytics')}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
-              activeTab === 'analytics' ? 'bg-blue-600 text-white' : 'bg-[#162031] text-gray-400'
+              activeTab === 'analytics' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
             }`}
           >
             📈 Analytics
@@ -143,7 +143,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
         <div className="space-y-6">
           {/* No Words Warning */}
           {totalWords === 0 && (
-            <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 rounded-2xl p-6 animate-in slide-in-from-top duration-500">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 animate-in slide-in-from-top duration-500 shadow-lg shadow-orange-200">
               <div className="flex items-start gap-4">
                 <div className="text-4xl">⚠️</div>
                 <div className="flex-1">
@@ -178,48 +178,48 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 shadow-lg shadow-purple-200">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-3xl">👥</span>
-                <span className="text-xs font-bold text-purple-400 uppercase">Students</span>
+                <span className="text-xs font-bold text-purple-100 uppercase">Students</span>
               </div>
               <p className="text-3xl font-bold text-white mb-1">{totalStudents}</p>
-              <p className="text-xs text-gray-500">{activeStudents} active</p>
+              <p className="text-xs text-purple-100">{activeStudents} active</p>
             </div>
 
-            <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl p-6 shadow-lg shadow-orange-200">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-3xl">📚</span>
-                <span className="text-xs font-bold text-orange-400 uppercase">Words</span>
+                <span className="text-xs font-bold text-orange-100 uppercase">Words</span>
               </div>
               <p className="text-3xl font-bold text-white mb-1">{totalWords}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-orange-100">
                 {wordsByDifficulty.easy}E • {wordsByDifficulty.medium}M • {wordsByDifficulty.hard}H
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-teal-500/10 to-teal-500/5 border border-teal-500/20 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl p-6 shadow-lg shadow-teal-200">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-3xl">✨</span>
-                <span className="text-xs font-bold text-teal-400 uppercase">Avg Sparkies</span>
+                <span className="text-xs font-bold text-teal-100 uppercase">Avg Sparkies</span>
               </div>
               <p className="text-3xl font-bold text-white mb-1">{avgSparkies}</p>
-              <p className="text-xs text-gray-500">per student</p>
+              <p className="text-xs text-teal-100">per student</p>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-lg shadow-blue-200">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-3xl">🎮</span>
-                <span className="text-xs font-bold text-blue-400 uppercase">Total Games</span>
+                <span className="text-xs font-bold text-blue-100 uppercase">Total Games</span>
               </div>
               <p className="text-3xl font-bold text-white mb-1">{totalGames}</p>
-              <p className="text-xs text-gray-500">played</p>
+              <p className="text-xs text-blue-100">played</p>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-[#162031] rounded-3xl p-8 border border-white/5">
-            <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button
                 onClick={() => setActiveTab('words')}
@@ -264,13 +264,13 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
           </div>
 
           {/* Top Performers */}
-          <div className="bg-[#162031] rounded-3xl p-8 border border-white/5">
-            <h3 className="text-xl font-bold text-white mb-6">Top Performers (By Sparkies)</h3>
+          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">🏆 Top Performers (By Sparkies)</h3>
             <div className="space-y-3">
               {topPerformers.map((student, index) => (
                 <div
                   key={student.id}
-                  className="flex items-center gap-4 p-4 bg-[#0b1221] rounded-2xl hover:bg-[#0b1221]/50 transition-all cursor-pointer"
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all cursor-pointer border border-gray-100"
                   onClick={() => setSelectedStudent(student)}
                 >
                   <div
@@ -281,13 +281,13 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
                         ? 'bg-gray-400 text-white'
                         : index === 2
                         ? 'bg-orange-600 text-white'
-                        : 'bg-[#162031] text-gray-400'
+                        : 'bg-gray-200 text-gray-600'
                     }`}
                   >
                     {index + 1}
                   </div>
                   <div className="flex-1">
-                    <p className="text-white font-bold">{student.name}</p>
+                    <p className="text-gray-900 font-bold">{student.name}</p>
                     <p className="text-gray-500 text-xs">
                       {student.gradeLevel ? `Grade ${student.gradeLevel}` : 'No grade'} • {student.wordsLearned || 0} words learned
                     </p>
@@ -306,9 +306,9 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
       {/* Students Tab */}
       {activeTab === 'students' && (
         <div className="space-y-6">
-          <div className="bg-[#162031] rounded-2xl p-6 border border-white/5">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6">
-              <h3 className="text-2xl font-bold text-white">Student Performance ({filteredStudents.length})</h3>
+              <h3 className="text-2xl font-bold text-gray-900">Student Performance ({filteredStudents.length})</h3>
               <div className="flex gap-3 w-full md:w-auto flex-wrap">
                 <div className="relative flex-1 md:w-64">
                   <input
@@ -316,14 +316,14 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
                     placeholder="Search students..."
                     value={studentSearch}
                     onChange={(e) => setStudentSearch(e.target.value)}
-                    className="w-full bg-[#0b1221] border border-white/5 rounded-xl py-2 px-10 text-sm text-white focus:border-[#00c2a0] outline-none"
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl py-2 px-10 text-sm text-gray-900 focus:border-[#00c2a0] outline-none"
                   />
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 text-xs">🔍</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
                 </div>
                 <select
                   value={gradeFilter}
                   onChange={(e) => setGradeFilter(e.target.value)}
-                  className="bg-[#0b1221] border border-white/5 rounded-xl py-2 px-4 text-sm text-white focus:border-[#00c2a0] outline-none"
+                  className="bg-gray-100 border border-gray-200 rounded-xl py-2 px-4 text-sm text-gray-900 focus:border-[#00c2a0] outline-none"
                 >
                   <option value="all">All Grades</option>
                   {gradeLevels.map(grade => (
@@ -333,7 +333,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-[#0b1221] border border-white/5 rounded-xl py-2 px-4 text-sm text-white focus:border-[#00c2a0] outline-none"
+                  className="bg-gray-100 border border-gray-200 rounded-xl py-2 px-4 text-sm text-gray-900 focus:border-[#00c2a0] outline-none"
                 >
                   <option value="sparkies">Sort by Sparkies</option>
                   <option value="name">Sort by Name</option>
@@ -345,7 +345,7 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-gray-500 text-xs font-bold uppercase tracking-widest border-b border-white/5">
+                  <tr className="text-gray-500 text-xs font-bold uppercase tracking-widest border-b border-gray-100">
                     <th className="pb-4 pl-4">Student</th>
                     <th className="pb-4">Grade</th>
                     <th className="pb-4">Progress</th>
@@ -365,22 +365,22 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
                     return (
                       <tr
                         key={student.id}
-                        className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group"
+                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors group"
                       >
                         <td className="py-5 pl-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-[#3b82f6]/20 rounded-xl flex items-center justify-center text-[#3b82f6] font-bold">
+                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold">
                               {student.name[0]}
                             </div>
                             <div>
-                              <span className="text-white font-bold block">{student.name}</span>
+                              <span className="text-gray-900 font-bold block">{student.name}</span>
                               <span className="text-gray-500 text-xs">@{student.username}</span>
                             </div>
                           </div>
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
-                            <span className="text-blue-400 font-bold">
+                            <span className="text-blue-600 font-bold">
                               {student.gradeLevel ? `Grade ${student.gradeLevel}` : 'N/A'}
                             </span>
                             {student.section && (
@@ -390,25 +390,25 @@ const TeacherView: React.FC<TeacherViewProps> = ({ initialTab = 'dashboard' }) =
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-24 h-2 bg-[#0b1221] rounded-full overflow-hidden">
+                            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-[#00c2a0] transition-all"
                                 style={{ width: `${avgMastery}%` }}
                               />
                             </div>
-                            <span className="text-white font-bold text-sm">{avgMastery}%</span>
+                            <span className="text-gray-900 font-bold text-sm">{avgMastery}%</span>
                           </div>
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
                             <span className="text-[#f39c12]">✨</span>
-                            <span className="text-white font-bold">{student.sparkies || 0}</span>
+                            <span className="text-gray-900 font-bold">{student.sparkies || 0}</span>
                           </div>
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
                             <span className="text-red-500">🔥</span>
-                            <span className="text-white font-bold">{student.currentStreak || 0}</span>
+                            <span className="text-gray-900 font-bold">{student.currentStreak || 0}</span>
                           </div>
                         </td>
                         <td className="py-5 text-right pr-4">
