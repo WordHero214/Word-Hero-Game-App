@@ -219,22 +219,22 @@ const DashboardView: React.FC<{ user: User; onStart: () => void }> = ({ user, on
 
       {/* Grade-Appropriate Words Indicator */}
       {user.gradeLevel && (
-        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-2 border-blue-500/20 rounded-2xl p-6">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 shadow-lg shadow-blue-200">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
               📚
             </div>
             <div className="flex-1">
               <h4 className="text-white font-bold text-lg mb-1">
                 Grade {user.gradeLevel} Words
               </h4>
-              <p className="text-gray-400 text-sm">
+              <p className="text-white/80 text-sm">
                 You're getting words specially selected for Grade {user.gradeLevel} students. 
                 Each difficulty level is designed to match your learning level!
               </p>
             </div>
-            <div className="text-center px-4 py-2 bg-blue-500/20 rounded-xl">
-              <p className="text-blue-400 text-xs font-bold uppercase">Your Level</p>
+            <div className="text-center px-4 py-2 bg-white/20 rounded-xl">
+              <p className="text-white/80 text-xs font-bold uppercase">Your Level</p>
               <p className="text-white text-2xl font-bold">{user.gradeLevel}</p>
             </div>
           </div>
