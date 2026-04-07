@@ -2079,7 +2079,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1221] text-white font-['Quicksand'] pb-32 pt-8 px-6 selection:bg-[#00c2a0]/30 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-white font-['Quicksand'] pb-32 pt-8 px-6 selection:bg-[#00c2a0]/30 overflow-x-hidden">
       <div className="flex justify-between items-center mb-10 gap-4">
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-10 h-10 bg-[#00c2a0] rounded-xl flex items-center justify-center font-bold text-2xl shadow-lg">W</div>
@@ -2320,6 +2320,11 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <div className="text-center text-xs text-gray-400 py-4 pb-36">
+        © 2026 Solanoy & Gabay - Mastering Minds
+      </div>
     </div>
   );
 }
