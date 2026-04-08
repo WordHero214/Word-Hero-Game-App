@@ -151,7 +151,7 @@ const AuthView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 animate-in fade-in duration-700 bg-slate-50">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 animate-in fade-in duration-700 bg-slate-50">
       <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-xl border border-gray-100">
         <div className="text-center mb-10">
           {/* Enhanced Animated Logo */}
@@ -396,6 +396,9 @@ const AuthView: React.FC = () => {
           </>
         )}
       </div>
+      <p className="text-center text-sm text-gray-500 font-semibold mt-6">
+        © 2026 Solanoy & Gabay - Mastering Minds
+      </p>
     </div>
   );
 };
